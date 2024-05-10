@@ -84,8 +84,34 @@ public class LoginController {
         }
     }
     @FXML
+    // Open the Policy Holder Dashboard
     private void openPolicyHolderDashboard(User user) {
-        // Open the Policy Holder Dashboard
+        //startTextAnimation(dashboardLabel.getText()); // Start the text animation
+
+        // Display a popup dialog
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Policy Holder Login");
+        alert.setHeaderText("Login Successful");
+        alert.setContentText("You have successfully logged in as Policy Holder.");
+        alert.showAndWait();
+
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/policyHolderDashboard.fxml"));
+            Parent adminDashboardRoot = loader.load();
+            Scene adminDashboardScene = new Scene(adminDashboardRoot);
+
+            // Get any node from the current scene
+            Node sourceNode = loginButton; // Use any node from the current scene
+
+            // Get any primary stage from the source node's scene
+            Stage primaryStage = (Stage) sourceNode.getScene().getWindow();
+
+            primaryStage.setScene(adminDashboardScene);
+            primaryStage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+            // Handle any errors loading the admin dashboard FXML
+        }
     }
 
     private void openDependentDashboard(User user) {
