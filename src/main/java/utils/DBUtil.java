@@ -7,9 +7,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DBUtil {
-    private static final String URL = "jdbc:postgresql://your_database_url";
-    private static final String USER = "your_username";
-    private static final String PASSWORD = "your_password";
+    private static final String URL = "jdbc:postgresql://aws-0-ap-southeast-1.pooler.supabase.com:5432/postgres";
+    private static final String USER = "postgres.lyyhbfqsjhcujgbjkqlc";
+    private static final String PASSWORD = "9FCf7nrJcs7Qwz5E";
+
 
     public static Connection getConnection() throws SQLException {
         return DriverManager.getConnection(URL, USER, PASSWORD);
