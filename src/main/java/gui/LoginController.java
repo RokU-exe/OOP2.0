@@ -100,7 +100,7 @@ public class LoginController {
             alert.showAndWait();
 
             try {
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/systemAdminhDashboard.fxml"));
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/systemAdminDashboard.fxml"));
                 Parent adminDashboardRoot = loader.load();
                 Scene adminDashboardScene = new Scene(adminDashboardRoot);
 
