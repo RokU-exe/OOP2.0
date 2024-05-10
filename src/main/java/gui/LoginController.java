@@ -96,7 +96,7 @@ public class LoginController {
         alert.showAndWait();
 
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/policyHolderDashboard.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/PolicyHolderDashboard.fxml"));
             Parent adminDashboardRoot = loader.load();
             Scene adminDashboardScene = new Scene(adminDashboardRoot);
 
