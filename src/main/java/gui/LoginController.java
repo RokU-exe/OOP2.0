@@ -35,12 +35,32 @@ public class LoginController {
     }
 
     public void validShow(){
-        // Display a popup dialog for system admin
+        User user = getUser();
+        String roleName = getRoleDisplayName(user.getRole());
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Admin Login");
+        alert.setTitle(roleName + " Login");
         alert.setHeaderText("Login Successful");
-        alert.setContentText("You have successfully logged in as a " + getUser().getRole());
+        alert.setContentText("You have successfully logged in as a " + roleName);
         alert.showAndWait();
+    }
+
+    private String getRoleDisplayName(UserRole role) {
+        switch (role) {
+            case POLICY_OWNER:
+                return "Policy Owner";
+            case POLICY_HOLDER:
+                return "Policy Holder";
+            case DEPENDENT:
+                return "Dependent";
+            case INSURANCE_SURVEYOR:
+                return "Insurance Surveyor";
+            case INSURANCE_MANAGER:
+                return "Insurance Manager";
+            case SYSTEM_ADMIN:
+                return "System Admin";
+            default:
+                return "Unknown Role";
+        }
     }
     @FXML
     private void handleLogin() throws IOException {
