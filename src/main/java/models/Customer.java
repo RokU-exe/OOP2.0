@@ -10,6 +10,18 @@ public abstract class Customer {
     private String address;
     private String phone;
     private String email;
+    private String role;
+
+    public Customer(String id, String fullName, InsuranceCard insuranceCard, List<Claim> claims, String address, String phone, String email, String role) {
+        this.id = id;
+        this.fullName = fullName;
+        this.insuranceCard = insuranceCard;
+        this.claims = claims;
+        this.address = address;
+        this.phone = phone;
+        this.email = email;
+        this.role = role;
+    }
 
     // Constructors, getters, and setters
     public Customer(String id, String fullName, InsuranceCard insuranceCard, List<Claim> claims,
@@ -79,9 +91,17 @@ public abstract class Customer {
         this.email = email;
     }
 
+    public String getRole(){
+        return this.role = role;
+    }
+
+    public String setRole(String role) {
+        return role;
+    }
+
     @Override
     public String toString() {
-        return "models.Customer{" +
+        return "Customer{" +
                 "id='" + id + '\'' +
                 ", fullName='" + fullName + '\'' +
                 ", insuranceCard=" + insuranceCard +
@@ -89,6 +109,7 @@ public abstract class Customer {
                 ", address='" + address + '\'' +
                 ", phone='" + phone + '\'' +
                 ", email='" + email + '\'' +
+                ", role='" + role + '\'' +
                 '}';
     }
 }

@@ -15,6 +15,7 @@ public class Claim {
     private String receiverBank;
     private String receiverName;
     private String receiverNumber;
+    private String policyHolderName;
 
     // Constructors, getters, and setters
     public Claim(String id, Date claimDate, String insuredPerson, String cardNumber, Date examDate,
@@ -31,6 +32,7 @@ public class Claim {
         this.receiverBank = receiverBank;
         this.receiverName = receiverName;
         this.receiverNumber = receiverNumber;
+        this.policyHolderName = policyHolderName;
     }
 
     public String getId() {
@@ -121,9 +123,16 @@ public class Claim {
         this.receiverNumber = receiverNumber;
     }
 
+    public String getPolicyHolderName() {
+        return policyHolderName;
+    }
+    public void setPolicyHolderName(String policyHolderName) {
+        this.policyHolderName = policyHolderName;
+    }
+
     @Override
     public String toString() {
-        return "models.Claim{" +
+        return "Claim{" +
                 "id='" + id + '\'' +
                 ", claimDate=" + claimDate +
                 ", insuredPerson='" + insuredPerson + '\'' +
@@ -135,6 +144,7 @@ public class Claim {
                 ", receiverBank='" + receiverBank + '\'' +
                 ", receiverName='" + receiverName + '\'' +
                 ", receiverNumber='" + receiverNumber + '\'' +
+                ", policyHolderName='" + policyHolderName + '\'' +
                 '}';
     }
 }

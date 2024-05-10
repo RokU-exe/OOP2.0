@@ -35,12 +35,32 @@ public class LoginController {
     }
 
     public void validShow(){
-        // Display a popup dialog for system admin
+        User user = getUser();
+        String roleName = getRoleDisplayName(user.getRole());
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Admin Login");
+        alert.setTitle(roleName + " Login");
         alert.setHeaderText("Login Successful");
-        alert.setContentText("You have successfully logged in as a " + getUser().getRole());
+        alert.setContentText("You have successfully logged in as a " + roleName);
         alert.showAndWait();
+    }
+
+    private String getRoleDisplayName(UserRole role) {
+        switch (role) {
+            case POLICY_OWNER:
+                return "Policy Owner";
+            case POLICY_HOLDER:
+                return "Policy Holder";
+            case DEPENDENT:
+                return "Dependent";
+            case INSURANCE_SURVEYOR:
+                return "Insurance Surveyor";
+            case INSURANCE_MANAGER:
+                return "Insurance Manager";
+            case SYSTEM_ADMIN:
+                return "System Admin";
+            default:
+                return "Unknown Role";
+        }
     }
     @FXML
     private void handleLogin() throws IOException {
@@ -51,7 +71,7 @@ public class LoginController {
                 case UserRole.DEPENDENT -> {validShow();openDependentDashboard(user);}
                 case UserRole.POLICY_OWNER -> {validShow();openPolicyOwnerDashboard(user);}
                 case UserRole.INSURANCE_SURVEYOR -> {validShow();openSurveyorDashboard(user);}
-                case UserRole.INSURANCE_MANAGER ->{validShow(); openAdminDashboard(user);}
+                case UserRole.INSURANCE_MANAGER ->{validShow(); openManagerDashboard(user);}
                 case UserRole.SYSTEM_ADMIN -> {validShow();openAdminDashboard(user);}
             }
 
@@ -63,7 +83,7 @@ public class LoginController {
             alert.showAndWait();
         }
     }
-@FXML
+    @FXML
     private void openPolicyHolderDashboard(User user) {
         // Open the Policy Holder Dashboard
     }
@@ -80,8 +100,35 @@ public class LoginController {
         // Open the Surveyor Dashboard
     }
 
+    @FXML
     private void openManagerDashboard(User user) {
-        // Open the Manager Dashboard
+        // Start text animation on the dashboard label
+        startTextAnimation(dashboardLabel.getText());
+
+        // Display a popup dialog
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Manager Login");
+        alert.setHeaderText("Login Successful");
+        alert.setContentText("You have successfully logged in as an insurance manager.");
+        alert.showAndWait();
+
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/managerDashboard.fxml"));
+            Parent managerDashboardRoot = loader.load();
+            Scene managerDashboardScene = new Scene(managerDashboardRoot);
+
+            // Get any node from the current scene
+            Node sourceNode = loginButton;
+
+            // Get the primary stage from the source node's scene
+            Stage primaryStage = (Stage) sourceNode.getScene().getWindow();
+
+            primaryStage.setScene(managerDashboardScene);
+            primaryStage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+            // Handle any errors loading the manager dashboard FXML
+        }
     }
 
     @FXML
@@ -93,30 +140,30 @@ public class LoginController {
         //startTextAnimation(dashboardLabel.getText()); // Start the text animation
 
         // Display a popup dialog
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("Admin Login");
-            alert.setHeaderText("Login Successful");
-            alert.setContentText("You have successfully logged in as an admin.");
-            alert.showAndWait();
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Admin Login");
+        alert.setHeaderText("Login Successful");
+        alert.setContentText("You have successfully logged in as an admin.");
+        alert.showAndWait();
 
-            try {
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/systemAdminDashboard.fxml"));
-                Parent adminDashboardRoot = loader.load();
-                Scene adminDashboardScene = new Scene(adminDashboardRoot);
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/systemAdminDashboard.fxml"));
+            Parent adminDashboardRoot = loader.load();
+            Scene adminDashboardScene = new Scene(adminDashboardRoot);
 
-                // Get any node from the current scene
-                Node sourceNode = loginButton; // Use any node from the current scene
+            // Get any node from the current scene
+            Node sourceNode = loginButton; // Use any node from the current scene
 
-                // Get the primary stage from the source node's scene
-                Stage primaryStage = (Stage) sourceNode.getScene().getWindow();
+            // Get the primary stage from the source node's scene
+            Stage primaryStage = (Stage) sourceNode.getScene().getWindow();
 
-                primaryStage.setScene(adminDashboardScene);
-                primaryStage.show();
-            } catch (IOException e) {
-                e.printStackTrace();
-                // Handle any errors loading the admin dashboard FXML
-            }
+            primaryStage.setScene(adminDashboardScene);
+            primaryStage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+            // Handle any errors loading the admin dashboard FXML
         }
+    }
 
 
     private void startTextAnimation(String text) {

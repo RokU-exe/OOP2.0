@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="gui.ManagerController"
+            prefHeight="600.0" prefWidth="800.0">
+
+    <!-- Top Bar with Title -->
+    <VBox spacing="10" AnchorPane.topAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+        <HBox style="-fx-background-color: #2a9d8f;" padding="10">
+            <Label text="Manager Dashboard"
+                   style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: white;"/>
+            <Region fx:id="topBarSpacer" HBox.hgrow="ALWAYS"/>
+            <Button text="Log Out"
+                    fx:id="logoutButton"
+                    style="-fx-font-size: 14px; -fx-text-fill: #2a9d8f; -fx-background-color: white;"
+                    onAction="#handleLogout"/>
+        </HBox>
+
+        <!-- Main Content -->
+        <HBox spacing="20" padding="10">
+            <!-- Sidebar Menu -->
+            <VBox spacing="10" style="-fx-background-color: #f4a261; -fx-padding: 15;" prefWidth="200.0">
+                <Label text="Navigation"
+                       style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: white;"/>
+                <Button text="View Claims"
+                        fx:id="viewClaimsButton"
+                        style="-fx-font-size: 14px; -fx-background-color: #2a9d8f; -fx-text-fill: white;"
+                        onAction="#handleViewClaims"/>
+                <Button text="View Customers"
+                        fx:id="viewCustomersButton"
+                        style="-fx-font-size: 14px; -fx-background-color: #2a9d8f; -fx-text-fill: white;"
+                        onAction="#handleViewCustomers"/>
+                <Button text="View Surveyors"
+                        fx:id="viewSurveyorsButton"
+                        style="-fx-font-size: 14px; -fx-background-color: #2a9d8f; -fx-text-fill: white;"
+                        onAction="#handleViewSurveyors"/>
+            </VBox>
+
+            <!-- Content Area -->
+            <VBox fx:id="contentArea"
+                  style="-fx-background-color: #e9c46a; -fx-padding: 15;" prefWidth="580.0">
+                <Label fx:id="contentLabel"
+                       text="Welcome, [Manager Name]"
+                       style="-fx-font-size: 20px; -fx-font-weight: bold;"/>
+                <Label text="Select an option from the sidebar to get started."
+                       style="-fx-font-size: 14px;"/>
+            </VBox>
+        </HBox>
+    </VBox>
+</AnchorPane>
