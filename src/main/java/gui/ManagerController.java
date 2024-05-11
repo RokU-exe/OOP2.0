@@ -33,7 +33,7 @@ public class ManagerController {
         System.out.println("Logging out...");
     }
 
-    @FXML
+   @FXML
     private void handleViewClaims() {
         // Retrieve claims data and display
         List<Claim> claims = DBUtil.getAllClaims();
