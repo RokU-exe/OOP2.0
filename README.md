@@ -3,7 +3,6 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Insurance Claims Management System - README</title>
 </head>
 <body>
 
