@@ -1,14 +1,37 @@
 package gui;
 
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.stage.Stage;
+import models.SystemAdmin;
 import models.User;
 import utils.DBUtil;
 
+import java.io.IOException;
+import java.net.URL;
 import java.util.List;
+import java.util.ResourceBundle;
 
-public class SystemAdminController {
-    private User systemAdmin;
+public class SystemAdminController implements Initializable {
 
-    public SystemAdminController(User systemAdmin) {
+
+    @Override
+    public void initialize(URL url, ResourceBundle resourceBundle) {
+
+    }
+    private SystemAdmin systemAdmin;
+    public SystemAdminController() {
+        // Default constructor
+    }
+
+
+    public SystemAdminController(SystemAdmin systemAdmin) {
         this.systemAdmin = systemAdmin;
     }
 
@@ -41,4 +64,49 @@ public class SystemAdminController {
         // Sum up the successfully claimed amount with different parameters
         return DBUtil.calculateTotalClaimedAmount();
     }
-}
+    @FXML
+// Open the Admin Dashboard
+    public void openAdminDashboard(Button loginButton) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/systemAdminDashboard.fxml"));
+            Parent adminDashboardRoot = loader.load();
+
+            Node sourceNode = loginButton; // Use any node from the current scene
+
+            // Get the primary stage from the source node's scene
+            Stage primaryStage = (Stage) sourceNode.getScene().getWindow();
+
+            primaryStage.setScene(new Scene(adminDashboardRoot));
+            primaryStage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+            // Handle any errors loading the admin dashboard FXML
+        }
+    }
+
+    @FXML
+    private Button ph;
+
+    @FXML
+    public void policyHolderMenu(){
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/sysPolicyHolderMenu.fxml"));
+            Parent adminDashboardRoot = loader.load();
+            Scene adminDashboardScene = new Scene(adminDashboardRoot);
+
+            // Get any node from the current scene
+            Node sourceNode = ph; // Use any node from the current scene
+
+            // Get the primary stage from the source node's scene
+            Stage primaryStage = (Stage) sourceNode.getScene().getWindow();
+
+            primaryStage.setScene(adminDashboardScene);
+            primaryStage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+            // Handle any errors loading the admin dashboard FXML
+        }
+    }
+
+    }
+
