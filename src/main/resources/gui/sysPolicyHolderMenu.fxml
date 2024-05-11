@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.effect.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.PolicyHolderController">
+   <children>
+      <Label layoutX="263.0" prefHeight="62.0" prefWidth="99.0" text="Menu:" textFill="RED">
+         <font>
+            <Font name="Calibri Bold" size="24.0" />
+         </font>
+      </Label>
+      <ImageView blendMode="MULTIPLY" fitHeight="150.0" fitWidth="200.0" layoutX="450.0" layoutY="242.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="https://tse1.mm.bing.net/th?id=OIP.QqEXi7j5Z0ZMFu8pLgTxzAHaHa&amp;pid=Api&amp;P=0&amp;h=180" />
+         </image>
+         <effect>
+            <Blend opacity="0.96" />
+         </effect>
+      </ImageView>
+      <Button layoutX="36.0" layoutY="101.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="214.0" text="Create new Policy Holder">
+         <font>
+            <Font name="Calibri" size="14.0" />
+         </font>
+      </Button>
+      <Button layoutX="355.0" layoutY="101.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="214.0" text="Read Policy Holder">
+         <font>
+            <Font name="Calibri" size="14.0" />
+         </font>
+      </Button>
+      <Button layoutX="36.0" layoutY="240.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="214.0" text="Update Policy Holder">
+         <font>
+            <Font name="Calibri" size="14.0" />
+         </font>
+      </Button>
+      <Button layoutX="355.0" layoutY="240.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="214.0" text=" Delete Policy Holder">
+         <font>
+            <Font name="Calibri" size="14.0" />
+         </font>
+      </Button>
+   </children>
+</AnchorPane>
