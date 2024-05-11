@@ -72,7 +72,12 @@ public class LoginController {
                 case UserRole.POLICY_OWNER -> {validShow();openPolicyOwnerDashboard(user);}
                 case UserRole.INSURANCE_SURVEYOR -> {validShow();openSurveyorDashboard(user);}
                 case UserRole.INSURANCE_MANAGER ->{validShow(); openManagerDashboard(user);}
-                case UserRole.SYSTEM_ADMIN -> {validShow();openAdminDashboard(user);}
+                 case UserRole.SYSTEM_ADMIN -> {
+                    validShow();
+                    SystemAdmin systemAdmin = new SystemAdmin(user.getId(), user.getFullName(), user.getEmail(), user.getPassword(), UserRole.SYSTEM_ADMIN);
+                    SystemAdminController controller = new SystemAdminController(systemAdmin);
+                    controller.openAdminDashboard(getLoginButton());
+                }
             }
 
         } else {
@@ -182,32 +187,7 @@ public class LoginController {
         }
     }
 
-    @FXML
-    private Label dashboardLabel;
- @FXML
-    // Open the Admin Dashboard
-    private void openAdminDashboard(User user) {
-        String text = "Welcome, our Admin!";
-
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/systemAdminDashboard.fxml"));
-            Parent adminDashboardRoot = loader.load();
-            Scene adminDashboardScene = new Scene(adminDashboardRoot);
-
-            // Get any node from the current scene
-            Node sourceNode = loginButton; // Use any node from the current scene
-
-            // Get the primary stage from the source node's scene
-            Stage primaryStage = (Stage) sourceNode.getScene().getWindow();
-
-            primaryStage.setScene(adminDashboardScene);
-            primaryStage.show();
-        } catch (IOException e) {
-            e.printStackTrace();
-            // Handle any errors loading the admin dashboard FXML
-        }
-    }
-    }
+  
 }
 
 // Full version after create full GUI, FXML File
