@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.LoginController">
+   <children>
+      <Label layoutX="150.0" text="Insurance Manager Dashboard" textFill="#f42828">
+         <font>
+            <Font name="Calibri" size="24.0" />
+         </font>
+      </Label>
+      <Label layoutX="46.0" layoutY="57.0" text="1. Waiting Examining Claims" textFill="#c10606">
+         <font>
+            <Font name="Calibri" size="20.0" />
+         </font>
+      </Label>
+      <Label layoutX="48.0" layoutY="109.0" text="2. Retrieve Customer" textFill="#c10606">
+         <font>
+            <Font name="Calibri" size="20.0" />
+         </font>
+      </Label>
+      <Label layoutX="44.0" layoutY="236.0" text="3. Retrieve Claim" textFill="#c10606">
+         <font>
+            <Font name="Calibri" size="20.0" />
+         </font>
+      </Label>
+      <Label layoutX="83.0" layoutY="266.0" text="Claim ID" textFill="#1b1a1a">
+         <font>
+            <Font name="Calibri" size="18.0" />
+         </font>
+      </Label>
+      <Label layoutX="79.0" layoutY="304.0" text="Card Number" textFill="#1b1a1a">
+         <font>
+            <Font name="Calibri" size="18.0" />
+         </font>
+      </Label>
+      <TextField layoutX="215.0" layoutY="259.0" />
+      <TextField layoutX="215.0" layoutY="300.0" />
+      <Button layoutX="454.0" layoutY="278.0" mnemonicParsing="false" text="Button" />
+      <Button layoutX="454.0" layoutY="53.0" mnemonicParsing="false" text="Button" />
+      <Label layoutX="83.0" layoutY="143.0" text="Customer ID" textFill="#1b1a1a">
+         <font>
+            <Font name="Calibri" size="18.0" />
+         </font>
+      </Label>
+      <Label layoutX="83.0" layoutY="184.0" text="Card Number" textFill="#1b1a1a">
+         <font>
+            <Font name="Calibri" size="18.0" />
+         </font>
+      </Label>
+      <TextField layoutX="215.0" layoutY="138.0" />
+      <TextField layoutX="215.0" layoutY="179.0" />
+      <Button layoutX="454.0" layoutY="157.0" mnemonicParsing="false" text="Button" />
+   </children>
+</AnchorPane>
