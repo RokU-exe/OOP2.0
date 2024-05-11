@@ -165,14 +165,32 @@ public class LoginController {
             }
     }
 
-    private void openSurveyorDashboard(User user) {
-        // Open the Surveyor Dashboard
+   private void openSurveyorDashboard(User user) {
+        // Open the Insurance Surveyor Dashboard
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/InsuranceSurveyor.fxml"));
+            Parent insuranceSurveyorDashboardRoot = loader.load();
+            Scene insuranceSurveyorDashboardScene = new Scene(insuranceSurveyorDashboardRoot);
+
+            // Get any node from the current scene
+            Node sourceNode = loginButton; // Use any node from the current scene
+
+            // Get the primary stage from the source node's scene
+            Stage primaryStage = (Stage) sourceNode.getScene().getWindow();
+
+            primaryStage.setScene(insuranceSurveyorDashboardScene);
+            primaryStage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+            // Handle any errors loading the admin dashboard FXML
+        }
     }
 
     @FXML
     private void openManagerDashboard(User user) {
+        // Open the Insurance Manager Dashboard
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/managerDashboard.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/Manager.fxml"));
             Parent managerDashboardRoot = loader.load();
             Scene managerDashboardScene = new Scene(managerDashboardRoot);
 
