@@ -6,7 +6,6 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-
 <AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.LoginController">
    <children>
       <Label layoutX="169.0" prefHeight="50.0" prefWidth="262.0" text="System Admin Dashboard" textFill="#ed0505">
@@ -14,7 +13,7 @@
             <Font name="Calibri Bold" size="24.0" />
          </font>
       </Label>
-      <ImageView blendMode="MULTIPLY" fitHeight="150.0" fitWidth="200.0" layoutX="450.0" layoutY="242.0" onDragDetected="#handleLogin" pickOnBounds="true" preserveRatio="true">
+      <ImageView blendMode="MULTIPLY" fitHeight="150.0" fitWidth="200.0" layoutX="450.0" layoutY="242.0" pickOnBounds="true" preserveRatio="true">
          <image>
             <Image url="https://tse1.mm.bing.net/th?id=OIP.QqEXi7j5Z0ZMFu8pLgTxzAHaHa&amp;pid=Api&amp;P=0&amp;h=180" />
          </image>
@@ -22,5 +21,12 @@
             <Blend opacity="0.96" />
          </effect>
       </ImageView>
+      <MenuButton layoutX="501.0" layoutY="1.0" mnemonicParsing="false" text="MenuButton" textFill="#fa0101">
+        <items>
+          <MenuItem mnemonicParsing="false" text="Action 1" />
+          <MenuItem mnemonicParsing="false" text="Action 2" />
+        </items>
+      </MenuButton>
+      <ChoiceBox prefWidth="150.0" />
    </children>
 </AnchorPane>
