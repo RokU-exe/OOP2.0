@@ -6,7 +6,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.LoginController">
+<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.SystemAdminController">
    <children>
       <Label layoutX="169.0" prefHeight="50.0" prefWidth="262.0" text="System Admin Dashboard" textFill="#ed0505">
          <font>
@@ -21,12 +21,63 @@
             <Blend opacity="0.96" />
          </effect>
       </ImageView>
-      <MenuButton layoutX="501.0" layoutY="1.0" mnemonicParsing="false" text="MenuButton" textFill="#fa0101">
-        <items>
-          <MenuItem mnemonicParsing="false" text="Action 1" />
-          <MenuItem mnemonicParsing="false" text="Action 2" />
-        </items>
-      </MenuButton>
-      <ChoiceBox prefWidth="150.0" />
+      <ButtonBar layoutX="8.0" layoutY="104.0" prefHeight="40.0" prefWidth="200.0">
+         <buttons>
+            <Label prefHeight="51.0" prefWidth="190.0" text="Customers:">
+               <font>
+                  <Font name="Calibri" size="21.0" />
+               </font>
+            </Label>
+         </buttons></ButtonBar>
+      <Label layoutX="17.0" layoutY="50.0" text="Entites:">
+         <font>
+            <Font size="33.0" />
+         </font>
+      </Label>
+      <Button layoutX="283.0" layoutY="135.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="106.0" text="Policy Owner">
+         <font>
+            <Font name="Calibri" size="14.0" />
+         </font>
+      </Button>
+      <Button layoutX="97.0" layoutY="317.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="95.0" text="Claims">
+         <font>
+            <Font name="Calibri" size="14.0" />
+         </font>
+      </Button>
+      <Button layoutX="444.0" layoutY="135.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="106.0" text="Dependent">
+         <font>
+            <Font name="Calibri" size="14.0" />
+         </font>
+      </Button>
+      <Button  fx:id="ph" layoutX="128.0" layoutY="135.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="105.0" text="Policy Holder" onAction="#policyHolderMenu">
+         <font>
+            <Font name="Calibri" size="14.0" />
+         </font>
+      </Button>
+      <Label layoutX="17.0" layoutY="174.0" prefHeight="51.0" prefWidth="190.0" text="Providers:">
+         <font>
+            <Font name="Calibri" size="21.0" />
+         </font>
+      </Label>
+      <Button layoutX="124.0" layoutY="222.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="138.0" text="Insurance Surveyors">
+         <font>
+            <Font name="Calibri" size="14.0" />
+         </font>
+      </Button>
+      <Button layoutX="336.0" layoutY="222.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="138.0" text="Insurance Managers">
+         <font>
+            <Font name="Calibri" size="14.0" />
+         </font>
+      </Button>
+      <Label layoutX="17.0" layoutY="262.0" prefHeight="51.0" prefWidth="190.0" text="Others:">
+         <font>
+            <Font name="Calibri" size="21.0" />
+         </font>
+      </Label>
+      <Button layoutX="262.0" layoutY="317.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="125.0" text="Insurance cards">
+         <font>
+            <Font name="Calibri" size="14.0" />
+         </font>
+      </Button>
    </children>
 </AnchorPane>
