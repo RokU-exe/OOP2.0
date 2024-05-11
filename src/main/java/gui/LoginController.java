@@ -176,18 +176,10 @@ public class LoginController {
 
     @FXML
     private Label dashboardLabel;
-
-    @FXML
+ @FXML
     // Open the Admin Dashboard
     private void openAdminDashboard(User user) {
-        //startTextAnimation(dashboardLabel.getText()); // Start the text animation
-
-        // Display a popup dialog
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Admin Login");
-        alert.setHeaderText("Login Successful");
-        alert.setContentText("You have successfully logged in as an admin.");
-        alert.showAndWait();
+        String text = "Welcome, our Admin!";
 
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/systemAdminDashboard.fxml"));
@@ -207,21 +199,7 @@ public class LoginController {
             // Handle any errors loading the admin dashboard FXML
         }
     }
-
-
-    private void startTextAnimation(String text) {
-        Text textfield = new Text();
-        textfield.setTextAlignment(TextAlignment.CENTER); // Align text to the center
-        textfield.setText(text); // Set the initial text
-        FlowPane flowPane = new FlowPane(); // Create a FlowPane
-        flowPane.setAlignment(Pos.TOP_CENTER); // Align the FlowPane contents to the top center
-        flowPane.getChildren().add(textfield);
-        TextAnimation textAnimator = new TextAnimation(text, 100, textfield);
-        Thread thread = new Thread(textAnimator);
-        thread.start();
     }
-
-}
 
 // Full version after create full GUI, FXML File
 
