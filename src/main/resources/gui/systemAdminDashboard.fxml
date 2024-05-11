@@ -49,7 +49,7 @@
             <Font name="Calibri" size="14.0" />
          </font>
       </Button>
-      <Button  fx:id="ph" layoutX="128.0" layoutY="135.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="105.0" text="Policy Holder" onAction="#policyHolderMenu">
+      <Button  fx:id="ph" layoutX="128.0" layoutY="135.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="105.0" text="Policy Holder" onAction="#policyHolderMenu" >
          <font>
             <Font name="Calibri" size="14.0" />
          </font>
