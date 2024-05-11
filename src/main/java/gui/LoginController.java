@@ -163,16 +163,6 @@ public class LoginController {
 
     @FXML
     private void openManagerDashboard(User user) {
-        // Start text animation on the dashboard label
-        //startTextAnimation(dashboardLabel.getText());
-
-        // Display a popup dialog
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Manager Login");
-        alert.setHeaderText("Login Successful");
-        alert.setContentText("You have successfully logged in as an insurance manager.");
-        alert.showAndWait();
-
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/managerDashboard.fxml"));
             Parent managerDashboardRoot = loader.load();
