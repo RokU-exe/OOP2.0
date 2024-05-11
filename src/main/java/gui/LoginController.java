@@ -114,8 +114,26 @@ public class LoginController {
         }
     }
 
+   @FXML
+    //Open Dependent dashboard
     private void openDependentDashboard(User user) {
-        // Open the models.Dependent Dashboard
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/Dependent.fxml"));
+            Parent adminDashboardRoot = loader.load();
+            Scene adminDashboardScene = new Scene(adminDashboardRoot);
+
+            // Get any node from the current scene
+            Node sourceNode = loginButton; // Use any node from the current scene
+
+            // Get the primary stage from the source node's scene
+            Stage primaryStage = (Stage) sourceNode.getScene().getWindow();
+
+            primaryStage.setScene(adminDashboardScene);
+            primaryStage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+            // Handle any errors loading the admin dashboard FXML
+        }
     }
 
     private void openPolicyOwnerDashboard(User user) {
