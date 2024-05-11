@@ -25,6 +25,9 @@ public class LoginController {
     private PasswordField passwordField;
     @FXML
     private Button loginButton;
+        public  Button getLoginButton() {
+        return loginButton;
+    }
 
     private User getUser(){
         User user  = new User();
