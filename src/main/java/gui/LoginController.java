@@ -176,28 +176,29 @@ public class LoginController {
 
     @FXML
     private Label dashboardLabel;
-// @FXML
-//    // Open the Admin Dashboard
+ @FXML
+    // Open the Admin Dashboard
     private void openAdminDashboard(User user) {
-//        String text = "Welcome, our Admin!";
-//
-//        try {
-//            FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/systemAdminDashboard.fxml"));
-//            Parent adminDashboardRoot = loader.load();
-//            Scene adminDashboardScene = new Scene(adminDashboardRoot);
-//
-//            // Get any node from the current scene
-//            Node sourceNode = loginButton; // Use any node from the current scene
-//
-//            // Get the primary stage from the source node's scene
-//            Stage primaryStage = (Stage) sourceNode.getScene().getWindow();
-//
-//            primaryStage.setScene(adminDashboardScene);
-//            primaryStage.show();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//            // Handle any errors loading the admin dashboard FXML
-//        }
+        String text = "Welcome, our Admin!";
+
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/systemAdminDashboard.fxml"));
+            Parent adminDashboardRoot = loader.load();
+            Scene adminDashboardScene = new Scene(adminDashboardRoot);
+
+            // Get any node from the current scene
+            Node sourceNode = loginButton; // Use any node from the current scene
+
+            // Get the primary stage from the source node's scene
+            Stage primaryStage = (Stage) sourceNode.getScene().getWindow();
+
+            primaryStage.setScene(adminDashboardScene);
+            primaryStage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+            // Handle any errors loading the admin dashboard FXML
+        }
+    }
     }
 }
 
