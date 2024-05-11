@@ -92,15 +92,13 @@ public class SystemAdminController implements Initializable {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/sysPolicyHolderMenu.fxml"));
             Parent adminDashboardRoot = loader.load();
-            Scene adminDashboardScene = new Scene(adminDashboardRoot);
 
-            // Get any node from the current scene
             Node sourceNode = ph; // Use any node from the current scene
 
             // Get the primary stage from the source node's scene
             Stage primaryStage = (Stage) sourceNode.getScene().getWindow();
 
-            primaryStage.setScene(adminDashboardScene);
+            primaryStage.setScene(new Scene(adminDashboardRoot));
             primaryStage.show();
         } catch (IOException e) {
             e.printStackTrace();
