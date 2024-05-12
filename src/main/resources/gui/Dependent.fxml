@@ -24,7 +24,7 @@
             <Font name="Calibri" size="20.0" />
          </font>
       </Label>
-      <Button layoutX="476.0" layoutY="277.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="65.0" style="-fx-background-color: #4D869C;" text="Button" textFill="WHITE" />
+      <Button fx:id="dependentButton" layoutX="476.0" layoutY="277.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="65.0" style="-fx-background-color: #4D869C;" onAction="#getProfile" text="View" textFill="WHITE" />
       <TextField layoutX="207.0" layoutY="165.0" prefHeight="25.0" prefWidth="223.0" />
       <Label layoutX="85.0" layoutY="160.0" prefHeight="32.0" prefWidth="118.0" text="Card Number" textAlignment="CENTER">
          <font>
