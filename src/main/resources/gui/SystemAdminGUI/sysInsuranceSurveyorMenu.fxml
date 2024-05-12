@@ -8,7 +8,7 @@
 
 <AnchorPane prefHeight="400.0" prefWidth="600.0" style="-fx-background-color: #CDE8E5;" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.SystemAdminController">
     <children>
-        <ImageView fitHeight="88.0" fitWidth="286.0" pickOnBounds="true" preserveRatio="true">
+        <ImageView fitHeight="88.0" fitWidth="286.0" layoutX="4.0" pickOnBounds="true" preserveRatio="true">
             <image>
                 <Image url="https://1000logos.net/wp-content/uploads/2019/07/RMIT-Logo.png" />
             </image>
@@ -41,7 +41,7 @@
                 <Font name="Calibri" size="14.0" />
             </font>
         </Button>
-        <Button fx:id="back" layoutX="525.0" layoutY="5.0" mnemonicParsing="false" text="Back to Dashboard" onAction="#backtoDashboard">
+        <Button fx:id="back" layoutX="525.0" layoutY="5.0" mnemonicParsing="false" onAction="#backtoDashboard" text="Back to Dashboard">
             <font>
                 <Font size="14.0" />
             </font>
