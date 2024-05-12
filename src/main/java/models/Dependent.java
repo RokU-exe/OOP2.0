@@ -6,16 +6,17 @@ public class Dependent extends Customer {
     private String policyHolderId;
 
     // Constructors, getters, and setters
-//    public Dependent(String id, String fullName, InsuranceCard insuranceCard, String address,
-//                     String phone, String email, String policyHolderId) {
-//        super(id, fullName, insuranceCard, null, address, phone, email);
-//        this.policyHolderId = policyHolderId;
-//    }
-
     public Dependent(String id, String fullName, String email, String password, UserRole role, InsuranceCard insuranceCard, List<Claim> claims, String policyHolderId) {
         super(id, fullName, email, password, role, insuranceCard, claims);
         this.policyHolderId = policyHolderId;
     }
+
+    public Dependent() {
+    }
+
+    public Dependent(String id, String fullName, String email, String password, UserRole userRole) {
+    }
+
 
     public String getPolicyHolderId() {
         return policyHolderId;
@@ -27,9 +28,8 @@ public class Dependent extends Customer {
 
     @Override
     public String toString() {
-        return "models.Dependent{" +
+        return "models.Dependent{" + super.toString() +
                 "policyHolderId='" + policyHolderId + '\'' +
-                ", " + super.toString() +
                 '}';
     }
 }
