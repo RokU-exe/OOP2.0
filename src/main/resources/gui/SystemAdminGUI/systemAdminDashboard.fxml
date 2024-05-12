@@ -78,10 +78,5 @@
             <Font name="Calibri" size="14.0" />
          </font>
       </Button>
-      <Button fx:id="back" layoutX="525.0" layoutY="5.0" mnemonicParsing="false" text="Back to Dashboard" onAction="#backtoDashboard">
-         <font>
-            <Font size="14.0" />
-         </font>
-      </Button>
    </children>
 </AnchorPane>
