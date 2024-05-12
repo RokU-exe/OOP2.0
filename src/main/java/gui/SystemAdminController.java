@@ -6,16 +6,19 @@ import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
+import javafx.scene.control.*;
 import javafx.stage.Stage;
 import models.SystemAdmin;
 import models.User;
+import models.UserRole;
 import utils.DBUtil;
-
+import javafx.event.ActionEvent;
 import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
+
+import static models.UserRole.*;
 
 public class SystemAdminController implements Initializable {
 
@@ -38,11 +41,105 @@ public class SystemAdminController implements Initializable {
         // Retrieve all users from the database
         return DBUtil.getAllUsers();
     }
+    @FXML
+    private Button add;
+    @FXML
+    private TextField email;
+    @FXML
+    private TextField fullname;
+    @FXML
+    private TextField password;
+    @FXML
+    private MenuButton role;
 
-    public void addUser(User user) {
-        // Add a new user to the database
-        DBUtil.addUser(user);
+    private UserRole getRole(String role) {
+        if (role.equals("Policy Owner")) {
+            return UserRole.POLICY_OWNER;
+        } else if (role.equals("Policy Holder")) {
+            return UserRole.POLICY_HOLDER;
+        } else if (role.equals("Dependent")) {
+            return UserRole.DEPENDENT;
+        } else if (role.equals("Insurance Surveyor")) {
+            return UserRole.INSURANCE_SURVEYOR;
+        } else if (role.equals("Insurance Manager")) {
+            return UserRole.INSURANCE_MANAGER;
+        } else {
+            // Handle the case when the role is not recognized
+            // For example, you can throw an IllegalArgumentException
+            throw new IllegalArgumentException("Unknown role: " + role);
+        }
     }
+    public void addUser() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/SystemAdminGUI/AddUser.fxml"));
+            Parent adminDashboardRoot = loader.load();
+
+            Node sourceNode = add; // Use any node from the current scene
+
+            // Get the primary stage from the source node's scene
+            Stage primaryStage = (Stage) sourceNode.getScene().getWindow();
+
+            primaryStage.setScene(new Scene(adminDashboardRoot));
+            primaryStage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+            // Handle any errors loading the admin dashboard FXML
+        }
+    }
+    @FXML
+    private void selectRole(ActionEvent event) {
+        MenuItem menuItem = (MenuItem) event.getSource();
+        String roleName = menuItem.getText();
+
+        // Set the selected role as the text of the MenuButton
+        role.setText(roleName);
+    }
+    @FXML
+    private Button doneAdding;
+
+   //add the user, go back to dashboard
+   public void doneAddUser() {
+       String roleName = role.getText();
+       // Check if a role is selected
+       if (roleName.equals("Select Role")) {
+           System.out.println("Please select a valid role.");
+           return;
+       }
+
+       UserRole userRole = getRole(roleName);
+       String id = DBUtil.getLargestIdByUserRole(userRole);
+       if (id == null) {
+           // Handle case when no matching records are found
+           System.out.println("No matching records found for role: " + roleName);
+           return;
+       }
+       User user = new User(id, fullname.getText(), email.getText(), password.getText(), userRole);
+
+       // Add a new user to the database
+       DBUtil.addUser(user);
+       Alert alert = new Alert(Alert.AlertType.INFORMATION);
+
+       alert.setTitle("Add " + roleName);
+       alert.setHeaderText(roleName + " Added Successfully!");
+       alert.setContentText(user.toString());
+       alert.showAndWait();
+
+       try {
+           FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/SystemAdminGUI/systemAdminDashboard.fxml"));
+           Parent adminDashboardRoot = loader.load();
+
+           Node sourceNode = doneAdding; // Use any node from the current scene
+
+           // Get the primary stage from the source node's scene
+           Stage primaryStage = (Stage) sourceNode.getScene().getWindow();
+
+           primaryStage.setScene(new Scene(adminDashboardRoot));
+           primaryStage.show();
+       } catch (IOException e) {
+           e.printStackTrace();
+           // Handle any errors loading the admin dashboard FXML
+       }
+   }
 
     public void updateUser(User updatedUser) {
         // Update a user's information in the database

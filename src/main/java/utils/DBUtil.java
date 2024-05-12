@@ -189,4 +189,43 @@ public class DBUtil {
 
         return totalClaimedAmount;
     }
+
+    public static String getPrefixByUserRole(UserRole role) {
+        switch (role) {
+            case POLICY_HOLDER:
+                return "h";
+            case POLICY_OWNER:
+                return "o";
+            case INSURANCE_SURVEYOR:
+                return "s";
+            case INSURANCE_MANAGER:
+                return "m";
+            case DEPENDENT:
+                return "d";
+            default:
+                throw new IllegalArgumentException("Unknown role: " + role);
+        }
+    }
+
+    public static String getLargestIdByUserRole(UserRole role) {
+        String prefix = getPrefixByUserRole(role);
+        String query = "SELECT MAX(CAST(SUBSTRING(id, 2) AS INTEGER)) AS max_id " +
+                "FROM users " +
+                "WHERE role = ?";
+        try (Connection conn = getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(query)) {
+            pstmt.setString(1, role.toString());
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {
+                int maxId = rs.getInt("max_id");
+                // Increment the numeric part of the ID
+                maxId++;
+                String largestId = String.format("%s%02d", prefix, maxId);
+                return largestId;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 }
