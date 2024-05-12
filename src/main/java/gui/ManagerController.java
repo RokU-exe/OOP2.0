@@ -17,7 +17,7 @@ public class ManagerController {
     private Label contentLabel;
 
     @FXML
-    private Button logoutButton, viewClaimsButton, viewCustomersButton, viewSurveyorsButton;
+    private Button logoutButton, viewClaimsButton, viewCustomersButton, viewSurveyorsButton, approveClaimButton, rejectClaimButton;
 
     @FXML
     private VBox contentArea;
@@ -33,7 +33,7 @@ public class ManagerController {
         System.out.println("Logging out...");
     }
 
-   @FXML
+    @FXML
     private void handleViewClaims() {
         // Retrieve claims data and display
         List<Claim> claims = DBUtil.getAllClaims();
@@ -67,5 +67,51 @@ public class ManagerController {
                     surveyor.getId(), surveyor.getName()));
         }
         contentLabel.setText(surveyorsInfo.toString());
+    }
+
+    @FXML
+    private void handleApproveClaim() {
+        Claim selectedClaim = getSelectedClaim(); // Implement method to get selected claim
+        if (selectedClaim != null) {
+            DBUtil.approveClaim(selectedClaim.getId());
+            // Update UI or show confirmation message
+            refreshClaims(); // Implement method to refresh claims list
+        } else {
+            // Show error message if no claim is selected
+            showAlert(Alert.AlertType.ERROR, "No Claim Selected", "Please select a claim to approve.");
+        }
+    }
+
+    @FXML
+    private void handleRejectClaim() {
+        Claim selectedClaim = getSelectedClaim(); // Implement method to get selected claim
+        if (selectedClaim != null) {
+            DBUtil.rejectClaim(selectedClaim.getId());
+            // Update UI or show confirmation message
+            refreshClaims(); // Implement method to refresh claims list
+        } else {
+            // Show error message if no claim is selected
+            showAlert(Alert.AlertType.ERROR, "No Claim Selected", "Please select a claim to reject.");
+        }
+    }
+
+    // Helper method to get the selected claim from UI
+    private Claim getSelectedClaim() {
+        // Implement logic to retrieve selected claim from UI (e.g., from a table view)
+        return null; // Placeholder, replace with actual implementation
+    }
+
+    // Helper method to refresh claims list in UI after approval or rejection
+    private void refreshClaims() {
+        handleViewClaims(); // Call existing method to refresh claims list
+    }
+
+    // Helper method to show alert messages
+    private void showAlert(Alert.AlertType alertType, String title, String content) {
+        Alert alert = new Alert(alertType);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(content);
+        alert.showAndWait();
     }
 }

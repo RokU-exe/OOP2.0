@@ -2,7 +2,7 @@ package models;
 
 import java.util.List;
 
-public abstract class Customer {
+public class Customer {
     private String id;
     private String fullName;
     private InsuranceCard insuranceCard;
@@ -33,6 +33,9 @@ public abstract class Customer {
         this.address = address;
         this.phone = phone;
         this.email = email;
+    }
+
+    public Customer(String id, String fullName, String email, String phone, String address) {
     }
 
     public String getId() {

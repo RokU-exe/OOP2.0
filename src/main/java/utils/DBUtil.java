@@ -189,4 +189,93 @@ public class DBUtil {
 
         return totalClaimedAmount;
     }
+    public static List<Claim> getAllClaims() {
+        List<Claim> claims = new ArrayList<>();
+        String query = "SELECT * FROM claims";
+        try (Connection conn = getConnection();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(query)) {
+            while (rs.next()) {
+                claims.add(new Claim(
+                        rs.getString("id"),
+                        rs.getDate("claim_date"),
+                        rs.getString("insured_person"),
+                        rs.getString("card_number"),
+                        rs.getDate("exam_date"),
+                        null,
+                        rs.getDouble("claim_amount"),
+                        ClaimStatus.valueOf(rs.getString("status")),
+                        rs.getString("receiver_bank"),
+                        rs.getString("receiver_name"),
+                        rs.getString("receiver_number")
+                ));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return claims;
+    }
+
+    public static void approveClaim(String claimId) {
+        String query = "UPDATE claims SET status = 'APPROVED' WHERE id = ?";
+        try (Connection conn = getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(query)) {
+            pstmt.setString(1, claimId);
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void rejectClaim(String claimId) {
+        String query = "UPDATE claims SET status = 'REJECTED' WHERE id = ?";
+        try (Connection conn = getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(query)) {
+            pstmt.setString(1, claimId);
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    // Additional methods for ManagerController
+    public static List<Customer> getAllCustomers() {
+        List<Customer> customers = new ArrayList<>();
+        String query = "SELECT * FROM customers";
+        try (Connection conn = getConnection();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(query)) {
+            while (rs.next()) {
+                customers.add(new Customer(
+                        rs.getString("id"),
+                        rs.getString("full_name"),
+                        rs.getString("email"),
+                        rs.getString("phone"),
+                        rs.getString("address")
+                ));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return customers;
+    }
+
+    public static List<Surveyor> getAllSurveyors() {
+        List<Surveyor> surveyors = new ArrayList<>();
+        String query = "SELECT * FROM surveyors";
+        try (Connection conn = getConnection();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(query)) {
+            while (rs.next()) {
+                surveyors.add(new Surveyor(
+                        rs.getString("id"),
+                        rs.getString("name")
+                ));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return surveyors;
+    }
 }

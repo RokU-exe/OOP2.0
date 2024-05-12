@@ -4,8 +4,8 @@ public class Surveyor {
     private int id;
     private String name;
 
-    public Surveyor(int id, String name) {
-        this.id = id;
+    public Surveyor(String id, String name) {
+        this.id = Integer.parseInt(id);
         this.name = name;
     }
 

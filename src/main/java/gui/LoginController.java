@@ -26,7 +26,7 @@ public class LoginController {
     private PasswordField passwordField;
     @FXML
     private Button loginButton;
-        public  Button getLoginButton() {
+    public  Button getLoginButton() {
         return loginButton;
     }
 
@@ -76,7 +76,7 @@ public class LoginController {
                 case UserRole.POLICY_OWNER -> {validShow();openPolicyOwnerDashboard(user);}
                 case UserRole.INSURANCE_SURVEYOR -> {validShow();openSurveyorDashboard(user);}
                 case UserRole.INSURANCE_MANAGER ->{validShow(); openManagerDashboard(user);}
-                 case UserRole.SYSTEM_ADMIN -> {
+                case UserRole.SYSTEM_ADMIN -> {
                     validShow();
                     SystemAdmin systemAdmin = new SystemAdmin(user.getId(), user.getFullName(), user.getEmail(), user.getPassword(), UserRole.SYSTEM_ADMIN);
                     SystemAdminController controller = new SystemAdminController(systemAdmin);
@@ -95,15 +95,6 @@ public class LoginController {
     @FXML
     // Open the Policy Holder Dashboard
     private void openPolicyHolderDashboard(User user) {
-        //startTextAnimation(dashboardLabel.getText()); // Start the text animation
-
-        // Display a popup dialog
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Policy Holder Login");
-        alert.setHeaderText("Login Successful");
-        alert.setContentText("You have successfully logged in as Policy Holder.");
-        alert.showAndWait();
-
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/PolicyHolderDashboard.fxml"));
             Parent adminDashboardRoot = loader.load();
@@ -123,7 +114,7 @@ public class LoginController {
         }
     }
 
-   @FXML
+    @FXML
     //Open Dependent dashboard
     private void openDependentDashboard(User user) {
         try {
@@ -148,25 +139,25 @@ public class LoginController {
     private void openPolicyOwnerDashboard(User user) {
         // Open the Policy Owner Dashboard
         try {
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/systemPolicyOwnerDashboard.fxml"));
-                Parent policyOwnerDashboardRoot = loader.load();
-                Scene policyOwnerDashboardScene = new Scene(policyOwnerDashboardRoot);
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/systemPolicyOwnerDashboard.fxml"));
+            Parent policyOwnerDashboardRoot = loader.load();
+            Scene policyOwnerDashboardScene = new Scene(policyOwnerDashboardRoot);
 
-                // Get any node from the current scene
-                Node sourceNode = loginButton; // Use any node from the current scene
+            // Get any node from the current scene
+            Node sourceNode = loginButton; // Use any node from the current scene
 
-                // Get the primary stage from the source node's scene
-                Stage primaryStage = (Stage) sourceNode.getScene().getWindow();
+            // Get the primary stage from the source node's scene
+            Stage primaryStage = (Stage) sourceNode.getScene().getWindow();
 
-                primaryStage.setScene(policyOwnerDashboardScene);
-                    primaryStage.show();
-            } catch (IOException e) {
-                e.printStackTrace();
-                // Handle any errors loading the admin dashboard FXML
-            }
+            primaryStage.setScene(policyOwnerDashboardScene);
+            primaryStage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+            // Handle any errors loading the admin dashboard FXML
+        }
     }
 
-   private void openSurveyorDashboard(User user) {
+    private void openSurveyorDashboard(User user) {
         // Open the Insurance Surveyor Dashboard
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/InsuranceSurveyor.fxml"));
@@ -209,7 +200,7 @@ public class LoginController {
         }
     }
 
-  
+
 }
 
 // Full version after create full GUI, FXML File
