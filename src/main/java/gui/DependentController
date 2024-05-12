@@ -1,0 +1,88 @@
+package gui;
+
+import controllers.SystemAdmin;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.TextField;
+import javafx.stage.Stage;
+import models.Customer;
+import models.Dependent;
+import models.User;
+import utils.DBUtil;
+
+import java.io.IOException;
+
+public class DependentController {
+    @FXML
+    private TextField insuredPerson;
+
+    Dependent dependent;
+    public DependentController(Dependent dependent) {
+        this.dependent = dependent;
+    }
+    public DependentController() {
+        // Initialization code here, if needed
+    }
+
+    @FXML
+    private Button dependentButton;
+    public  Button getDependentButton() {
+        return dependentButton;
+    }
+
+    @FXML
+    //Open Dependent dashboard
+    void openDependentDashboard(Button loginButton) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/DependentGUI/Dependent.fxml"));
+            Parent adminDashboardRoot = loader.load();
+            Scene adminDashboardScene = new Scene(adminDashboardRoot);
+
+            // Get any node from the current scene
+            Node sourceNode = loginButton; // Use any node from the current scene
+
+            // Get the primary stage from the source node's scene
+            Stage primaryStage = (Stage) sourceNode.getScene().getWindow();
+
+            primaryStage.setScene(adminDashboardScene);
+            primaryStage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+            // Handle any errors loading the admin dashboard FXML
+        }
+    }
+
+    @FXML
+    private Customer getProfile(){
+        User user  = new User();
+        LoginController loginController = new LoginController();
+        user = loginController.getUser();
+        Dependent d = new Dependent();
+        String profile = user.toString();
+        d = (Dependent) DBUtil.getFilteredCustomers(profile);
+        return d;
+    }
+
+    @FXML
+    public void viewProfile(){
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/DependentGUI/DependentViewProfile.fxml"));
+            Parent adminDashboardRoot = loader.load();
+
+            Node sourceNode = dependentButton; // Use any node from the current scene
+
+            // Get the primary stage from the source node's scene
+            Stage primaryStage = (Stage) sourceNode.getScene().getWindow();
+
+            primaryStage.setScene(new Scene(adminDashboardRoot));
+            primaryStage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+            // Handle any errors loading the admin dashboard FXML
+        }
+    }
+}
