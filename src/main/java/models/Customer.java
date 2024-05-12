@@ -2,7 +2,7 @@ package models;
 
 import java.util.List;
 
-public abstract class Customer extends User{
+public class Customer extends User{
     private InsuranceCard insuranceCard;
     private List<Claim> claims;
 
@@ -10,6 +10,9 @@ public abstract class Customer extends User{
         super(id, fullName, email, password, role);
         this.insuranceCard = insuranceCard;
         this.claims = claims;
+    }
+
+    public Customer(String id, String fullName, String email, String phone) {
     }
 
 

@@ -251,8 +251,7 @@ public class DBUtil {
                         rs.getString("id"),
                         rs.getString("full_name"),
                         rs.getString("email"),
-                        rs.getString("phone"),
-                        rs.getString("address")
+                        rs.getString("phone")
                 ));
             }
         } catch (SQLException e) {
