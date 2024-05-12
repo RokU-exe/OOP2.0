@@ -95,15 +95,6 @@ public class LoginController {
     @FXML
     // Open the Policy Holder Dashboard
     private void openPolicyHolderDashboard(User user) {
-        //startTextAnimation(dashboardLabel.getText()); // Start the text animation
-
-        // Display a popup dialog
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Policy Holder Login");
-        alert.setHeaderText("Login Successful");
-        alert.setContentText("You have successfully logged in as Policy Holder.");
-        alert.showAndWait();
-
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/PolicyHolderDashboard.fxml"));
             Parent adminDashboardRoot = loader.load();
