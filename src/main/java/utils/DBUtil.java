@@ -125,9 +125,9 @@ public class DBUtil {
         return customers;
     }
 
-    public static List<Claim> getFilteredClaims(String filterCriteria) {
+    public static List<Claim> getFilteredClaims(/*String filterCriteria*/) {
         List<Claim> claims = new ArrayList<>();
-        String query = "SELECT * FROM claims WHERE " + filterCriteria;
+        String query = "SELECT claims.* FROM claims INNER JOIN users ON claims.insured_person = users.full_name"; /*filterCriteria;*/
         try (Connection conn = getConnection();
              Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery(query)) {
@@ -143,7 +143,8 @@ public class DBUtil {
                         ClaimStatus.valueOf(rs.getString("status")),
                         rs.getString("receiver_bank"),
                         rs.getString("receiver_name"),
-                        rs.getString("receiver_number")
+                        rs.getString("receiver_number"),
+                        rs.getString("policyHolder_name")
                 ));
             }
         } catch (SQLException e) {
