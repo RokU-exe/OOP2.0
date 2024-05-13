@@ -69,6 +69,7 @@ public class LoginController {
     @FXML
     private void handleLogin() throws IOException {
         User user = getUser();
+        Dependent d = new Dependent();
         if (user != null) {
             switch (user.getRole()) {
                 case UserRole.POLICY_HOLDER -> {validShow();openPolicyHolderDashboard(user);}
@@ -78,9 +79,10 @@ public class LoginController {
                 case UserRole.INSURANCE_MANAGER ->{validShow(); openManagerDashboard(user);}
                 case UserRole.SYSTEM_ADMIN -> {
                     validShow();
-                    SystemAdmin systemAdmin = new SystemAdmin(user.getId(), user.getFullName(), user.getEmail(), user.getPassword(), UserRole.SYSTEM_ADMIN);
-                    SystemAdminController controller = new SystemAdminController(systemAdmin);
-                    controller.openAdminDashboard(getLoginButton());
+                    Dependent dependent = new Dependent(user.getId(), user.getFullName(), user.getEmail(), user.getPassword(), UserRole.DEPENDENT, d.getInsuranceCard(), null, d.getPolicyHolderId());
+                    DependentController controller = new DependentController(dependent);
+                    controller.openDependentDashboard(getLoginButton());
+                    LoginSession.getInstance().setCurrentUser(user);
                 }
             }
 
