@@ -16,6 +16,9 @@ public class User {
         this.role = role;
     }
 
+    public User(String email, String password) {
+    }
+
     public User() {
 
     }
