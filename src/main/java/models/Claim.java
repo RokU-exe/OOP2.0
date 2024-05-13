@@ -20,7 +20,7 @@ public class Claim {
     // Constructors, getters, and setters
     public Claim(String id, Date claimDate, String insuredPerson, String cardNumber, Date examDate,
                  List<String> documents, double claimAmount, ClaimStatus status, String receiverBank,
-                 String receiverName, String receiverNumber) {
+                 String receiverName, String receiverNumber, String policyHolderName) {
         this.id = id;
         this.claimDate = claimDate;
         this.insuredPerson = insuredPerson;
