@@ -1,14 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
 <?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 
-<AnchorPane xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
-            fx:controller="gui.LoginController"
-            prefHeight="400.0" prefWidth="600.0">
+<AnchorPane id="AnchorPane" prefHeight="400" prefWidth="600" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.PolicyOwnerController">
+    <children>
+        <ImageView fitHeight="88.0" fitWidth="286.0" pickOnBounds="true" preserveRatio="true">
+            <image>
+                <Image url="https://1000logos.net/wp-content/uploads/2019/07/RMIT-Logo.png" />
+            </image>
+        </ImageView>
+        <Label layoutX="300.0" layoutY="102.0" text="Manage Beneficiaries">
+         <font>
+            <Font size="30.0" />
+         </font></Label>
 
+        <Label layoutX="55.0" layoutY="102.0" text="Manage Claims">
+         <font>
+            <Font size="30.0" />
+         </font></Label>
+      <Button layoutX="157.0" layoutY="175.0" mnemonicParsing="false" onAction="#updateClaim" text="Update Claim" />
+      <Button layoutX="34.0" layoutY="175.0" mnemonicParsing="false" text="File Claim" />
+      <Button layoutX="26.0" layoutY="245.0" mnemonicParsing="false" text="Delete Claim" />
+    </children>
 </AnchorPane>
