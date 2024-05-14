@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.InsuranceSurveyorController">
+   <children>
+      <Label layoutX="147.0" text="Insurance Surveyor Dashboard" textFill="#d41b1b">
+         <font>
+            <Font name="Calibri Bold" size="24.0" />
+         </font></Label>
+      <Button fx:id="reviewClaimButton" layoutX="51.0" layoutY="102.0" mnemonicParsing="false" onAction="#reviewClaim" text="Review Claim" />
+      <Button layoutX="256.0" layoutY="102.0" mnemonicParsing="false" text="Filter Claim" />
+      <Button layoutX="434.0" layoutY="102.0" mnemonicParsing="false" text="Filter Customer" />
+      <Button layoutX="230.0" layoutY="227.0" mnemonicParsing="false" text="Back To Dashboard" />
+   </children>
+</AnchorPane>
