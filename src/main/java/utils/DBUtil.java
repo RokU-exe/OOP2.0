@@ -296,7 +296,7 @@ public class DBUtil {
         }
     }
 
-    public static String getLargestIdByUserRole(UserRole role) {
+   public static String getLargestIdByUserRole(UserRole role) {
         String prefix = getPrefixByUserRole(role);
         String query = "SELECT MAX(CAST(SUBSTRING(id, 2) AS INTEGER)) AS max_id " +
                 "FROM users " +
@@ -317,6 +317,7 @@ public class DBUtil {
         }
         return null;
     }
+
 
     //get claim for PO
     public static List<Claim> getAllClaimsForPolicyOwner() {
