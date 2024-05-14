@@ -8,7 +8,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
-import controllers.SystemAdmin;
+import models.SystemAdmin;
 import models.User;
 import models.UserRole;
 import utils.DBUtil;
@@ -299,7 +299,7 @@ public class SystemAdminController implements Initializable {
     }
     @FXML
     private Button back;
-    public void backtoDashboard(){
+    public void backtoDashboard() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/SystemAdminGUI/systemAdminDashboard.fxml"));
             Parent adminDashboardRoot = loader.load();
@@ -315,7 +315,4 @@ public class SystemAdminController implements Initializable {
             e.printStackTrace();
             // Handle any errors loading the admin dashboard FXML
         }
-    }
-
-    }
-
+    }}
