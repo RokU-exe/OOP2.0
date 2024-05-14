@@ -208,7 +208,8 @@ public class DBUtil {
                         ClaimStatus.valueOf(rs.getString("status")),
                         rs.getString("receiver_bank"),
                         rs.getString("receiver_name"),
-                        rs.getString("receiver_number")
+                        rs.getString("receiver_number"),
+                        rs.getString("policy_holder_name")
                 ));
             }
         } catch (SQLException e) {
