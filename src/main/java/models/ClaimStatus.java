@@ -1,5 +1,5 @@
 package models;
 
 public enum ClaimStatus {
-    NEW, PROCESSING, DONE
+    NEW, PROCESSING, DONE, APPROVED, REJECTED
 }
