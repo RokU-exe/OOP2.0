@@ -82,7 +82,11 @@ public class LoginController {
                     LoginSession.getInstance().setCurrentUser(user);
                 }
 
-                case UserRole.POLICY_OWNER -> {validShow();openPolicyOwnerDashboard(user);}
+                case UserRole.POLICY_OWNER -> {validShow();
+                    PolicyOwner po = new PolicyOwner(user.getId(), user.getFullName(), user.getEmail(), user.getPassword(), UserRole.DEPENDENT);
+                    PolicyOwnerController controller = new PolicyOwnerController(po);
+                    controller.openPolicyOwnerDashboard(getLoginButton());
+                }
                 case UserRole.INSURANCE_SURVEYOR -> {validShow();openSurveyorDashboard(user);}
                 case UserRole.INSURANCE_MANAGER ->{validShow(); openManagerDashboard(user);}
 
