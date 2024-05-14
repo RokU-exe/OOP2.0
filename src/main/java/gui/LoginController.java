@@ -13,6 +13,7 @@ import javafx.scene.layout.FlowPane;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
+import models.Dependent;
 import models.User;
 import models.UserRole;
 import utils.DBUtil;
