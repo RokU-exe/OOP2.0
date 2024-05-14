@@ -316,4 +316,35 @@ public class DBUtil {
         }
         return null;
     }
+
+    //get claim for PO
+    public static List<Claim> getAllClaimsForPolicyOwner() {
+        List<Claim> claims = new ArrayList<>();
+        String query = "SELECT c.*, u.full_name AS policy_holder_name " +
+                "FROM claims c " +
+                "JOIN users u ON c.policy_holder_id = u.id";
+        try (Connection conn = getConnection();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(query)) {
+            while (rs.next()) {
+                claims.add(new Claim(
+                        rs.getString("id"),
+                        rs.getDate("claim_date"),
+                        rs.getString("insured_person"),
+                        rs.getString("card_number"),
+                        rs.getDate("exam_date"),
+                        null,
+                        rs.getDouble("claim_amount"),
+                        ClaimStatus.valueOf(rs.getString("status")),
+                        rs.getString("receiver_bank"),
+                        rs.getString("receiver_name"),
+                        rs.getString("receiver_number"),
+                        rs.getString("policy_holder_name")
+                ));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return claims;
+    }
 }
