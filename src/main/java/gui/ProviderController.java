@@ -17,7 +17,7 @@ public class ProviderController {
     public List<Claim> getClaims() {
         // Retrieve all claims for this provider from the database
         String filterCriteria = String.format("insured_person = '%s'", provider.getFullName());
-        return DBUtil.getFilteredClaims(filterCriteria);
+        return DBUtil.getFilteredClaims();
     }
 
     public void proposeClaimToManager(Claim claim) {
