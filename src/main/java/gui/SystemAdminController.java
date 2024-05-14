@@ -8,7 +8,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
-import models.SystemAdmin;
+import controllers.SystemAdmin;
 import models.User;
 import models.UserRole;
 import utils.DBUtil;
