@@ -358,4 +358,64 @@ public class DBUtil {
         }
         return claims;
     }
+
+    //Use to review claim (Insurance Surveyor) before decide to propose to manager or require more information
+    public static List<Claim> surveyorReviewClaim(){
+        List<Claim> claims = new ArrayList<>();
+        String query = "SELECT * FROM claims WHERE status = 'NEW'";
+        try (Connection conn = getConnection();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(query)) {
+            while (rs.next()) {
+                claims.add(new Claim(
+                        rs.getString("id"),
+                        rs.getDate("claim_date"),
+                        rs.getString("insured_person"),
+                        rs.getString("card_number"),
+                        rs.getDate("exam_date"),
+                        null,
+                        rs.getDouble("claim_amount"),
+                        ClaimStatus.valueOf(rs.getString("status")),
+                        rs.getString("receiver_bank"),
+                        rs.getString("receiver_name"),
+                        rs.getString("receiver_number"),
+                        rs.getString("policyHolder_name")
+                ));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return claims;
+    }
+
+    //Use to propose claim to manager (Insurance Surveyor) STILL ERROR NHA :)))))
+    public static List<Claim> surveyorProposeToManager(){
+        List<Claim> claims = new ArrayList<>();
+        String query = "UPDATE claims SET status = 'PROCESSING' WHERE status = 'NEW'";
+        try (Connection conn = getConnection();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(query)) {
+            while (rs.next()) {
+                claims.add(new Claim(
+                        rs.getString("id"),
+                        rs.getDate("claim_date"),
+                        rs.getString("insured_person"),
+                        rs.getString("card_number"),
+                        rs.getDate("exam_date"),
+                        null,
+                        rs.getDouble("claim_amount"),
+                        ClaimStatus.valueOf(rs.getString("status")),
+                        rs.getString("receiver_bank"),
+                        rs.getString("receiver_name"),
+                        rs.getString("receiver_number"),
+                        rs.getString("policyHolder_name")
+                ));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return claims;
+    }
+    
 }
