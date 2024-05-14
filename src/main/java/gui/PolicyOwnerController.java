@@ -26,13 +26,12 @@ public class PolicyOwnerController implements Initializable {
     private PolicyOwner owner;
 
     public PolicyOwnerController(PolicyOwner owner) {
-        // Default consturtor
     };
 
     public PolicyOwnerController(PolicyOwner owner, List<PolicyHolder> policyHolders) {}
 
     public PolicyOwnerController() {
-        // Default consturtor
+        //default constructor
     };
 
 
@@ -54,7 +53,7 @@ public class PolicyOwnerController implements Initializable {
     {
 
     }
-     void openPolicyOwnerDashboard(Button loginButton) {
+     public void openPolicyOwnerDashboard(Button loginButton) {
         // Open the Policy Owner Dashboard
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/PolicyOwnerDashBoard.fxml"));
@@ -86,6 +85,18 @@ public class PolicyOwnerController implements Initializable {
         }
     }
 
+    @FXML
+    private Button viewClaimButton;
+    public void viewClaim() {
+        // Call the getAllClaimsForPolicyOwner method from DBUtil to retrieve all claims for the policy owner
+        List<Claim> claims = DBUtil.getAllClaimsForPolicyOwner();
+
+        // Perform further actions with the retrieved claims, such as displaying them in the UI
+        for (Claim claim : claims) {
+            System.out.println("Claim ID: " + claim.getId());
+            // Display other relevant information about the claim
+        }
+    }
     @FXML
     private Button deleteClaimButton;
     public void deleteClaim()
