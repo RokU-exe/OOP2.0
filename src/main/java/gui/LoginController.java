@@ -151,26 +151,26 @@ public class LoginController {
         }
     }
 
-    private void openPolicyOwnerDashboard(User user) {
-        // Open the Policy Owner Dashboard
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/systemPolicyOwnerDashboard.fxml"));
-            Parent policyOwnerDashboardRoot = loader.load();
-            Scene policyOwnerDashboardScene = new Scene(policyOwnerDashboardRoot);
+    // private void openPolicyOwnerDashboard(User user) {
+    //     // Open the Policy Owner Dashboard
+    //     try {
+    //         FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/systemPolicyOwnerDashboard.fxml"));
+    //         Parent policyOwnerDashboardRoot = loader.load();
+    //         Scene policyOwnerDashboardScene = new Scene(policyOwnerDashboardRoot);
 
-            // Get any node from the current scene
-            Node sourceNode = loginButton; // Use any node from the current scene
+    //         // Get any node from the current scene
+    //         Node sourceNode = loginButton; // Use any node from the current scene
 
-            // Get the primary stage from the source node's scene
-            Stage primaryStage = (Stage) sourceNode.getScene().getWindow();
+    //         // Get the primary stage from the source node's scene
+    //         Stage primaryStage = (Stage) sourceNode.getScene().getWindow();
 
-            primaryStage.setScene(policyOwnerDashboardScene);
-            primaryStage.show();
-        } catch (IOException e) {
-            e.printStackTrace();
-            // Handle any errors loading the admin dashboard FXML
-        }
-    }
+    //         primaryStage.setScene(policyOwnerDashboardScene);
+    //         primaryStage.show();
+    //     } catch (IOException e) {
+    //         e.printStackTrace();
+    //         // Handle any errors loading the admin dashboard FXML
+    //     }
+    // }
 
     private void openSurveyorDashboard(User user) {
         // Open the Insurance Surveyor Dashboard
