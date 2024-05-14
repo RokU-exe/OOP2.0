@@ -67,24 +67,33 @@ public class LoginController {
         }
     }
     @FXML
-    private void handleLogin() throws IOException {
+    public void handleLogin() throws IOException {
         User user = getUser();
         Dependent d = new Dependent();
         if (user != null) {
             switch (user.getRole()) {
                 case UserRole.POLICY_HOLDER -> {validShow();openPolicyHolderDashboard(user);}
-                case UserRole.DEPENDENT -> {validShow();openDependentDashboard(user);}
-                case UserRole.POLICY_OWNER -> {validShow();openPolicyOwnerDashboard(user);}
-                case UserRole.INSURANCE_SURVEYOR -> {validShow();openSurveyorDashboard(user);}
-                case UserRole.INSURANCE_MANAGER ->{validShow(); openManagerDashboard(user);}
-                case UserRole.SYSTEM_ADMIN -> {
+
+                case UserRole.DEPENDENT -> {
                     validShow();
                     Dependent dependent = new Dependent(user.getId(), user.getFullName(), user.getEmail(), user.getPassword(), UserRole.DEPENDENT, d.getInsuranceCard(), null, d.getPolicyHolderId());
                     DependentController controller = new DependentController(dependent);
                     controller.openDependentDashboard(getLoginButton());
                     LoginSession.getInstance().setCurrentUser(user);
                 }
+
+                case UserRole.POLICY_OWNER -> {validShow();openPolicyOwnerDashboard(user);}
+                case UserRole.INSURANCE_SURVEYOR -> {validShow();openSurveyorDashboard(user);}
+                case UserRole.INSURANCE_MANAGER ->{validShow(); openManagerDashboard(user);}
+
+                case UserRole.SYSTEM_ADMIN -> {
+                    validShow();
+                    SystemAdmin systemAdmin = new SystemAdmin(user.getId(), user.getFullName(), user.getEmail(), user.getPassword(), UserRole.SYSTEM_ADMIN);
+                    SystemAdminController controller = new SystemAdminController(systemAdmin);
+                    controller.openAdminDashboard(getLoginButton());
+                }
             }
+
 
         } else {
             Alert alert = new Alert(Alert.AlertType.ERROR);
