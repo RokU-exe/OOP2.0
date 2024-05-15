@@ -21,9 +21,6 @@
          <font>
             <Font size="30.0" />
          </font></Label>
-      <Button layoutX="157.0" layoutY="175.0" mnemonicParsing="false" onAction="#updateClaim" text="Update Claim" />
-      <Button layoutX="34.0" layoutY="175.0" mnemonicParsing="false" onAction="#fileClaim" text="File Claim" />
-      <Button layoutX="26.0" layoutY="245.0" mnemonicParsing="false" text="Delete Claim" />
-      <Button layoutX="164.0" layoutY="245.0" mnemonicParsing="false" onAction="#viewClaim" text="View Claim" />
+      <Button fx:id="viewClaimButton" layoutX="164.0" layoutY="245.0" mnemonicParsing="false" onAction="#viewClaim" text="View Claim" />
     </children>
 </AnchorPane>
