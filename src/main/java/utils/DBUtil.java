@@ -209,23 +209,68 @@ public class DBUtil {
 
     public static String getLargestIdByUserRole(UserRole role) {
         String prefix = getPrefixByUserRole(role);
-        String query = "SELECT MAX(CAST(SUBSTRING(id, 2) AS INTEGER)) AS max_id " +
+        String query = "SELECT MAX(CAST(SUBSTRING(id FROM LENGTH(?) + 1) AS INTEGER)) AS max_id " +
                 "FROM users " +
-                "WHERE role = ?";
+                "WHERE role = ? AND SUBSTRING(id FROM LENGTH(?) + 1) ~ '^[0-9]+$'";
         try (Connection conn = getConnection();
              PreparedStatement pstmt = conn.prepareStatement(query)) {
-            pstmt.setString(1, role.toString());
+            pstmt.setString(1, prefix);
+            pstmt.setString(2, role.toString());
+            pstmt.setString(3, prefix);
             ResultSet rs = pstmt.executeQuery();
+            int maxId = 0; // Default maxId if no records found
             if (rs.next()) {
-                int maxId = rs.getInt("max_id");
-                // Increment the numeric part of the ID
-                maxId++;
-                String largestId = String.format("%s%02d", prefix, maxId);
-                return largestId;
+                // Get the max_id from the result set
+                maxId = rs.getInt("max_id");
+                // Check if max_id was null (i.e., no records found)
+                if (rs.wasNull()) {
+                    maxId = 0; // No records found, so initialize to 0
+                }
             }
+            // Increment the numeric part of the ID
+            maxId++;
+            // Format the new ID with the prefix and zero-padded numeric part
+            String largestId = String.format("%s%02d", prefix, maxId);
+            return largestId;
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return null;
     }
+    public static List<String> getPolicyHolders() throws SQLException {
+        List<String> policyHolders = new ArrayList<>();
+        String query = "SELECT u.id, u.full_name " +
+                "FROM users u " +
+                "LEFT JOIN \"InsuranceCard\" ic ON u.id = ic.policy_holder_id " +
+                "WHERE ic.policy_holder_id IS NULL AND u.role = 'POLICY_HOLDER'";
+        try (Connection conn = getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(query);
+             ResultSet rs = pstmt.executeQuery()) {
+            while (rs.next()) {
+                String fullName = rs.getString("full_name");
+                String id = rs.getString("id");
+                policyHolders.add(fullName + " - " + id);
+            }
+        }
+        return policyHolders;
+    }
+
+    // Method to retrieve policy owners from the database
+    public static List<String> getPolicyOwners() throws SQLException {
+        List<String> policyOwners = new ArrayList<>();
+        String query = "SELECT u.id, u.full_name " +
+                "FROM users u " +
+                "WHERE u.role = 'POLICY_OWNER'";
+        try (Connection conn = getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(query);
+             ResultSet rs = pstmt.executeQuery()) {
+            while (rs.next()) {
+                String fullName = rs.getString("full_name");
+                String id = rs.getString("id");
+                policyOwners.add(fullName + " - " + id);
+            }
+        }
+        return policyOwners;
+    }
+
 }

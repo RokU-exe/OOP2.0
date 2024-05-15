@@ -7,6 +7,10 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import models.SystemAdmin;
 import models.User;
@@ -15,6 +19,7 @@ import utils.DBUtil;
 import javafx.event.ActionEvent;
 import java.io.IOException;
 import java.net.URL;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -51,6 +56,8 @@ public class SystemAdminController implements Initializable {
     private TextField password;
     @FXML
     private MenuButton role;
+    @FXML
+    private Button addIc;
 
     private UserRole getRole(String role) {
         if (role.equals("Policy Owner")) {
@@ -100,6 +107,7 @@ public class SystemAdminController implements Initializable {
    //add the user, go back to dashboard
    public void doneAddUser() {
        String roleName = role.getText();
+       System.out.println(roleName);
        // Check if a role is selected
        if (roleName.equals("Select Role")) {
            System.out.println("Please select a valid role.");
@@ -160,6 +168,107 @@ public class SystemAdminController implements Initializable {
         // Sum up the successfully claimed amount with different parameters
         return DBUtil.calculateTotalClaimedAmount();
     }
+
+    @FXML
+    private MenuButton policyHolderMenuButton;
+
+    @FXML
+    private MenuButton policyOwnerMenuButton;
+
+    @FXML
+    private void initializeUIComponents() throws SQLException {
+        AnchorPane root = new AnchorPane();
+        root.setPrefSize(600, 400);
+        root.setStyle("-fx-background-color: #CDE8E5;");
+
+        Label titleLabel = new Label("ADD NEW INSURANCE CARD");
+        titleLabel.setLayoutX(128);
+        titleLabel.setPrefHeight(118);
+        titleLabel.setPrefWidth(497);
+        titleLabel.setStyle("-fx-background-color: #CDE8E5;");
+        titleLabel.setFont(new Font("Calibri", 24));
+        titleLabel.setAlignment(javafx.geometry.Pos.CENTER);
+
+        ImageView logoImageView = new ImageView(new Image("https://1000logos.net/wp-content/uploads/2019/07/RMIT-Logo.png"));
+        logoImageView.setFitHeight(88);
+        logoImageView.setFitWidth(286);
+        logoImageView.setPreserveRatio(true);
+        logoImageView.setPickOnBounds(true);
+
+        ImageView blendImageView = new ImageView(new Image("https://tse1.mm.bing.net/th?id=OIP.QqEXi7j5Z0ZMFu8pLgTxzAHaHa&amp;pid=Api&amp;P=0&amp;h=180"));
+        blendImageView.setFitHeight(150);
+        blendImageView.setFitWidth(200);
+        blendImageView.setLayoutX(450);
+        blendImageView.setLayoutY(242);
+        blendImageView.setPreserveRatio(true);
+        blendImageView.setPickOnBounds(true);
+        blendImageView.setBlendMode(javafx.scene.effect.BlendMode.MULTIPLY);
+
+        Label cardHolderLabel = new Label("Card Holder:");
+        cardHolderLabel.setLayoutX(90);
+        cardHolderLabel.setLayoutY(144);
+        cardHolderLabel.setFont(new Font("Calibri", 18));
+
+        Label policyOwnerLabel = new Label("Policy Owner:");
+        policyOwnerLabel.setLayoutX(92);
+        policyOwnerLabel.setLayoutY(215);
+        policyOwnerLabel.setFont(new Font("Calibri", 18));
+
+        Label expireDateLabel = new Label("Expire date:");
+        expireDateLabel.setLayoutX(92);
+        expireDateLabel.setLayoutY(283);
+        expireDateLabel.setFont(new Font("Calibri", 18));
+
+        policyHolderMenuButton = new MenuButton("Select Policy Holder");
+        policyHolderMenuButton.setLayoutX(226);
+        policyHolderMenuButton.setLayoutY(142);
+        policyHolderMenuButton.setPrefHeight(26);
+        policyHolderMenuButton.setPrefWidth(150);
+
+        policyOwnerMenuButton = new MenuButton("Select Policy Owner");
+        policyOwnerMenuButton.setLayoutX(227);
+        policyOwnerMenuButton.setLayoutY(213);
+        policyOwnerMenuButton.setPrefHeight(26);
+        policyOwnerMenuButton.setPrefWidth(150);
+
+        DatePicker datePicker = new DatePicker();
+        datePicker.setLayoutX(227);
+        datePicker.setLayoutY(282);
+
+        Button doneButton = new Button("ADD");
+        doneButton.setLayoutX(502);
+        doneButton.setLayoutY(168);
+        doneButton.setPrefHeight(47);
+        doneButton.setPrefWidth(106);
+        doneButton.setFont(new Font("Calibri", 18));
+        doneButton.setOnAction(event -> doneAddUser());
+
+        root.getChildren().addAll(titleLabel, logoImageView, blendImageView, cardHolderLabel, policyOwnerLabel, expireDateLabel, policyHolderMenuButton, policyOwnerMenuButton, datePicker, doneButton);
+
+        populateMenuButtons();
+        addIc.getScene().setRoot(root);
+    }
+
+    private void populateMenuButtons() throws SQLException {
+        List<String> policyHolders = DBUtil.getPolicyHolders();
+        List<String> policyOwners = DBUtil.getPolicyOwners();
+
+        policyHolderMenuButton.getItems().clear();
+        policyOwnerMenuButton.getItems().clear();
+
+        for (String holder : policyHolders) {
+            MenuItem menuItem = new MenuItem(holder);
+            menuItem.setOnAction(event -> policyHolderMenuButton.setText(holder));
+            policyHolderMenuButton.getItems().add(menuItem);
+        }
+
+        for (String owner : policyOwners) {
+            MenuItem menuItem = new MenuItem(owner);
+            menuItem.setOnAction(event -> policyOwnerMenuButton.setText(owner));
+            policyOwnerMenuButton.getItems().add(menuItem);
+        }
+    }
+
     @FXML
 // Open the Admin Dashboard
     public void openAdminDashboard(Button loginButton) {
@@ -280,7 +389,7 @@ public class SystemAdminController implements Initializable {
 
     @FXML
     private Button ic;
-    public void insuranceCardMenu(){
+    public void insuranceCardMenu() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/SystemAdminGUI/sysInsuranceCardMenu.fxml"));
             Parent adminDashboardRoot = loader.load();
@@ -292,6 +401,7 @@ public class SystemAdminController implements Initializable {
 
             primaryStage.setScene(new Scene(adminDashboardRoot));
             primaryStage.show();
+
         } catch (IOException e) {
             e.printStackTrace();
             // Handle any errors loading the admin dashboard FXML
@@ -299,7 +409,7 @@ public class SystemAdminController implements Initializable {
     }
     @FXML
     private Button back;
-    public void backtoDashboard(){
+    public void backtoDashboard() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/SystemAdminGUI/systemAdminDashboard.fxml"));
             Parent adminDashboardRoot = loader.load();
@@ -315,7 +425,4 @@ public class SystemAdminController implements Initializable {
             e.printStackTrace();
             // Handle any errors loading the admin dashboard FXML
         }
-    }
-
-    }
-
+    }}
