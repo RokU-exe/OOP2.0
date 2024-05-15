@@ -4,14 +4,10 @@ package gui;
 import controllers.SystemAdmin;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.layout.FlowPane;
-import javafx.scene.text.Text;
-import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 import models.*;
 import utils.DBUtil;
@@ -29,7 +25,7 @@ public class LoginController {
         return loginButton;
     }
 
-    private User getUser(){
+    User getUser(){
         User user  = new User();
         String email = emailField.getText();
         String password = passwordField.getText();
@@ -174,7 +170,7 @@ public class LoginController {
     private void openSurveyorDashboard(User user) {
         // Open the Insurance Surveyor Dashboard
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/InsuranceSurveyor.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/InsuranceSurveyorGUI/InsuranceSurveyor.fxml"));
             Parent insuranceSurveyorDashboardRoot = loader.load();
             Scene insuranceSurveyorDashboardScene = new Scene(insuranceSurveyorDashboardRoot);
 
@@ -196,14 +192,12 @@ public class LoginController {
     private void openManagerDashboard(User user) {
         // Open the Insurance Manager Dashboard
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/Manager.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/ManagerGUI/Manager.fxml"));
             Parent managerDashboardRoot = loader.load();
             Scene managerDashboardScene = new Scene(managerDashboardRoot);
 
-            // Get any node from the current scene
             Node sourceNode = loginButton;
 
-            // Get the primary stage from the source node's scene
             Stage primaryStage = (Stage) sourceNode.getScene().getWindow();
 
             primaryStage.setScene(managerDashboardScene);
@@ -213,126 +207,4 @@ public class LoginController {
             // Handle any errors loading the manager dashboard FXML
         }
     }
-
-
 }
-
-// Full version after create full GUI, FXML File
-
-/* public class LoginController {
-    @FXML
-    private TextField emailField;
-    @FXML
-    private PasswordField passwordField;
-    @FXML
-    private Button loginButton;
-
-    @FXML
-    private void handleLogin() {
-        String email = emailField.getText();
-        String password = passwordField.getText();
-
-        User user = DBUtil.getUserByEmailAndPassword(email, password);
-        if (user != null) {
-            switch (user.getRole()) {
-                case UserRole.POLICY_HOLDER -> openPolicyHolderDashboard(user);
-                case UserRole.DEPENDENT -> openDependentDashboard(user);
-                case UserRole.POLICY_OWNER -> openPolicyOwnerDashboard(user);
-                case UserRole.INSURANCE_SURVEYOR -> openSurveyorDashboard(user);
-                case UserRole.INSURANCE_MANAGER -> openManagerDashboard(user);
-                case UserRole.SYSTEM_ADMIN -> openAdminDashboard(user);
-            }
-        } else {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Login Failed");
-            alert.setHeaderText("Invalid Credentials");
-            alert.setContentText("Please check your email and password.");
-            alert.showAndWait();
-        }
-    }
-
-    private void openPolicyHolderDashboard(User user) {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("PolicyHolderDashboard.fxml"));
-            Parent root = loader.load();
-            PolicyHolderDashboardController controller = loader.getController();
-            controller.setUser(user);
-            Stage stage = new Stage();
-            stage.setScene(new Scene(root));
-            stage.show();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void openDependentDashboard(User user) {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("DependentDashboard.fxml"));
-            Parent root = loader.load();
-            DependentDashboardController controller = loader.getController();
-            controller.setUser(user);
-            Stage stage = new Stage();
-            stage.setScene(new Scene(root));
-            stage.show();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void openPolicyOwnerDashboard(User user) {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("PolicyOwnerDashboard.fxml"));
-            Parent root = loader.load();
-            PolicyOwnerDashboardController controller = loader.getController();
-            controller.setUser(user);
-            Stage stage = new Stage();
-            stage.setScene(new Scene(root));
-            stage.show();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void openSurveyorDashboard(User user) {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("SurveyorDashboard.fxml"));
-            Parent root = loader.load();
-            SurveyorDashboardController controller = loader.getController();
-            controller.setUser(user);
-            Stage stage = new Stage();
-            stage.setScene(new Scene(root));
-            stage.show();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void openManagerDashboard(User user) {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("ManagerDashboard.fxml"));
-            Parent root = loader.load();
-            ManagerDashboardController controller = loader.getController();
-            controller.setUser(user);
-            Stage stage = new Stage();
-            stage.setScene(new Scene(root));
-            stage.show();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void openAdminDashboard(User user) {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("AdminDashboard.fxml"));
-            Parent root = loader.load();
-            AdminDashboardController controller = loader.getController();
-            controller.setUser(user);
-            Stage stage = new Stage();
-            stage.setScene(new Scene(root));
-            stage.show();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-}
-*/
