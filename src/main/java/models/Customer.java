@@ -15,9 +15,11 @@ public class Customer extends User{
     public Customer(String id, String fullName, String email, String phone) {
     }
 
-     public Customer() {
+    public Customer(int id, String fullName, String role) {
     }
 
+    public Customer() {
+    }
 
     public InsuranceCard getInsuranceCard() {
         return insuranceCard;

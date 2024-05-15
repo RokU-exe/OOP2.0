@@ -18,10 +18,7 @@ public class Main extends Application {
         primaryStage.show();
     }
 
-    public static void main(String[] args){ //throws SQLException {
-        // Initialize the database connection
-        //DBUtil.getConnection();
-
+    public static void main(String[] args){
         // Launch JavaFX application
         launch(args);
     }

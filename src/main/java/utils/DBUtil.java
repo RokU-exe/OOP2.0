@@ -420,5 +420,74 @@ public class DBUtil {
         }
         return claims;
     }
-    
+    public static void approveClaim(int claimId) {
+        try (Connection conn = connect()) {
+            String sql = "UPDATE claims SET status = 'approved' WHERE id = ?";
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            pstmt.setInt(1, claimId);
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void rejectClaim(int claimId) {
+        try (Connection conn = connect()) {
+            String sql = "UPDATE claims SET status = 'rejected' WHERE id = ?";
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            pstmt.setInt(1, claimId);
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static Connection connect() {
+        Connection conn = null;
+        try {
+            conn = DriverManager.getConnection(URL, USER, PASSWORD);
+            System.out.println("Connection to PostgreSQL has been established.");
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return conn;
+    }
+    public static Customer getCustomerById(int id) {
+        String sql = "SELECT * FROM customers WHERE id = ?";
+        try (Connection conn = connect();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, id);
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {
+                return new Customer(
+                        rs.getInt("id"),
+                        rs.getString("full_name"),
+                        rs.getString("role")
+                );
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return null;
+    }
+
+    public static List<Claim> getClaimsToExamine() {
+        List<Claim> claims = new ArrayList<>();
+        String sql = "SELECT * FROM claims WHERE status = 'waiting for examination'";
+        try (Connection conn = connect();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+            while (rs.next()) {
+                Claim claim = new Claim(
+                        rs.getInt("id"),
+                        rs.getString("policy_holder_name"),
+                        rs.getString("status")
+                );
+                claims.add(claim);
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return claims;
+    }
 }

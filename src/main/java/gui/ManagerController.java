@@ -1,30 +1,59 @@
 package gui;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.scene.control.Label;
-import javafx.scene.control.Button;
-import javafx.scene.control.Alert;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
 import models.Claim;
 import models.Customer;
 import models.Surveyor;
 import utils.DBUtil;
 
+import java.io.IOException;
 import java.util.List;
 
 public class ManagerController {
+
     @FXML
     private Label contentLabel;
 
     @FXML
-    private Button logoutButton, viewClaimsButton, viewCustomersButton, viewSurveyorsButton, approveClaimButton, rejectClaimButton;
+    private Button logoutButton, viewClaimsButton, viewCustomersButton, viewSurveyorsButton, approveClaimButton, rejectClaimButton, navigateButton;
 
     @FXML
     private VBox contentArea;
 
     @FXML
+    private TableView<Claim> claimsTable;
+
+    @FXML
+    private TableColumn<Claim, Integer> claimIdColumn;
+
+    @FXML
+    private TableColumn<Claim, String> policyHolderColumn;
+
+    @FXML
+    private TableColumn<Claim, String> statusColumn;
+
+    private ObservableList<Claim> claimsData = FXCollections.observableArrayList();
+
+    @FXML
+    private void initialize() {
+        claimIdColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
+        policyHolderColumn.setCellValueFactory(new PropertyValueFactory<>("policyHolderName"));
+        statusColumn.setCellValueFactory(new PropertyValueFactory<>("status"));
+
+        claimsTable.setItems(claimsData);
+    }
+
+    @FXML
     private void handleLogout() {
-        // Example logout logic, replace with actual implementation
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Logout");
         alert.setHeaderText("Logout Successful");
@@ -35,8 +64,8 @@ public class ManagerController {
 
     @FXML
     private void handleViewClaims() {
-        // Retrieve claims data and display
         List<Claim> claims = DBUtil.getAllClaims();
+        claimsData.setAll(claims);
         StringBuilder claimsInfo = new StringBuilder("Claims:\n\n");
         for (Claim claim : claims) {
             claimsInfo.append(String.format("ID: %d, Policy Holder: %s, Status: %s\n",
@@ -47,7 +76,6 @@ public class ManagerController {
 
     @FXML
     private void handleViewCustomers() {
-        // Retrieve customer data and display
         List<Customer> customers = DBUtil.getAllCustomers();
         StringBuilder customersInfo = new StringBuilder("Customers:\n\n");
         for (Customer customer : customers) {
@@ -59,7 +87,6 @@ public class ManagerController {
 
     @FXML
     private void handleViewSurveyors() {
-        // Retrieve surveyor data and display
         List<Surveyor> surveyors = DBUtil.getAllSurveyors();
         StringBuilder surveyorsInfo = new StringBuilder("Surveyors:\n\n");
         for (Surveyor surveyor : surveyors) {
@@ -80,8 +107,36 @@ public class ManagerController {
         }
     }
 
+    @FXML
+    private void handleRejectClaim() {
+        Claim selectedClaim = getSelectedClaim();
+        if (selectedClaim != null) {
+            DBUtil.rejectClaim(selectedClaim.getId());
+            refreshClaims();
+        } else {
+            showAlert(Alert.AlertType.ERROR, "No Claim Selected", "Please select a claim to reject.");
+        }
+    }
+
+    @FXML
+    private void handleExamineClaims() throws IOException {
+        navigateToPage("ExamClaims.fxml");
+    }
+
+    @FXML
+    private void handleRetrieveUser() throws IOException {
+        navigateToPage("RetrieveUser.fxml");
+    }
+
+    private void navigateToPage(String fxmlFile) throws IOException {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlFile));
+        Parent root = loader.load();
+        Stage stage = (Stage) navigateButton.getScene().getWindow();
+        stage.setScene(new Scene(root));
+    }
+
     private Claim getSelectedClaim() {
-        return null;
+        return claimsTable.getSelectionModel().getSelectedItem();
     }
 
     private void refreshClaims() {

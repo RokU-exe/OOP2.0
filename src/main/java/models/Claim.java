@@ -35,6 +35,9 @@ public class Claim {
         this.policyHolderName = policyHolderName;
     }
 
+    public Claim(int id, String policyHolderName, String status) {
+    }
+
     public String getId() {
         return id;
     }
@@ -148,4 +151,3 @@ public class Claim {
                 '}';
     }
 }
-
