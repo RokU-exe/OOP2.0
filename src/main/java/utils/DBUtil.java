@@ -326,7 +326,42 @@ public class DBUtil {
         }
         return null;
     }
+    
+ public static List<String> getPolicyHolders() throws SQLException {
+        List<String> policyHolders = new ArrayList<>();
+        String query = "SELECT u.id, u.full_name " +
+                "FROM users u " +
+                "LEFT JOIN \"InsuranceCard\" ic ON u.id = ic.policy_holder_id " +
+                "WHERE ic.policy_holder_id IS NULL AND u.role = 'POLICY_HOLDER'";
+        try (Connection conn = getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(query);
+             ResultSet rs = pstmt.executeQuery()) {
+            while (rs.next()) {
+                String fullName = rs.getString("full_name");
+                String id = rs.getString("id");
+                policyHolders.add(fullName + " - " + id);
+            }
+        }
+        return policyHolders;
+    }
 
+    // Method to retrieve policy owners from the database
+    public static List<String> getPolicyOwners() throws SQLException {
+        List<String> policyOwners = new ArrayList<>();
+        String query = "SELECT u.id, u.full_name " +
+                "FROM users u " +
+                "WHERE u.role = 'POLICY_OWNER'";
+        try (Connection conn = getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(query);
+             ResultSet rs = pstmt.executeQuery()) {
+            while (rs.next()) {
+                String fullName = rs.getString("full_name");
+                String id = rs.getString("id");
+                policyOwners.add(fullName + " - " + id);
+            }
+        }
+        return policyOwners;
+    }
 
     //get claim for PO
     public static List<Claim> getClaimsForPolicyOwner() throws SQLException {
