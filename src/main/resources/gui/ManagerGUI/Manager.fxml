@@ -16,8 +16,9 @@
       <Button layoutX="44.0" layoutY="225.0" mnemonicParsing="false" onAction="#handleViewSurveyors" prefHeight="40.0" prefWidth="200.0" style="-fx-background-color: #4D869C;" text="View Surveyors" textFill="WHITE" />
       <Button layoutX="44.0" layoutY="275.0" mnemonicParsing="false" onAction="#handleApproveClaim" prefHeight="40.0" prefWidth="200.0" style="-fx-background-color: #4D869C;" text="Approve Claim" textFill="WHITE" />
       <Button layoutX="44.0" layoutY="325.0" mnemonicParsing="false" onAction="#handleRejectClaim" prefHeight="40.0" prefWidth="200.0" style="-fx-background-color: #4D869C;" text="Reject Claim" textFill="WHITE" />
-      <Button layoutX="44.0" layoutY="425.0" mnemonicParsing="false" onAction="#handleExamineClaims" prefHeight="40.0" prefWidth="200.0" style="-fx-background-color: #4D869C;" text="Examine Claims" textFill="WHITE" />
-      <Button layoutX="44.0" layoutY="475.0" mnemonicParsing="false" onAction="#handleRetrieveUser" prefHeight="40.0" prefWidth="200.0" style="-fx-background-color: #4D869C;" text="Retrieve User" textFill="WHITE" />
+      <Button fx:id="navigateButton" layoutX="44.0" layoutY="375.0" mnemonicParsing="false" onAction="#handleExamineClaims" prefHeight="40.0" prefWidth="200.0" style="-fx-background-color: #4D869C;" text="Examine Claims" textFill="WHITE" />
+      <Button layoutX="44.0" layoutY="425.0" mnemonicParsing="false" onAction="#handleRetrieveUser" prefHeight="40.0" prefWidth="200.0" style="-fx-background-color: #4D869C;" text="Retrieve User" textFill="WHITE" />
+      <Button fx:id="logoutButton" layoutX="44.0" layoutY="475.0" mnemonicParsing="false" onAction="#handleLogout" prefHeight="40.0" prefWidth="200.0" style="-fx-background-color: #4D869C;" text="Logout" textFill="WHITE" />
       <Label layoutX="260.0" layoutY="125.0" text="Content Area:" textFill="#1b1a1a">
          <font>
             <Font name="Calibri" size="20.0" />
@@ -28,7 +29,7 @@
             <Label fx:id="contentLabel" text="Content will be displayed here" textFill="#1b1a1a" />
          </children>
       </VBox>
-      <TableView fx:id="claimsTable" layoutX="44.0" layoutY="375.0" prefHeight="200.0" prefWidth="300.0">
+      <TableView fx:id="claimsTable" layoutX="44.0" layoutY="475.0" prefHeight="200.0" prefWidth="300.0">
          <columns>
             <TableColumn fx:id="claimIdColumn" text="Claim ID" />
             <TableColumn fx:id="policyHolderColumn" text="Policy Holder" />

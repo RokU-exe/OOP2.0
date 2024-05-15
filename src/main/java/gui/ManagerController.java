@@ -54,12 +54,7 @@ public class ManagerController {
 
     @FXML
     private void handleLogout() {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Logout");
-        alert.setHeaderText("Logout Successful");
-        alert.setContentText("You have successfully logged out.");
-        alert.showAndWait();
-        System.out.println("Logging out...");
+        navigateToPage("/gui/Login.fxml");
     }
 
     @FXML
@@ -128,11 +123,16 @@ public class ManagerController {
         navigateToPage("/gui/ManagerGUI/RetrieveUser.fxml");
     }
 
-    private void navigateToPage(String fxmlFile) throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlFile));
-        Parent root = loader.load();
-        Stage stage = (Stage) navigateButton.getScene().getWindow();
-        stage.setScene(new Scene(root));
+    private void navigateToPage(String fxmlFile) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlFile));
+            Parent root = loader.load();
+            Stage stage = (Stage) navigateButton.getScene().getWindow();
+            stage.setScene(new Scene(root));
+        } catch (IOException e) {
+            e.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "Navigation Error", "Unable to load the requested page: " + e.getMessage());
+        }
     }
 
     private Claim getSelectedClaim() {
