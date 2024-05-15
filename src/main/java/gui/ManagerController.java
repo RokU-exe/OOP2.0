@@ -120,12 +120,12 @@ public class ManagerController {
 
     @FXML
     private void handleExamineClaims() throws IOException {
-        navigateToPage("ExamClaims.fxml");
+        navigateToPage("/gui/ManagerGUI/ExamClaims.fxml");
     }
 
     @FXML
     private void handleRetrieveUser() throws IOException {
-        navigateToPage("RetrieveUser.fxml");
+        navigateToPage("/gui/ManagerGUI/RetrieveUser.fxml");
     }
 
     private void navigateToPage(String fxmlFile) throws IOException {
