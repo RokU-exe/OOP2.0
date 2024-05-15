@@ -329,35 +329,38 @@ public class DBUtil {
 
 
     //get claim for PO
-    public static List<Claim> getAllClaimsForPolicyOwner() {
+    public static List<Claim> getClaimsForPolicyOwner() throws SQLException {
         List<Claim> claims = new ArrayList<>();
-        String query = "SELECT c.*, u.full_name AS policy_holder_name " +
-                "FROM claims c " +
-                "JOIN users u ON c.policy_holder_id = u.id";
-        try (Connection conn = getConnection();
-             Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery(query)) {
-            while (rs.next()) {
-                claims.add(new Claim(
-                        rs.getString("id"),
-                        rs.getDate("claim_date"),
-                        rs.getString("insured_person"),
-                        rs.getString("card_number"),
-                        rs.getDate("exam_date"),
-                        null,
-                        rs.getDouble("claim_amount"),
-                        ClaimStatus.valueOf(rs.getString("status")),
-                        rs.getString("receiver_bank"),
-                        rs.getString("receiver_name"),
-                        rs.getString("receiver_number"),
-                        rs.getString("policy_holder_name")
-                ));
+        Connection connection = null;
+        PreparedStatement statement = null;
+        ResultSet resultSet = null;
+        try {
+            connection = getConnection();
+            String query = "SELECT claims.* FROM claims JOIN insurancecard i ON claims.cardNumber = i.cardNumber " +
+                    "JOIN users u ON i.policyHolderId = u.id";
+            statement = connection.prepareStatement(query);
+            resultSet = statement.executeQuery();
+            if (!resultSet.next()) {
+                System.out.println("No claims found.");
             }
         } catch (SQLException e) {
             e.printStackTrace();
+            throw e; // Re-throw the exception to propagate it
+        } finally {
+            // Close resources in reverse order of creation
+            if (resultSet != null) {
+                resultSet.close();
+            }
+            if (statement != null) {
+                statement.close();
+            }
+            if (connection != null) {
+                connection.close();
+            }
         }
         return claims;
     }
+
 
     //Use to review claim (Insurance Surveyor) before decide to propose to manager or require more information
     public static List<Claim> surveyorReviewClaim(){
