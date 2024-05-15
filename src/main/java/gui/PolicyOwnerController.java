@@ -13,8 +13,11 @@ import utils.DBUtil;
 
 import java.io.IOException;
 import java.net.URL;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.ResourceBundle;
+
+import static utils.DBUtil.getClaimsForPolicyOwner;
 
 public class PolicyOwnerController implements Initializable {
 
@@ -33,6 +36,68 @@ public class PolicyOwnerController implements Initializable {
     public PolicyOwnerController() {
         //default constructor
     };
+
+     public void openPolicyOwnerDashboard(Button loginButton) {
+        // Open the Policy Owner Dashboard
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/PolicyOwnerDashBoard.fxml"));
+            Parent adminDashboardRoot = loader.load();
+
+            Node sourceNode = loginButton; // Use any node from the current scene
+
+            // Get the primary stage from the source node's scene
+            Stage primaryStage = (Stage) sourceNode.getScene().getWindow();
+
+            primaryStage.setScene(new Scene(adminDashboardRoot));
+            primaryStage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+            // Handle any errors loading the admin dashboard FXML
+        }
+    }
+
+
+
+    @FXML
+    private Button viewClaimButton;
+    public void viewClaim() throws SQLException {
+        // Call the getAllClaimsForPolicyOwner method from DBUtil to retrieve all claims for the policy owner
+        List<Claim> claims = getClaimsForPolicyOwner();
+
+        // Perform further actions with the retrieved claims, such as displaying them in the UI
+
+
+    }
+    public void openViewClaim() {
+
+        // Open the Policy Owner Dashboard
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/PolicyOwnerGUI/View_Claim.fxml"));
+            Parent viewClaimRoot = loader.load();
+
+//            ClaimsController claimsController = loader.getController();
+//            claimsController.setClaims(claims);
+
+            Node sourceNode = viewClaimButton; // Use any node from the current scene
+
+            // Get the primary stage from the source node's scene
+            Stage primaryStage = (Stage) sourceNode.getScene().getWindow();
+
+            primaryStage.setScene(new Scene(viewClaimRoot));
+            primaryStage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+            // Handle any errors loading the admin dashboard FXML
+        }
+    }
+
+    @FXML
+    private Button deleteClaimButton;
+    public void deleteClaim()
+    {
+
+    }
+
 
 
 
@@ -53,111 +118,21 @@ public class PolicyOwnerController implements Initializable {
     {
 
     }
-     public void openPolicyOwnerDashboard(Button loginButton) {
-        // Open the Policy Owner Dashboard
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/PolicyOwnerDashBoard.fxml"));
-            Parent adminDashboardRoot = loader.load();
-
-            Node sourceNode = loginButton; // Use any node from the current scene
-
-            // Get the primary stage from the source node's scene
-            Stage primaryStage = (Stage) sourceNode.getScene().getWindow();
-
-            primaryStage.setScene(new Scene(adminDashboardRoot));
-            primaryStage.show();
-        } catch (IOException e) {
-            e.printStackTrace();
-            // Handle any errors loading the admin dashboard FXML
-        }
-    }
-
-    @FXML
-    private Button fileClaimButton;
-    public void fileClaim() {
-        // Call the getAllClaimsForPolicyOwner method from DBUtil to retrieve all claims for the policy owner
-        List<Claim> claims = DBUtil.getAllClaimsForPolicyOwner();
-
-        // Perform further actions with the retrieved claims, such as displaying them in the UI
-        for (Claim claim : claims) {
-            System.out.println("Claim ID: " + claim.getId());
-            // Display other relevant information about the claim
-        }
-    }
-
-    @FXML
-    private Button viewClaimButton;
-    public void viewClaim() {
-        // Call the getAllClaimsForPolicyOwner method from DBUtil to retrieve all claims for the policy owner
-        List<Claim> claims = DBUtil.getAllClaimsForPolicyOwner();
-
-        // Perform further actions with the retrieved claims, such as displaying them in the UI
-        for (Claim claim : claims) {
-            System.out.println("Claim ID: " + claim.getId());
-            // Display other relevant information about the claim
-        }
-    }
-    @FXML
-    private Button deleteClaimButton;
-    public void deleteClaim()
-    {
-
-    }
 
 
-
-
-    //Methods for buttons in next fxml files
-
-//    // Method to handle adding a new policy holder
-//    public void addPolicyHolder() {
-//        // Implement logic to add a new policy holder
-//    }
-//
-//    // Method to handle updating an existing policy holder
-//    public void updatePolicyHolder() {
-//        // Implement logic to update an existing policy holder
-//    }
-//
-//    // Method to handle retrieving policy holders
-//    public void retrievePolicyHolders() {
-//        // Implement logic to retrieve policy holders
-//    }
-//
-//    // Method to handle deleting a policy holder
-//    public void deletePolicyHolder() {
-//        // Implement logic to delete a policy holder
-//    }
-//
-//    // Method to handle adding a new dependent
-//    public void addDependent() {
-//        // Implement logic to add a new dependent
-//    }
-//
-//    // Method to handle updating an existing dependent
-//    public void updateDependent() {
-//        // Implement logic to update an existing dependent
-//    }
-
-    // Method to handle retrieving dependents
-    // Method to handle "Get Dependents" button
 //    @FXML
-//    private void getDependents( {
-//        // Implement logic to retrieve dependents
-//        // For example:
-//        User currentUser;
-//        List<Dependent> dependents = PolicyHolder.getDependents(currentUser);
+//    private Button fileClaimButton;
+//    public List<Claim> fileClaim() {
+//        // Call the getAllClaimsForPolicyOwner method from DBUtil to retrieve all claims for the policy owner
+//        List<Claim> claims = DBUtil.getAllClaims();
 //
-//        // Once dependents are retrieved, you can display them or perform further actions
-//        for (Dependent dependent : dependents) {
-//            System.out.println("Dependent Name: " + dependent.getName());
-//            System.out.println("Relationship: " + dependent.getRelationship());
-//            // Display other relevant information about the dependent
+//        // Perform further actions with the retrieved claims, such as displaying them in the UI
+//        for (Claim claim : claims) {
+//            System.out.println("Claim ID: " + claim.getId());
+//            // Display other relevant information about the claim
 //        }
+//        return claims;
 //    }
 
-    // Method to handle deleting a dependent
-//    public void deleteDependent() {
-//        // Implement logic to delete a dependent
-//    }
+
 }
