@@ -169,11 +169,15 @@ public class SystemAdminController implements Initializable {
         return DBUtil.calculateTotalClaimedAmount();
     }
 
-    @FXML
+  @FXML
     private MenuButton policyHolderMenuButton;
 
     @FXML
     private MenuButton policyOwnerMenuButton;
+    @FXML
+    private DatePicker datePicker;
+    @FXML
+    private Button doneAddingIC;
 
     @FXML
     private void initializeUIComponents() throws SQLException {
@@ -231,22 +235,72 @@ public class SystemAdminController implements Initializable {
         policyOwnerMenuButton.setPrefHeight(26);
         policyOwnerMenuButton.setPrefWidth(150);
 
-        DatePicker datePicker = new DatePicker();
+        datePicker = new DatePicker();
         datePicker.setLayoutX(227);
         datePicker.setLayoutY(282);
 
-        Button doneButton = new Button("ADD");
-        doneButton.setLayoutX(502);
-        doneButton.setLayoutY(168);
-        doneButton.setPrefHeight(47);
-        doneButton.setPrefWidth(106);
-        doneButton.setFont(new Font("Calibri", 18));
-        doneButton.setOnAction(event -> doneAddUser());
+        doneAddingIC = new Button("ADD");
+        doneAddingIC.setLayoutX(502);
+        doneAddingIC.setLayoutY(168);
+        doneAddingIC.setPrefHeight(47);
+        doneAddingIC.setPrefWidth(106);
+        doneAddingIC.setFont(new Font("Calibri", 18));
+        doneAddingIC.setOnAction(event -> doneAddInsuranceCard());
 
-        root.getChildren().addAll(titleLabel, logoImageView, blendImageView, cardHolderLabel, policyOwnerLabel, expireDateLabel, policyHolderMenuButton, policyOwnerMenuButton, datePicker, doneButton);
+        root.getChildren().addAll(titleLabel, logoImageView, blendImageView, cardHolderLabel, policyOwnerLabel, expireDateLabel, policyHolderMenuButton, policyOwnerMenuButton, datePicker, doneAddingIC);
 
         populateMenuButtons();
         addIc.getScene().setRoot(root);
+    }
+    // Helper method to extract ID from the text (modify based on your actual format)
+    private String extractIdFromText(String text) {
+        if (text == null || text.isEmpty()) {
+            return null; // Handle empty text
+        }
+        // Assuming the ID is at the end, separated by a space or hyphen
+        int indexOfSeparator = text.lastIndexOf(" ") + 1; // Adjust for different separators
+        if (indexOfSeparator > 0) {
+            return text.substring(indexOfSeparator);
+        } else {
+            return text; // If no separator found, return the entire text (might need adjustment)
+        }
+    }
+    private void doneAddInsuranceCard() {
+        String cardHolder = extractIdFromText(policyHolderMenuButton.getText()); // Get selected card holder
+        String policyOwner = extractIdFromText(policyOwnerMenuButton.getText()); // Get selected policy owner
+        LocalDate expireDate = datePicker.getValue(); // Get selected expiration date
+
+        // Convert LocalDate to java.util.Date (legacy approach)
+        java.util.Date utilExpireDate = java.util.Date.from(expireDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
+
+        // Convert java.util.Date to java.sql.Date
+        Date sqlExpireDate = new Date(utilExpireDate.getTime());
+
+        String cardNumber = DBUtil.generateUniqueRandomCardNumber();
+        InsuranceCard newIC = new InsuranceCard(cardNumber,cardHolder, policyOwner, sqlExpireDate);
+
+        DBUtil.addInsuranceCard(newIC);
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+
+        alert.setTitle("Add Insurance Card");
+        alert.setHeaderText("Card: "+ cardNumber + " Added Successfully!");
+        alert.setContentText(newIC.toString());
+        alert.showAndWait();
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/SystemAdminGUI/systemAdminDashboard.fxml"));
+            Parent adminDashboardRoot = loader.load();
+
+            Node sourceNode = doneAddingIC; // Use any node from the current scene
+
+            // Get the primary stage from the source node's scene
+            Stage primaryStage = (Stage) sourceNode.getScene().getWindow();
+
+            primaryStage.setScene(new Scene(adminDashboardRoot));
+            primaryStage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+            // Handle any errors loading the admin dashboard FXML
+        }
     }
 
     private void populateMenuButtons() throws SQLException {
