@@ -13,6 +13,7 @@ import models.*;
 import utils.DBUtil;
 
 import java.io.IOException;
+import java.sql.SQLException;
 
 public class LoginController {
     @FXML
@@ -38,8 +39,8 @@ public class LoginController {
         String roleName = getRoleDisplayName(user.getRole());
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle(roleName + " Login");
-        alert.setHeaderText("Login Successful");
-        alert.setContentText("You have successfully logged in as a " + roleName);
+        alert.setHeaderText("Login Successful!");
+        alert.setContentText("You have successfully logged in as a " + roleName + ".");
         alert.showAndWait();
     }
 
