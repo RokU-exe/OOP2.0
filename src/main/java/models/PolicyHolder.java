@@ -5,24 +5,31 @@ import java.util.List;
 public class PolicyHolder extends Customer {
     private List<Dependent> dependents;
 
-    // Constructors, getters, and setters
-//    public PolicyHolder(String id, String fullName, InsuranceCard insuranceCard, List<Claim> claims,
-//                        String address, String phone, String email, List<Dependent> dependents) {
-//        super(id, fullName, insuranceCard, claims, address, phone, email);
-//        this.dependents = dependents;
-//    }
-
+    // Constructors
     public PolicyHolder(String id, String fullName, String email, String password, UserRole role, InsuranceCard insuranceCard, List<Claim> claims, List<Dependent> dependents) {
         super(id, fullName, email, password, role, insuranceCard, claims);
         this.dependents = dependents;
+        this.claims = claims;
     }
 
+    // Getters and Setters for dependent and claims
     public List<Dependent> getDependents() {
         return dependents;
     }
 
     public void setDependents(List<Dependent> dependents) {
         this.dependents = dependents;
+    }
+
+    public PolicyHolder() {
+    }
+
+    public List<Claim> getClaims() {
+        return claims;
+    }
+
+    public void setClaims(List<Claim> claims) {
+        this.claims = claims;
     }
 
     public double calculateTotalCost(double rate) {
