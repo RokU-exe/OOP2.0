@@ -40,8 +40,8 @@ public class InsuranceCard {
         this.policyOwner = policyOwner;
     }
 
-    public Date getExpirationDate() {
-        return expirationDate;
+    public java.sql.Date getExpirationDate() {
+        return new java.sql.Date(expirationDate.getTime());
     }
 
     public void setExpirationDate(Date expirationDate) {
@@ -50,12 +50,11 @@ public class InsuranceCard {
 
     @Override
     public String toString() {
-        return "models.InsuranceCard{" +
-                "cardNumber='" + cardNumber + '\'' +
-                ", cardHolder='" + cardHolder + '\'' +
-                ", policyOwner='" + policyOwner + '\'' +
-                ", expirationDate=" + expirationDate +
-                '}';
+        return "InsuranceCard:" +
+                "\ncardNumber: " + cardNumber +
+                "\ncardHolder: " + cardHolder +
+                "\npolicyOwner: " + policyOwner +
+                "\nexpirationDate: " + expirationDate;
     }
 }
 
