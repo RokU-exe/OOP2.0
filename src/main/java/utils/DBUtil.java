@@ -327,7 +327,64 @@ public class DBUtil {
         return null;
     }
     
- public static List<String> getPolicyHolders() throws SQLException {
+public static String generateUniqueRandomCardNumber() {
+        int numRetries = 0; // Track retry attempts
+        int maxRetries = 10; // Set a maximum number of retries (optional)
+        String cardNumber;
+        do {
+            cardNumber = generateRandomCardNumber();
+            if (isCardNumberInUse(cardNumber)) {
+                numRetries++;
+                if (numRetries >= maxRetries) {
+                    throw new RuntimeException("Failed to generate unique card number after " + maxRetries + " attempts.");
+                }
+            }
+        } while (isCardNumberInUse(cardNumber));
+        return cardNumber;
+    }
+    public static String generateRandomCardNumber() {
+        StringBuilder sb = new StringBuilder();
+        Random random = new Random();
+        for (int i = 0; i < 10; i++) {
+            sb.append(random.nextInt(10));
+        }
+        return sb.toString();
+    }
+
+    private static boolean isCardNumberInUse(String cardNumber) {
+        String query = "SELECT COUNT(*) FROM \"InsuranceCard\" WHERE card_number = ?";
+        try (Connection conn = getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(query)) {
+            pstmt.setString(1, cardNumber);
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1) > 0; // Check if count is greater than 0 (card exists)
+            } else {
+                // Table might be empty, consider this a unique card number
+                return false;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            // Handle database errors (consider logging or throwing exception)
+            return false; // Assume failure on error
+        }
+    }
+    public static void addInsuranceCard(InsuranceCard card) {
+        String query = "INSERT INTO \"InsuranceCard\" (card_number, policy_holder_id, policy_owner_id, expire_date) VALUES (?, ?, ?, ?)";
+        try (Connection conn = getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(query)) {
+            pstmt.setString(1, card.getCardNumber()); // Use getters from the object
+            pstmt.setString(2, card.getCardHolder());
+            pstmt.setString(3, card.getPolicyOwner()); // Assuming policyOwnerId exists
+            java.util.Date utilDate = card.getExpirationDate();
+            java.sql.Date sqlDate = new java.sql.Date(utilDate.getTime());
+            pstmt.setDate(4, sqlDate);
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+    public static List<String> getPolicyHolders() throws SQLException {
         List<String> policyHolders = new ArrayList<>();
         String query = "SELECT u.id, u.full_name " +
                 "FROM users u " +
