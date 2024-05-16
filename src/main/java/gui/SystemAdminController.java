@@ -12,7 +12,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
-import models.SystemAdmin;
+import controllers.SystemAdmin;
 import models.User;
 import models.UserRole;
 import utils.DBUtil;
