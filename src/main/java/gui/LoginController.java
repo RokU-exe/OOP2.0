@@ -63,13 +63,24 @@ public class LoginController {
         }
     }
     @FXML
-    public void handleLogin() throws IOException {
+    public void handleLogin() throws IOException,  {
         User user = getUser();
         Dependent d = new Dependent();
         if (user != null) {
             switch (user.getRole()) {
-                case UserRole.POLICY_HOLDER -> {validShow();openPolicyHolderDashboard(user);}
-
+                case UserRole.POLICY_HOLDER -> {
+                    // Fetch the PolicyHolder details
+                    PolicyHolder policyHolder = DBUtil.fetchPolicyHolderDetails(user.getId());
+                    if (policyHolder != null) {
+                        validShow();
+                        PolicyHolderController controller = new PolicyHolderController(policyHolder);
+                        controller.openPolicyHolderDashboard(getLoginButton()); // Open the dashboard
+                        LoginSession.getInstance().setCurrentUser(user);
+                    } else {
+                        // Handle the case where no policy holder is found (e.g., show an error)
+                    }
+                }
+                    
                 case UserRole.DEPENDENT -> {
                     validShow();
                     Dependent dependent = new Dependent(user.getId(), user.getFullName(), user.getEmail(), user.getPassword(), UserRole.DEPENDENT, d.getInsuranceCard(), null, d.getPolicyHolderId());
@@ -103,70 +114,6 @@ public class LoginController {
             alert.showAndWait();
         }
     }
-    @FXML
-    // Open the Policy Holder Dashboard
-    private void openPolicyHolderDashboard(User user) {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/PolicyHolderDashboard.fxml"));
-            Parent adminDashboardRoot = loader.load();
-            Scene adminDashboardScene = new Scene(adminDashboardRoot);
-
-            // Get any node from the current scene
-            Node sourceNode = loginButton; // Use any node from the current scene
-
-            // Get any primary stage from the source node's scene
-            Stage primaryStage = (Stage) sourceNode.getScene().getWindow();
-
-            primaryStage.setScene(adminDashboardScene);
-            primaryStage.show();
-        } catch (IOException e) {
-            e.printStackTrace();
-            // Handle any errors loading the admin dashboard FXML
-        }
-    }
-
-    @FXML
-    //Open Dependent dashboard
-    private void openDependentDashboard(User user) {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/Dependent.fxml"));
-            Parent adminDashboardRoot = loader.load();
-            Scene adminDashboardScene = new Scene(adminDashboardRoot);
-
-            // Get any node from the current scene
-            Node sourceNode = loginButton; // Use any node from the current scene
-
-            // Get the primary stage from the source node's scene
-            Stage primaryStage = (Stage) sourceNode.getScene().getWindow();
-
-            primaryStage.setScene(adminDashboardScene);
-            primaryStage.show();
-        } catch (IOException e) {
-            e.printStackTrace();
-            // Handle any errors loading the admin dashboard FXML
-        }
-    }
-
-    // private void openPolicyOwnerDashboard(User user) {
-    //     // Open the Policy Owner Dashboard
-    //     try {
-    //         FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/systemPolicyOwnerDashboard.fxml"));
-    //         Parent policyOwnerDashboardRoot = loader.load();
-    //         Scene policyOwnerDashboardScene = new Scene(policyOwnerDashboardRoot);
-
-    //         // Get any node from the current scene
-    //         Node sourceNode = loginButton; // Use any node from the current scene
-
-    //         // Get the primary stage from the source node's scene
-    //         Stage primaryStage = (Stage) sourceNode.getScene().getWindow();
-
-    //         primaryStage.setScene(policyOwnerDashboardScene);
-    //         primaryStage.show();
-    //     } catch (IOException e) {
-    //         e.printStackTrace();
-    //         // Handle any errors loading the admin dashboard FXML
-    //     }
-    // }
 
     private void openSurveyorDashboard(User user) {
         // Open the Insurance Surveyor Dashboard
