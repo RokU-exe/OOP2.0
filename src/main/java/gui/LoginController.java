@@ -63,7 +63,7 @@ public class LoginController {
         }
     }
     @FXML
-    public void handleLogin() throws IOException,  {
+    public void handleLogin() throws IOException, SQLExeption {
         User user = getUser();
         Dependent d = new Dependent();
         if (user != null) {
