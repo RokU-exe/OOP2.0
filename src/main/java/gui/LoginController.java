@@ -80,7 +80,6 @@ public class LoginController {
                         // Handle the case where no policy holder is found (e.g., show an error)
                     }
                 }
-                    
                 case UserRole.DEPENDENT -> {
                     validShow();
                     Dependent dependent = new Dependent(user.getId(), user.getFullName(), user.getEmail(), user.getPassword(), UserRole.DEPENDENT, d.getInsuranceCard(), null, d.getPolicyHolderId());
@@ -88,7 +87,6 @@ public class LoginController {
                     controller.openDependentDashboard(getLoginButton());
                     LoginSession.getInstance().setCurrentUser(user);
                 }
-
                 case UserRole.POLICY_OWNER -> {validShow();
                     PolicyOwner po = new PolicyOwner(user.getId(), user.getFullName(), user.getEmail(), user.getPassword(), UserRole.DEPENDENT);
                     PolicyOwnerController controller = new PolicyOwnerController(po);
@@ -96,7 +94,6 @@ public class LoginController {
                 }
                 case UserRole.INSURANCE_SURVEYOR -> {validShow();openSurveyorDashboard(user);}
                 case UserRole.INSURANCE_MANAGER ->{validShow(); openManagerDashboard(user);}
-
                 case UserRole.SYSTEM_ADMIN -> {
                     validShow();
                     SystemAdmin systemAdmin = new SystemAdmin(user.getId(), user.getFullName(), user.getEmail(), user.getPassword(), UserRole.SYSTEM_ADMIN);
@@ -104,8 +101,6 @@ public class LoginController {
                     controller.openAdminDashboard(getLoginButton());
                 }
             }
-
-
         } else {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Login Failed");
