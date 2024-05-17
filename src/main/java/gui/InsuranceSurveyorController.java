@@ -10,6 +10,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import models.Claim;
@@ -131,10 +132,14 @@ public class InsuranceSurveyorController implements Initializable {
     //PART OF FILTER CLAIM FUNCTION
     @FXML
     private Button filterClaimOption;
-    public  Button getFilterClaimOption() {
-        return filterClaimOption;
-    }
-
+    @FXML
+    private MenuButton statusSelection;
+    @FXML
+    private MenuButton policyHolderSelection;
+    @FXML
+    private MenuButton amountRangeSelection;
+    @FXML
+    Button findButton;
 
     private ClaimStatus getStatus(String status) {
         if (status.equals("NEW")) {
@@ -152,50 +157,30 @@ public class InsuranceSurveyorController implements Initializable {
         }
     }
 
-    //MenuButton for selecting status
-    @FXML
-    private MenuButton statusSelection;
-    @FXML
-    private void selectStatus(ActionEvent event) {
-        MenuItem menuItem = (MenuItem) event.getSource();
-        String statusName = menuItem.getText();
-
-        // Set the selected role as the text of the MenuButton
-        statusSelection.setText(statusName);
-    }
-
-    //MenuButton for selecting policy holder name
-    @FXML
-    private MenuButton policyHolderSelection;
-    public  MenuButton getPolicyHolderSelection() {
-        return policyHolderSelection;
-    }
 
     public void initialize() throws SQLException {
+//        String st = null;
+//        ClaimStatus statusOption = getStatus(st);
         List<String> options = DBUtil.selectPolicyHolderName();
         if (options != null) {
-                for (String name : options) {
-                    MenuItem menuItem = new MenuItem(name);
-                    menuItem.setOnAction(event -> policyHolderSelection.setText(name));
-                    policyHolderSelection.getItems().add(menuItem);
-                }
+            for (String name : options) {
+                MenuItem menuItem = new MenuItem(name);
+                menuItem.setOnAction(event -> policyHolderSelection.setText(name));
+                policyHolderSelection.getItems().add(menuItem);
+            }
         }
+
+//        if (statusOption != null) {
+//            for (String statusOpt : statusOption) {
+//                MenuItem menuItem = new MenuItem(statusOpt);
+//                menuItem.setOnAction(event -> statusSelection.setText(statusOpt));
+//                statusSelection.getItems().add(menuItem);
+//            }
+//        }
     }
 
     //MenuButton for selecting claim amount range
-    @FXML
-    private MenuButton amountRangeSelection;
-    @FXML
-    private void selectAmountRange(ActionEvent event) {
-        MenuItem menuItem = (MenuItem) event.getSource();
-        String amountRange = menuItem.getText();
 
-        // Set the selected role as the text of the MenuButton
-        amountRangeSelection.setText(amountRange);
-    }
-
-    @FXML
-    Button findButton;
     public void createFilterClaimFXML() throws SQLException {
         // Create root pane
         AnchorPane root = new AnchorPane();
@@ -204,32 +189,37 @@ public class InsuranceSurveyorController implements Initializable {
         // Create and configure "Filter Claim" label
         Label filterClaimLabel = new Label("Filter Claim");
         filterClaimLabel.setLayoutX(246);
-        filterClaimLabel.setTextFill(javafx.scene.paint.Color.web("#ec1919"));
+        filterClaimLabel.setTextFill(Color.web("#ec1919"));
         filterClaimLabel.setFont(new Font("Calibri Bold", 24));
 
         // Create and configure "Status" label
         Label statusLabel = new Label("1. Status");
         statusLabel.setLayoutX(38);
         statusLabel.setLayoutY(73);
-        statusLabel.setTextFill(javafx.scene.paint.Color.web("#b71212"));
+        statusLabel.setTextFill(Color.web("#b71212"));
         statusLabel.setFont(new Font(20));
 
         // Create and configure "Status" menu button
         statusSelection = new MenuButton("Select Status");
         statusSelection.setLayoutX(278);
         statusSelection.setLayoutY(72);
-        statusSelection.getItems().addAll(
-                new MenuItem("NEW"),
-                new MenuItem("PROCESSING"),
-                new MenuItem("APPROVED"),
-                new MenuItem("REJECTED")
-        );
+        MenuItem newStatus = new MenuItem("NEW");
+        MenuItem processingStatus = new MenuItem("PROCESSING");
+        MenuItem approvedStatus = new MenuItem("APPROVED");
+        MenuItem rejectedStatus = new MenuItem("REJECTED");
+        statusSelection.getItems().addAll(newStatus, processingStatus, approvedStatus, rejectedStatus);
+
+        // Set action listeners for status menu items
+        newStatus.setOnAction(event -> statusSelection.setText(newStatus.getText()));
+        processingStatus.setOnAction(event -> statusSelection.setText(processingStatus.getText()));
+        approvedStatus.setOnAction(event -> statusSelection.setText(approvedStatus.getText()));
+        rejectedStatus.setOnAction(event -> statusSelection.setText(rejectedStatus.getText()));
 
         // Create and configure "Policy Holder" label
         Label policyHolderLabel = new Label("2. Policy Holder");
         policyHolderLabel.setLayoutX(38);
         policyHolderLabel.setLayoutY(159);
-        policyHolderLabel.setTextFill(javafx.scene.paint.Color.web("#b71212"));
+        policyHolderLabel.setTextFill(Color.web("#b71212"));
         policyHolderLabel.setFont(new Font(20));
 
         // Create and configure "Policy Holder" menu button
@@ -241,18 +231,22 @@ public class InsuranceSurveyorController implements Initializable {
         Label amountRangeLabel = new Label("3. Claim Amount Range");
         amountRangeLabel.setLayoutX(38);
         amountRangeLabel.setLayoutY(242);
-        amountRangeLabel.setTextFill(javafx.scene.paint.Color.web("#b71212"));
+        amountRangeLabel.setTextFill(Color.web("#b71212"));
         amountRangeLabel.setFont(new Font(20));
 
         // Create and configure "Claim Amount Range" menu button
-        amountRangeSelection = new MenuButton("Select Amount Range");
-        amountRangeSelection.setLayoutX(277);
-        amountRangeSelection.setLayoutY(241);
-        amountRangeSelection.getItems().addAll(
-                new MenuItem("Under 1000"),
-                new MenuItem("1000 - 2000"),
-                new MenuItem("Above 2000")
-        );
+//        amountRangeSelection = new MenuButton("Select Amount Range");
+//        amountRangeSelection.setLayoutX(277);
+//        amountRangeSelection.setLayoutY(241);
+//        MenuItem under1000 = new MenuItem("Under 1000");
+//        MenuItem between1000And2000 = new MenuItem("1000 - 2000");
+//        MenuItem above2000 = new MenuItem("Above 2000");
+//        amountRangeSelection.getItems().addAll(under1000, between1000And2000, above2000);
+//
+//        // Set action listeners for amount range menu items
+//        under1000.setOnAction(event -> amountRangeSelection.setText(under1000.getText()));
+//        between1000And2000.setOnAction(event -> amountRangeSelection.setText(between1000And2000.getText()));
+//        above2000.setOnAction(event -> amountRangeSelection.setText(above2000.getText()));
 
         // Create and configure "Find" button
         findButton = new Button("Find");
@@ -267,6 +261,17 @@ public class InsuranceSurveyorController implements Initializable {
         });
 
         // Add all components to the root pane
+//        root.getChildren().addAll(
+//                filterClaimLabel,
+//                statusLabel,
+//                statusSelection,
+//                policyHolderLabel,
+//                policyHolderSelection,
+//                amountRangeLabel,
+//                amountRangeSelection,
+//                findButton
+//        );
+
         root.getChildren().addAll(
                 filterClaimLabel,
                 statusLabel,
@@ -274,13 +279,13 @@ public class InsuranceSurveyorController implements Initializable {
                 policyHolderLabel,
                 policyHolderSelection,
                 amountRangeLabel,
-                amountRangeSelection,
+
                 findButton
         );
         initialize();
         filterClaimOption.getScene().setRoot(root);
     }
-    
+
 
     private String extractIdFromText(String text) {
         if (text == null || text.isEmpty()) {
@@ -295,30 +300,40 @@ public class InsuranceSurveyorController implements Initializable {
         }
     }
 
-   //Method to retrieve filter claim
-   private void findFilterClaim() throws SQLException {
-       String statusSelect = extractIdFromText(statusSelection.getText()); // Get selected card holder
-       String policyHolderSelect = extractIdFromText(policyHolderSelection.getText());
-       String amountRangeSelect = extractIdFromText(amountRangeSelection.getText());
+    //Method to retrieve filter claim
+    private void findFilterClaim() throws SQLException {
+        String statusSelect = extractIdFromText(statusSelection.getText()); // Get selected card holder
+//        ClaimStatus sta = getStatus(statusSelect);
+        String policyHolderSelect = extractIdFromText(policyHolderSelection.getText());
+//        String amountRangeSelect = extractIdFromText(amountRangeSelection.getText());
 
+//        List<String> filteredClaims = DBUtil.surveyorGetFilterClaim(statusSelect, policyHolderSelect, amountRangeSelect);
+        // Do something with the filteredClaims, such as displaying them in the UI or processing them further
+        List<String> filterClaim = DBUtil.surveyorGetFilterClaim(statusSelect, policyHolderSelect/*, amountRangeSelect*/);
+        if (filterClaim != null) {
+            // Display the claim information
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Claim Information");
+            alert.setHeaderText("Claim Retrieved Successfully");
+            alert.setContentText(filterClaim.toString());
+            alert.showAndWait();
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/InsuranceSurveyorGUI/ViewFilterClaim.fxml"));
+            Parent adminDashboardRoot = loader.load();
 
-       DBUtil.surveyorGetFilterClaim(statusSelect, policyHolderSelect, amountRangeSelect);
-       try {
-           FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/InsuranceSurveyorGUI/ViewFilterClaim.fxml"));
-           Parent adminDashboardRoot = loader.load();
+            Node sourceNode = findButton; // Use any node from the current scene
 
-           Node sourceNode = findButton; // Use any node from the current scene
+            // Get the primary stage from the source node's scene
+            Stage primaryStage = (Stage) sourceNode.getScene().getWindow();
 
-           // Get the primary stage from the source node's scene
-           Stage primaryStage = (Stage) sourceNode.getScene().getWindow();
-
-           primaryStage.setScene(new Scene(adminDashboardRoot));
-           primaryStage.show();
-       } catch (IOException e) {
-           e.printStackTrace();
-           // Handle any errors loading the admin dashboard FXML
-       }
-   }
+            primaryStage.setScene(new Scene(adminDashboardRoot));
+            primaryStage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+            // Handle any errors loading the admin dashboard FXML
+        }
+    }
+        }
 
 
 
