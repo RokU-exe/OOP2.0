@@ -702,4 +702,101 @@ public static String generateUniqueRandomCardNumber() {
 
         return user;
     }
+
+     //Use to filter claim (INSURANCE SURVEYOR)
+    public static List<String> surveyorGetFilterClaim(String status, String policyHolderName /*, String amountRange*/) throws SQLException {
+        List<String> filterClaim = new ArrayList<>();
+        // Base query
+        String query = "SELECT * FROM claims WHERE 1=1";
+
+        // Dynamically build the query
+        switch (status){
+            case "NEW":
+                query += " AND \"status\" = 'NEW'";
+                break;
+            case "PROCESSING":
+                query += " AND \"status\" = 'PROCESSING'";
+                break;
+            case "APPROVED":
+                query += " AND \"status\" = 'APPROVED'";
+                break;
+            case "REJECTED":
+                query += " AND \"status\" = 'REJECTED'";
+                break;
+            default:
+                throw new IllegalArgumentException("Invalid status: " + status);
+        }
+
+//        if (policyHolderName != null && !policyHolderName.isEmpty()) {
+//            query += " AND policyHolder_name = ?";
+//        }
+//
+//        // Check if amountRange is not empty or null
+//        if (amountRange == null || amountRange.isEmpty()) {
+//            throw new IllegalArgumentException("Amount range cannot be empty or null");
+//        }
+//
+//        if(amountRange.equals("Under 1000")){
+//            query += " AND \"claim_amount\" < 1000.0";
+//        } else if (amountRange.equals("1000 - 2000")) {
+//            query += " AND \"claim_amount\" BETWEEN 1000.0 AND 2000.0";
+//        } else if (amountRange.equals("Above 2000")) {
+//            query += " AND \"claim_amount\" > 2000.0";
+//        }else{
+//            throw new IllegalArgumentException("Invalid amount range: ");
+//        }
+
+//        switch (amountRange){
+//            case "Under 1000":
+//                query += " AND claim_amount < 1000.0";
+//                break;
+//            case "1000 - 2000":
+//                query += " AND claim_amount BETWEEN 1000.0 AND 2000.0";
+//                break;
+//            case "Above 2000":
+//                query += " AND claim_amount > 2000.0";
+//                break;
+//            default:
+//                throw new IllegalArgumentException("Invalid amount range: ");
+//        }
+
+        try (Connection conn = getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(query);
+             ResultSet rs = pstmt.executeQuery()) {
+            while (rs.next()) {
+                filterClaim.add(String.valueOf(new Claim(
+                        rs.getString("id"),
+                        rs.getDate("claim_date"),
+                        rs.getString("insured_person"),
+                        rs.getString("card_number"),
+                        rs.getDate("exam_date"),
+                        null,
+                        rs.getDouble("claim_amount"),
+                        ClaimStatus.valueOf(rs.getString("status")),
+                        rs.getString("receiver_bank"),
+                        rs.getString("receiver_name"),
+                        rs.getString("receiver_number"),
+                        rs.getString("policyHolder_name")
+                )));
+            }
+        }
+        return filterClaim;
+    }
+
+    //Use to load policy holder name in table for function 'Filter Claim' (INSURANCE SURVEYOR)
+    public static List<String> selectPolicyHolderName() throws SQLException {
+        List<String> policyHolders = new ArrayList<>();
+        String query = "SELECT \"policyHolder_name\" FROM claims";
+        try (Connection conn = getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(query);
+             ResultSet rs = pstmt.executeQuery()) {
+            while (rs.next()) {
+                String fullName = rs.getString("policyHolder_name");
+                policyHolders.add(fullName);
+            }
+        }
+        return policyHolders;
+    }
+
+    
 }
