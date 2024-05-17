@@ -5,6 +5,7 @@ import models.*;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class DBUtil {
     private static final String URL = "jdbc:postgresql://aws-0-ap-southeast-1.pooler.supabase.com:5432/postgres";
@@ -428,23 +429,6 @@ public static String generateUniqueRandomCardNumber() {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-    }
-    public static List<String> getPolicyHolders() throws SQLException {
-        List<String> policyHolders = new ArrayList<>();
-        String query = "SELECT u.id, u.full_name " +
-                "FROM users u " +
-                "LEFT JOIN \"InsuranceCard\" ic ON u.id = ic.policy_holder_id " +
-                "WHERE ic.policy_holder_id IS NULL AND u.role = 'POLICY_HOLDER'";
-        try (Connection conn = getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(query);
-             ResultSet rs = pstmt.executeQuery()) {
-            while (rs.next()) {
-                String fullName = rs.getString("full_name");
-                String id = rs.getString("id");
-                policyHolders.add(fullName + " - " + id);
-            }
-        }
-        return policyHolders;
     }
 
     // Method to retrieve policy owners from the database
