@@ -26,7 +26,7 @@
             <Font name="Calibri" size="14.0" />
          </font>
       </Button>
-      <Button layoutX="355.0" layoutY="101.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="214.0" text="Read Policy Holder">
+      <Button fx:id="read" layoutX="355.0" layoutY="101.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="214.0" text="Read Policy Holder" onAction="#readPolicyHolder">
          <font>
             <Font name="Calibri" size="14.0" />
          </font>

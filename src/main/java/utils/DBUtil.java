@@ -295,6 +295,57 @@ public class DBUtil {
             e.printStackTrace();
         }
     }
+    // Method to retrieve Dependent from the database
+    public static List<String> getDependent() throws SQLException {
+        List<String> dependent = new ArrayList<>();
+        String query = "SELECT u.id, u.full_name " +
+                "FROM users u " +
+                "WHERE u.role = 'DEPENDENT'";
+        try (Connection conn = getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(query);
+             ResultSet rs = pstmt.executeQuery()) {
+            while (rs.next()) {
+                String fullName = rs.getString("full_name");
+                String id = rs.getString("id");
+                dependent.add(fullName + " - " + id);
+            }
+        }
+        return dependent;
+    }
+    // Method to retrieve Insurance Surveyor from the database
+    public static List<String> getInsuranceSurveyor() throws SQLException {
+        List<String> insuranceSurveyor = new ArrayList<>();
+        String query = "SELECT u.id, u.full_name " +
+                "FROM users u " +
+                "WHERE u.role = 'INSURANCE_SURVEYOR'";
+        try (Connection conn = getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(query);
+             ResultSet rs = pstmt.executeQuery()) {
+            while (rs.next()) {
+                String fullName = rs.getString("full_name");
+                String id = rs.getString("id");
+                insuranceSurveyor.add(fullName + " - " + id);
+            }
+        }
+        return insuranceSurveyor;
+    }
+    // Method to retrieve Insurance Manager from the database
+    public static List<String> getInsuranceManager() throws SQLException {
+        List<String> insuranceManager = new ArrayList<>();
+        String query = "SELECT u.id, u.full_name " +
+                "FROM users u " +
+                "WHERE u.role = 'INSURANCE_MANAGER'";
+        try (Connection conn = getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(query);
+             ResultSet rs = pstmt.executeQuery()) {
+            while (rs.next()) {
+                String fullName = rs.getString("full_name");
+                String id = rs.getString("id");
+                insuranceManager.add(fullName + " - " + id);
+            }
+        }
+        return insuranceManager;
+    }
     public static List<String> getPolicyHolders() throws SQLException {
         List<String> policyHolders = new ArrayList<>();
         String query = "SELECT u.id, u.full_name " +
@@ -329,6 +380,46 @@ public class DBUtil {
             }
         }
         return policyOwners;
+    }
+    public static List<String> getPH() throws SQLException {
+        List<String> policyHolders = new ArrayList<>();
+        String query = "SELECT u.id, u.full_name " +
+                "FROM users u " +
+                "WHERE u.role = 'POLICY_HOLDER'";
+        try (Connection conn = getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(query);
+             ResultSet rs = pstmt.executeQuery()) {
+            while (rs.next()) {
+                String fullName = rs.getString("full_name");
+                String id = rs.getString("id");
+                policyHolders.add(fullName + " - " + id);
+            }
+        }
+        return policyHolders;
+    }
+    public static User getUser(String id) {
+        User user = new User(); // Initialize user to null
+
+        String query = "SELECT * FROM users WHERE users.id = ?"; // Use prepared statement for security
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setString(1, id); // Set the id parameter
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    user = new User(  // Create a User object with retrieved values
+                            rs.getString("id"),
+                            rs.getString("full_name"),
+                            rs.getString("email"),
+                            rs.getString("password"),
+                            UserRole.valueOf(rs.getString("role"))
+                    );
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return user;
     }
 
 }
