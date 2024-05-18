@@ -135,28 +135,6 @@ public class DBUtil {
         return customers;
     }
 
-    public static PolicyHolder fetchPolicyHolderDetails(String userId) throws SQLException {
-        String query = "SELECT * FROM users WHERE id = ?";
-
-        try (Connection conn = getConnection();
-             PreparedStatement preparedStatement = conn.prepareStatement(query)) {
-
-            preparedStatement.setString(1, userId);
-
-            try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                if (resultSet.next()) {
-                    // Map ResultSet to PolicyHolder object
-                    PolicyHolder policyHolder = new PolicyHolder();
-                    policyHolder.setId(resultSet.getString("id"));
-                    policyHolder.setFullName(resultSet.getString("full_name"));
-                    // ... set other properties from the ResultSet
-                    return policyHolder;
-                }
-            }
-        }
-        return null; // PolicyHolder not found
-    }
-
     // Get all Policy Holders (Bao Do)
     public static List<String> getPolicyHolders() throws SQLException {
         List<String> policyHolders = new ArrayList<>();
@@ -189,13 +167,11 @@ public class DBUtil {
                         rs.getString("insured_person"),
                         rs.getString("card_number"),
                         rs.getDate("exam_date"),
-                        null,
                         rs.getDouble("claim_amount"),
                         ClaimStatus.valueOf(rs.getString("status")),
                         rs.getString("receiver_bank"),
                         rs.getString("receiver_name"),
-                        rs.getString("receiver_number"),
-                        rs.getString("policyHolder_name")
+                        rs.getString("receiver_number")
                 ));
             }
         } catch (SQLException e) {
@@ -241,14 +217,18 @@ public class DBUtil {
 
         return totalClaimedAmount;
     }
+
     public static List<Claim> getAllClaims() {
         List<Claim> claims = new ArrayList<>();
         String query = "SELECT * FROM claims";
 
-        try (Connection connection = connect(); Statement statement = connection.createStatement(); ResultSet resultSet = statement.executeQuery(query)) {
+        try (Connection connection = getConnection();
+             Statement statement = connection.createStatement();
+             ResultSet resultSet = statement.executeQuery(query)) {
+
             while (resultSet.next()) {
                 Claim claim = new Claim();
-                claim.setId(String.valueOf(resultSet.getInt("id")));
+                claim.setId(resultSet.getString("id"));
                 claim.setClaimDate(resultSet.getDate("claim_date"));
                 claim.setInsuredPerson(resultSet.getString("insured_person"));
                 claim.setCardNumber(resultSet.getString("card_number"));
@@ -258,15 +238,16 @@ public class DBUtil {
                 claim.setReceiverBank(resultSet.getString("receiver_bank"));
                 claim.setReceiverName(resultSet.getString("receiver_name"));
                 claim.setReceiverNumber(resultSet.getString("receiver_number"));
-                claim.setCreatedAt(resultSet.getTimestamp("created_at"));
                 claims.add(claim);
             }
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
         return claims;
     }
+
     public static void approveClaim(String claimId) {
         String query = "UPDATE claims SET status = 'APPROVED' WHERE id = ?";
         try (Connection conn = getConnection();
@@ -327,7 +308,8 @@ public class DBUtil {
         }
         return surveyors;
     }
-     public static String getPrefixByUserRole(UserRole role) {
+
+    public static String getPrefixByUserRole(UserRole role) {
         switch (role) {
             case POLICY_HOLDER:
                 return "h";
@@ -344,7 +326,7 @@ public class DBUtil {
         }
     }
 
-  public static String getLargestIdByUserRole(UserRole role) {
+    public static String getLargestIdByUserRole(UserRole role) {
         String prefix = getPrefixByUserRole(role);
         String query = "SELECT MAX(CAST(SUBSTRING(id FROM LENGTH(?) + 1) AS INTEGER)) AS max_id " +
                 "FROM users " +
@@ -374,8 +356,8 @@ public class DBUtil {
         }
         return null;
     }
-    
-public static String generateUniqueRandomCardNumber() {
+
+    public static String generateUniqueRandomCardNumber() {
         int numRetries = 0; // Track retry attempts
         int maxRetries = 10; // Set a maximum number of retries (optional)
         String cardNumber;
@@ -390,6 +372,7 @@ public static String generateUniqueRandomCardNumber() {
         } while (isCardNumberInUse(cardNumber));
         return cardNumber;
     }
+
     public static String generateRandomCardNumber() {
         StringBuilder sb = new StringBuilder();
         Random random = new Random();
@@ -417,6 +400,7 @@ public static String generateUniqueRandomCardNumber() {
             return false; // Assume failure on error
         }
     }
+
     public static void addInsuranceCard(InsuranceCard card) {
         String query = "INSERT INTO \"InsuranceCard\" (card_number, policy_holder_id, policy_owner_id, expire_date) VALUES (?, ?, ?, ?)";
         try (Connection conn = getConnection();
@@ -432,7 +416,8 @@ public static String generateUniqueRandomCardNumber() {
             e.printStackTrace();
         }
     }
-     // Method to retrieve Dependent from the database
+
+    // Method to retrieve Dependent from the database
     public static List<String> getDependent() throws SQLException {
         List<String> dependent = new ArrayList<>();
         String query = "SELECT u.id, u.full_name " +
@@ -449,6 +434,7 @@ public static String generateUniqueRandomCardNumber() {
         }
         return dependent;
     }
+
     // Method to retrieve Insurance Surveyor from the database
     public static List<String> getInsuranceSurveyor() throws SQLException {
         List<String> insuranceSurveyor = new ArrayList<>();
@@ -466,6 +452,7 @@ public static String generateUniqueRandomCardNumber() {
         }
         return insuranceSurveyor;
     }
+
     // Method to retrieve Insurance Manager from the database
     public static List<String> getInsuranceManager() throws SQLException {
         List<String> insuranceManager = new ArrayList<>();
@@ -502,7 +489,7 @@ public static String generateUniqueRandomCardNumber() {
         return policyOwners;
     }
 
-    //get claim for PO
+    // Get claims for Policy Owner
     public static List<Claim> getClaimsForPolicyOwner() throws SQLException {
         List<Claim> claims = new ArrayList<>();
         Connection connection = null;
@@ -510,12 +497,23 @@ public static String generateUniqueRandomCardNumber() {
         ResultSet resultSet = null;
         try {
             connection = getConnection();
-            String query = "SELECT claims.* FROM claims JOIN insurancecard i ON claims.cardNumber = i.cardNumber " +
-                    "JOIN users u ON i.policyHolderId = u.id";
+            String query = "SELECT claims.* FROM claims JOIN insurancecard i ON claims.card_number = i.card_number " +
+                    "JOIN users u ON i.policy_holder_id = u.id";
             statement = connection.prepareStatement(query);
             resultSet = statement.executeQuery();
-            if (!resultSet.next()) {
-                System.out.println("No claims found.");
+            while (resultSet.next()) {
+                claims.add(new Claim(
+                        resultSet.getString("id"),
+                        resultSet.getDate("claim_date"),
+                        resultSet.getString("insured_person"),
+                        resultSet.getString("card_number"),
+                        resultSet.getDate("exam_date"),
+                        resultSet.getDouble("claim_amount"),
+                        ClaimStatus.valueOf(resultSet.getString("status")),
+                        resultSet.getString("receiver_bank"),
+                        resultSet.getString("receiver_name"),
+                        resultSet.getString("receiver_number")
+                ));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -535,9 +533,8 @@ public static String generateUniqueRandomCardNumber() {
         return claims;
     }
 
-
-    //Use to review claim (Insurance Surveyor) before decide to propose to manager or require more information
-    public static List<Claim> surveyorReviewClaim(){
+    // Use to review claim (Insurance Surveyor) before deciding to propose to manager or require more information
+    public static List<Claim> surveyorReviewClaim() {
         List<Claim> claims = new ArrayList<>();
         String query = "SELECT * FROM claims WHERE status = 'NEW'";
         try (Connection conn = getConnection();
@@ -550,13 +547,11 @@ public static String generateUniqueRandomCardNumber() {
                         rs.getString("insured_person"),
                         rs.getString("card_number"),
                         rs.getDate("exam_date"),
-                        null,
                         rs.getDouble("claim_amount"),
                         ClaimStatus.valueOf(rs.getString("status")),
                         rs.getString("receiver_bank"),
                         rs.getString("receiver_name"),
-                        rs.getString("receiver_number"),
-                        rs.getString("policyHolder_name")
+                        rs.getString("receiver_number")
                 ));
             }
         } catch (SQLException e) {
@@ -566,8 +561,8 @@ public static String generateUniqueRandomCardNumber() {
         return claims;
     }
 
-    //Use to propose claim to manager (Insurance Surveyor) STILL ERROR NHA :)))))
-    public static List<Claim> surveyorProposeToManager(){
+    // Use to propose claim to manager (Insurance Surveyor)
+    public static List<Claim> surveyorProposeToManager() {
         List<Claim> claims = new ArrayList<>();
         String query = "UPDATE claims SET status = 'PROCESSING' WHERE status = 'NEW'";
         try (Connection conn = getConnection();
@@ -580,13 +575,11 @@ public static String generateUniqueRandomCardNumber() {
                         rs.getString("insured_person"),
                         rs.getString("card_number"),
                         rs.getDate("exam_date"),
-                        null,
                         rs.getDouble("claim_amount"),
                         ClaimStatus.valueOf(rs.getString("status")),
                         rs.getString("receiver_bank"),
                         rs.getString("receiver_name"),
-                        rs.getString("receiver_number"),
-                        rs.getString("policyHolder_name")
+                        rs.getString("receiver_number")
                 ));
             }
         } catch (SQLException e) {
@@ -594,9 +587,10 @@ public static String generateUniqueRandomCardNumber() {
         }
         return claims;
     }
+
     public static void approveClaim(int claimId) {
         try (Connection conn = connect()) {
-            String sql = "UPDATE claims SET status = 'approved' WHERE id = ?";
+            String sql = "UPDATE claims SET status = 'APPROVED' WHERE id = ?";
             PreparedStatement pstmt = conn.prepareStatement(sql);
             pstmt.setInt(1, claimId);
             pstmt.executeUpdate();
@@ -607,7 +601,7 @@ public static String generateUniqueRandomCardNumber() {
 
     public static void rejectClaim(int claimId) {
         try (Connection conn = connect()) {
-            String sql = "UPDATE claims SET status = 'rejected' WHERE id = ?";
+            String sql = "UPDATE claims SET status = 'REJECTED' WHERE id = ?";
             PreparedStatement pstmt = conn.prepareStatement(sql);
             pstmt.setInt(1, claimId);
             pstmt.executeUpdate();
@@ -626,6 +620,7 @@ public static String generateUniqueRandomCardNumber() {
         }
         return conn;
     }
+
     public static Customer getCustomerById(int id) {
         String sql = "SELECT * FROM customers WHERE id = ?";
         try (Connection conn = connect();
@@ -664,7 +659,8 @@ public static String generateUniqueRandomCardNumber() {
         }
         return claims;
     }
-        public static List<String> getPH() throws SQLException {
+
+    public static List<String> getPH() throws SQLException {
         List<String> policyHolders = new ArrayList<>();
         String query = "SELECT u.id, u.full_name " +
                 "FROM users u " +
@@ -680,6 +676,7 @@ public static String generateUniqueRandomCardNumber() {
         }
         return policyHolders;
     }
+
     public static User getUser(String id) {
         User user = new User(); // Initialize user to null
 
@@ -705,14 +702,14 @@ public static String generateUniqueRandomCardNumber() {
         return user;
     }
 
-     //Use to filter claim (INSURANCE SURVEYOR)
+    // Use to filter claim (INSURANCE SURVEYOR)
     public static List<String> surveyorGetFilterClaim(String status, String policyHolderName /*, String amountRange*/) throws SQLException {
         List<String> filterClaim = new ArrayList<>();
         // Base query
         String query = "SELECT * FROM claims WHERE 1=1";
 
         // Dynamically build the query
-        switch (status){
+        switch (status) {
             case "NEW":
                 query += " AND \"status\" = 'NEW'";
                 break;
@@ -729,39 +726,6 @@ public static String generateUniqueRandomCardNumber() {
                 throw new IllegalArgumentException("Invalid status: " + status);
         }
 
-//        if (policyHolderName != null && !policyHolderName.isEmpty()) {
-//            query += " AND policyHolder_name = ?";
-//        }
-//
-//        // Check if amountRange is not empty or null
-//        if (amountRange == null || amountRange.isEmpty()) {
-//            throw new IllegalArgumentException("Amount range cannot be empty or null");
-//        }
-//
-//        if(amountRange.equals("Under 1000")){
-//            query += " AND \"claim_amount\" < 1000.0";
-//        } else if (amountRange.equals("1000 - 2000")) {
-//            query += " AND \"claim_amount\" BETWEEN 1000.0 AND 2000.0";
-//        } else if (amountRange.equals("Above 2000")) {
-//            query += " AND \"claim_amount\" > 2000.0";
-//        }else{
-//            throw new IllegalArgumentException("Invalid amount range: ");
-//        }
-
-//        switch (amountRange){
-//            case "Under 1000":
-//                query += " AND claim_amount < 1000.0";
-//                break;
-//            case "1000 - 2000":
-//                query += " AND claim_amount BETWEEN 1000.0 AND 2000.0";
-//                break;
-//            case "Above 2000":
-//                query += " AND claim_amount > 2000.0";
-//                break;
-//            default:
-//                throw new IllegalArgumentException("Invalid amount range: ");
-//        }
-
         try (Connection conn = getConnection();
              PreparedStatement pstmt = conn.prepareStatement(query);
              ResultSet rs = pstmt.executeQuery()) {
@@ -772,33 +736,29 @@ public static String generateUniqueRandomCardNumber() {
                         rs.getString("insured_person"),
                         rs.getString("card_number"),
                         rs.getDate("exam_date"),
-                        null,
                         rs.getDouble("claim_amount"),
                         ClaimStatus.valueOf(rs.getString("status")),
                         rs.getString("receiver_bank"),
                         rs.getString("receiver_name"),
-                        rs.getString("receiver_number"),
-                        rs.getString("policyHolder_name")
+                        rs.getString("receiver_number")
                 )));
             }
         }
         return filterClaim;
     }
 
-    //Use to load policy holder name in table for function 'Filter Claim' (INSURANCE SURVEYOR)
+    // Use to load policy holder name in table for function 'Filter Claim' (INSURANCE SURVEYOR)
     public static List<String> selectPolicyHolderName() throws SQLException {
         List<String> policyHolders = new ArrayList<>();
-        String query = "SELECT \"policyHolder_name\" FROM claims";
+        String query = "SELECT \"policy_holder_name\" FROM claims";
         try (Connection conn = getConnection();
              PreparedStatement pstmt = conn.prepareStatement(query);
              ResultSet rs = pstmt.executeQuery()) {
             while (rs.next()) {
-                String fullName = rs.getString("policyHolder_name");
+                String fullName = rs.getString("policy_holder_name");
                 policyHolders.add(fullName);
             }
         }
         return policyHolders;
     }
-
-    
 }

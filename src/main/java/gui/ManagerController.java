@@ -46,13 +46,24 @@ public class ManagerController implements Initializable {
     @FXML
     private VBox contentArea;
 
-    @FXML
-    private void initialize() {
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
         claimIdColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
-        policyHolderColumn.setCellValueFactory(new PropertyValueFactory<>("policyHolderName"));
+        policyHolderColumn.setCellValueFactory(new PropertyValueFactory<>("insuredPerson"));
         statusColumn.setCellValueFactory(new PropertyValueFactory<>("status"));
 
         claimsTable.setItems(claimsData);
+        loadClaimsData();
+    }
+
+    private void loadClaimsData() {
+        List<Claim> claims = DBUtil.getAllClaims();
+        System.out.println("Loaded claims: " + claims.size()); // Debug statement
+        claimsData.setAll(claims);
+        System.out.println("Claims added to ObservableList."); // Debug statement
+        for (Claim claim : claims) {
+            System.out.println(claim); // Print each claim to verify its content
+        }
     }
 
     @FXML
@@ -67,7 +78,7 @@ public class ManagerController implements Initializable {
         StringBuilder claimsInfo = new StringBuilder("Claims:\n\n");
         for (Claim claim : claims) {
             claimsInfo.append(String.format("ID: %d, Policy Holder: %s, Status: %s\n",
-                    claim.getId(), claim.getPolicyHolderName(), claim.getStatus()));
+                    claim.getId(), claim.getInsuredPerson(), claim.getStatus()));
         }
         contentLabel.setText(claimsInfo.toString());
     }
@@ -152,19 +163,5 @@ public class ManagerController implements Initializable {
         alert.setHeaderText(null);
         alert.setContentText(content);
         alert.showAndWait();
-    }
-    @Override
-    public void initialize(URL location, ResourceBundle resources) {
-        claimIdColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
-        policyHolderColumn.setCellValueFactory(new PropertyValueFactory<>("insuredPerson"));
-        statusColumn.setCellValueFactory(new PropertyValueFactory<>("status"));
-
-        claimsTable.setItems(claimsData);
-        loadClaimsData();
-    }
-
-    private void loadClaimsData() {
-        List<Claim> claims = DBUtil.getAllClaims();
-        claimsData.setAll(claims);
     }
 }
