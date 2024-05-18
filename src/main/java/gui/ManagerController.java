@@ -4,6 +4,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -16,18 +17,11 @@ import models.Surveyor;
 import utils.DBUtil;
 
 import java.io.IOException;
+import java.net.URL;
 import java.util.List;
+import java.util.ResourceBundle;
 
-public class ManagerController {
-
-    @FXML
-    private Label contentLabel;
-
-    @FXML
-    private Button logoutButton, viewClaimsButton, viewCustomersButton, viewSurveyorsButton, approveClaimButton, rejectClaimButton, navigateButton;
-
-    @FXML
-    private VBox contentArea;
+public class ManagerController implements Initializable {
 
     @FXML
     private TableView<Claim> claimsTable;
@@ -42,6 +36,15 @@ public class ManagerController {
     private TableColumn<Claim, String> statusColumn;
 
     private ObservableList<Claim> claimsData = FXCollections.observableArrayList();
+
+    @FXML
+    private Label contentLabel;
+
+    @FXML
+    private Button logoutButton, viewClaimsButton, viewCustomersButton, viewSurveyorsButton, approveClaimButton, rejectClaimButton, navigateButton;
+
+    @FXML
+    private VBox contentArea;
 
     @FXML
     private void initialize() {
@@ -149,5 +152,19 @@ public class ManagerController {
         alert.setHeaderText(null);
         alert.setContentText(content);
         alert.showAndWait();
+    }
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+        claimIdColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
+        policyHolderColumn.setCellValueFactory(new PropertyValueFactory<>("insuredPerson"));
+        statusColumn.setCellValueFactory(new PropertyValueFactory<>("status"));
+
+        claimsTable.setItems(claimsData);
+        loadClaimsData();
+    }
+
+    private void loadClaimsData() {
+        List<Claim> claims = DBUtil.getAllClaims();
+        claimsData.setAll(claims);
     }
 }

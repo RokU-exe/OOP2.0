@@ -1,5 +1,6 @@
 package models;
 
+import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
 
@@ -16,11 +17,10 @@ public class Claim {
     private String receiverName;
     private String receiverNumber;
     private String policyHolderName;
+    private Timestamp createdAt;
 
     // Constructors, getters, and setters
-    public Claim(String id, Date claimDate, String insuredPerson, String cardNumber, Date examDate,
-                 List<String> documents, double claimAmount, ClaimStatus status, String receiverBank,
-                 String receiverName, String receiverNumber, String policyHolderName) {
+    public Claim(String id, Date claimDate, String insuredPerson, String cardNumber, Date examDate, List<String> documents, double claimAmount, ClaimStatus status, String receiverBank, String receiverName, String receiverNumber, String policyHolderName, Timestamp createdAt) {
         this.id = id;
         this.claimDate = claimDate;
         this.insuredPerson = insuredPerson;
@@ -33,9 +33,14 @@ public class Claim {
         this.receiverName = receiverName;
         this.receiverNumber = receiverNumber;
         this.policyHolderName = policyHolderName;
+        this.createdAt = createdAt;
     }
 
     public Claim(int id, String policyHolderName, String status) {
+    }
+
+    public Claim() {
+
     }
 
     public String getId() {
@@ -149,5 +154,8 @@ public class Claim {
                 ", receiverNumber='" + receiverNumber + '\'' +
                 ", policyHolderName='" + policyHolderName + '\'' +
                 '}';
+    }
+
+    public void setCreatedAt(Timestamp createdAt) {
     }
 }

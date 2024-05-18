@@ -17,6 +17,11 @@ public class DBUtil {
 //    private static final String USER = "postgres.xjekduuxxczbrnzmdhzo";
 //    private static final String PASSWORD = "giabaodoxuan";
 
+//    XuanLoc's Database
+//    private static final String URL = "jdbc:postgresql://aws-0-us-east-1.pooler.supabase.com:5432/postgres";
+//    private static final String USER = "postgres.zxihjumicwatiiurovft";
+//    private static final String PASSWORD = "OOP-OOP@12345";
+
     public static Connection getConnection() throws SQLException {
         return DriverManager.getConnection(URL, USER, PASSWORD);
     }
@@ -239,24 +244,22 @@ public class DBUtil {
     public static List<Claim> getAllClaims() {
         List<Claim> claims = new ArrayList<>();
         String query = "SELECT * FROM claims";
-        try (Connection conn = getConnection();
-             Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery(query)) {
-            while (rs.next()) {
-                claims.add(new Claim(
-                        rs.getString("id"),
-                        rs.getDate("claim_date"),
-                        rs.getString("insured_person"),
-                        rs.getString("card_number"),
-                        rs.getDate("exam_date"),
-                        null,
-                        rs.getDouble("claim_amount"),
-                        ClaimStatus.valueOf(rs.getString("status")),
-                        rs.getString("receiver_bank"),
-                        rs.getString("receiver_name"),
-                        rs.getString("receiver_number"),
-                        rs.getString("policy_holder_name")
-                ));
+
+        try (Connection connection = connect(); Statement statement = connection.createStatement(); ResultSet resultSet = statement.executeQuery(query)) {
+            while (resultSet.next()) {
+                Claim claim = new Claim();
+                claim.setId(String.valueOf(resultSet.getInt("id")));
+                claim.setClaimDate(resultSet.getDate("claim_date"));
+                claim.setInsuredPerson(resultSet.getString("insured_person"));
+                claim.setCardNumber(resultSet.getString("card_number"));
+                claim.setExamDate(resultSet.getDate("exam_date"));
+                claim.setClaimAmount(resultSet.getDouble("claim_amount"));
+                claim.setStatus(ClaimStatus.valueOf(resultSet.getString("status")));
+                claim.setReceiverBank(resultSet.getString("receiver_bank"));
+                claim.setReceiverName(resultSet.getString("receiver_name"));
+                claim.setReceiverNumber(resultSet.getString("receiver_number"));
+                claim.setCreatedAt(resultSet.getTimestamp("created_at"));
+                claims.add(claim);
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -264,7 +267,6 @@ public class DBUtil {
 
         return claims;
     }
-
     public static void approveClaim(String claimId) {
         String query = "UPDATE claims SET status = 'APPROVED' WHERE id = ?";
         try (Connection conn = getConnection();
