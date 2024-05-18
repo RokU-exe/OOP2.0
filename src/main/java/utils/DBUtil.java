@@ -589,28 +589,6 @@ public class DBUtil {
         return claims;
     }
 
-    public static void approveClaim(String claimId) {
-        String query = "UPDATE claims SET status = 'APPROVED' WHERE id = ?";
-        try (Connection conn = getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(query)) {
-            pstmt.setString(1, claimId);
-            pstmt.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public static void rejectClaim(String claimId) {
-        String query = "UPDATE claims SET status = 'REJECTED' WHERE id = ?";
-        try (Connection conn = getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(query)) {
-            pstmt.setString(1, claimId);
-            pstmt.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
     private static Connection connect() {
         Connection conn = null;
         try {
@@ -760,18 +738,18 @@ public class DBUtil {
         return filterClaim;
     }
 
-//    // Use to load policy holder name in table for function 'Filter Claim' (INSURANCE SURVEYOR)
-//    public static List<String> selectPolicyHolderName() throws SQLException {
-//        List<String> policyHolders = new ArrayList<>();
-//        String query = "SELECT \"policyHolder_name\" FROM claims";
-//        try (Connection conn = getConnection();
-//             PreparedStatement pstmt = conn.prepareStatement(query);
-//             ResultSet rs = pstmt.executeQuery()) {
-//            while (rs.next()) {
-//                String fullName = rs.getString("policyHolder_name");
-//                policyHolders.add(fullName);
-//            }
-//        }
-//        return policyHolders;
-//    }
+    // Use to load policy holder name in table for function 'Filter Claim' (INSURANCE SURVEYOR)
+    public static List<String> selectPolicyHolderName() throws SQLException {
+        List<String> policyHolders = new ArrayList<>();
+        String query = "SELECT \"policyHolder_name\" FROM claims";
+        try (Connection conn = getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(query);
+             ResultSet rs = pstmt.executeQuery()) {
+            while (rs.next()) {
+                String fullName = rs.getString("policyHolder_name");
+                policyHolders.add(fullName);
+            }
+        }
+        return policyHolders;
+    }
 }
