@@ -27,7 +27,7 @@ public class ManagerController implements Initializable {
     private TableView<Claim> claimsTable;
 
     @FXML
-    private TableColumn<Claim, Integer> claimIdColumn;
+    private TableColumn<Claim, String> claimIdColumn;
 
     @FXML
     private TableColumn<Claim, String> policyHolderColumn;
@@ -73,14 +73,7 @@ public class ManagerController implements Initializable {
 
     @FXML
     private void handleViewClaims() {
-        List<Claim> claims = DBUtil.getAllClaims();
-        claimsData.setAll(claims);
-        StringBuilder claimsInfo = new StringBuilder("Claims:\n\n");
-        for (Claim claim : claims) {
-            claimsInfo.append(String.format("ID: %d, Policy Holder: %s, Status: %s\n",
-                    claim.getId(), claim.getInsuredPerson(), claim.getStatus()));
-        }
-        contentLabel.setText(claimsInfo.toString());
+        loadClaimsData(); // Refresh the data from the database
     }
 
     @FXML
@@ -88,7 +81,7 @@ public class ManagerController implements Initializable {
         List<Customer> customers = DBUtil.getAllCustomers();
         StringBuilder customersInfo = new StringBuilder("Customers:\n\n");
         for (Customer customer : customers) {
-            customersInfo.append(String.format("ID: %d, Name: %s, Role: %s\n",
+            customersInfo.append(String.format("ID: %s, Name: %s, Role: %s\n",
                     customer.getId(), customer.getFullName(), customer.getRole()));
         }
         contentLabel.setText(customersInfo.toString());
@@ -99,7 +92,7 @@ public class ManagerController implements Initializable {
         List<Surveyor> surveyors = DBUtil.getAllSurveyors();
         StringBuilder surveyorsInfo = new StringBuilder("Surveyors:\n\n");
         for (Surveyor surveyor : surveyors) {
-            surveyorsInfo.append(String.format("ID: %d, Name: %s\n",
+            surveyorsInfo.append(String.format("ID: %s, Name: %s\n",
                     surveyor.getId(), surveyor.getName()));
         }
         contentLabel.setText(surveyorsInfo.toString());
@@ -109,7 +102,7 @@ public class ManagerController implements Initializable {
     private void handleApproveClaim() {
         Claim selectedClaim = getSelectedClaim();
         if (selectedClaim != null) {
-            DBUtil.approveClaim(selectedClaim.getId());
+            DBUtil.approveClaim(Integer.parseInt(selectedClaim.getId()));
             refreshClaims();
         } else {
             showAlert(Alert.AlertType.ERROR, "No Claim Selected", "Please select a claim to approve.");
@@ -120,7 +113,7 @@ public class ManagerController implements Initializable {
     private void handleRejectClaim() {
         Claim selectedClaim = getSelectedClaim();
         if (selectedClaim != null) {
-            DBUtil.rejectClaim(selectedClaim.getId());
+            DBUtil.rejectClaim(Integer.parseInt(selectedClaim.getId()));
             refreshClaims();
         } else {
             showAlert(Alert.AlertType.ERROR, "No Claim Selected", "Please select a claim to reject.");

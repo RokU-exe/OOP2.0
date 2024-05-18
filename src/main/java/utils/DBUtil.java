@@ -12,18 +12,10 @@ public class DBUtil {
     private static final String USER = "postgres.lyyhbfqsjhcujgbjkqlc";
     private static final String PASSWORD = "9FCf7nrJcs7Qwz5E";
 
-//    Bao Do's Database
-//    private static final String URL = "jdbc:postgresql://aws-0-ap-southeast-1.pooler.supabase.com:5432/postgres";
-//    private static final String USER = "postgres.xjekduuxxczbrnzmdhzo";
-//    private static final String PASSWORD = "giabaodoxuan";
-
-//    XuanLoc's Database
-//    private static final String URL = "jdbc:postgresql://aws-0-us-east-1.pooler.supabase.com:5432/postgres";
-//    private static final String USER = "postgres.zxihjumicwatiiurovft";
-//    private static final String PASSWORD = "OOP-OOP@12345";
-
     public static Connection getConnection() throws SQLException {
-        return DriverManager.getConnection(URL, USER, PASSWORD);
+        Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
+        System.out.println("Connected to the database."); // Debug statement
+        return conn;
     }
 
     public static User getUserByEmailAndPassword(String email, String password) {
@@ -227,17 +219,20 @@ public class DBUtil {
              ResultSet resultSet = statement.executeQuery(query)) {
 
             while (resultSet.next()) {
-                Claim claim = new Claim();
-                claim.setId(resultSet.getString("id"));
-                claim.setClaimDate(resultSet.getDate("claim_date"));
-                claim.setInsuredPerson(resultSet.getString("insured_person"));
-                claim.setCardNumber(resultSet.getString("card_number"));
-                claim.setExamDate(resultSet.getDate("exam_date"));
-                claim.setClaimAmount(resultSet.getDouble("claim_amount"));
-                claim.setStatus(ClaimStatus.valueOf(resultSet.getString("status")));
-                claim.setReceiverBank(resultSet.getString("receiver_bank"));
-                claim.setReceiverName(resultSet.getString("receiver_name"));
-                claim.setReceiverNumber(resultSet.getString("receiver_number"));
+                Claim claim = new Claim(
+                        resultSet.getString("id"),
+                        resultSet.getDate("claim_date"),
+                        resultSet.getString("insured_person"),
+                        resultSet.getString("card_number"),
+                        resultSet.getDate("exam_date"),
+                        resultSet.getDouble("claim_amount"),
+                        ClaimStatus.valueOf(resultSet.getString("status")),
+                        resultSet.getString("receiver_bank"),
+                        resultSet.getString("receiver_name"),
+                        resultSet.getString("receiver_number"),
+                        resultSet.getString("policyHolder_name"),
+                        resultSet.getTimestamp("createdAt")
+                );
                 claims.add(claim);
             }
 
@@ -248,22 +243,22 @@ public class DBUtil {
         return claims;
     }
 
-    public static void approveClaim(String claimId) {
+    public static void approveClaim(int claimId) {
         String query = "UPDATE claims SET status = 'APPROVED' WHERE id = ?";
         try (Connection conn = getConnection();
              PreparedStatement pstmt = conn.prepareStatement(query)) {
-            pstmt.setString(1, claimId);
+            pstmt.setInt(1, claimId);
             pstmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-    public static void rejectClaim(String claimId) {
+    public static void rejectClaim(int claimId) {
         String query = "UPDATE claims SET status = 'REJECTED' WHERE id = ?";
         try (Connection conn = getConnection();
              PreparedStatement pstmt = conn.prepareStatement(query)) {
-            pstmt.setString(1, claimId);
+            pstmt.setInt(1, claimId);
             pstmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -512,7 +507,9 @@ public class DBUtil {
                         ClaimStatus.valueOf(resultSet.getString("status")),
                         resultSet.getString("receiver_bank"),
                         resultSet.getString("receiver_name"),
-                        resultSet.getString("receiver_number")
+                        resultSet.getString("receiver_number"),
+                        resultSet.getString("policyHolder_name"),
+                        resultSet.getTimestamp("createdAt")
                 ));
             }
         } catch (SQLException e) {
@@ -551,7 +548,9 @@ public class DBUtil {
                         ClaimStatus.valueOf(rs.getString("status")),
                         rs.getString("receiver_bank"),
                         rs.getString("receiver_name"),
-                        rs.getString("receiver_number")
+                        rs.getString("receiver_number"),
+                        rs.getString("policyHolder_name"),
+                        rs.getTimestamp("createdAt")
                 ));
             }
         } catch (SQLException e) {
@@ -579,7 +578,9 @@ public class DBUtil {
                         ClaimStatus.valueOf(rs.getString("status")),
                         rs.getString("receiver_bank"),
                         rs.getString("receiver_name"),
-                        rs.getString("receiver_number")
+                        rs.getString("receiver_number"),
+                        rs.getString("policyHolder_name"),
+                        rs.getTimestamp("createdAt")
                 ));
             }
         } catch (SQLException e) {
@@ -588,22 +589,22 @@ public class DBUtil {
         return claims;
     }
 
-    public static void approveClaim(int claimId) {
-        try (Connection conn = connect()) {
-            String sql = "UPDATE claims SET status = 'APPROVED' WHERE id = ?";
-            PreparedStatement pstmt = conn.prepareStatement(sql);
-            pstmt.setInt(1, claimId);
+    public static void approveClaim(String claimId) {
+        String query = "UPDATE claims SET status = 'APPROVED' WHERE id = ?";
+        try (Connection conn = getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(query)) {
+            pstmt.setString(1, claimId);
             pstmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-    public static void rejectClaim(int claimId) {
-        try (Connection conn = connect()) {
-            String sql = "UPDATE claims SET status = 'REJECTED' WHERE id = ?";
-            PreparedStatement pstmt = conn.prepareStatement(sql);
-            pstmt.setInt(1, claimId);
+    public static void rejectClaim(String claimId) {
+        String query = "UPDATE claims SET status = 'REJECTED' WHERE id = ?";
+        try (Connection conn = getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(query)) {
+            pstmt.setString(1, claimId);
             pstmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -631,7 +632,8 @@ public class DBUtil {
                 return new Customer(
                         rs.getInt("id"),
                         rs.getString("full_name"),
-                        rs.getString("role")
+                        rs.getString("email"),
+                        rs.getString("phone")
                 );
             }
         } catch (SQLException e) {
@@ -648,9 +650,18 @@ public class DBUtil {
              ResultSet rs = stmt.executeQuery(sql)) {
             while (rs.next()) {
                 Claim claim = new Claim(
-                        rs.getInt("id"),
-                        rs.getString("policy_holder_name"),
-                        rs.getString("status")
+                        rs.getString("id"),
+                        rs.getDate("claim_date"),
+                        rs.getString("insured_person"),
+                        rs.getString("card_number"),
+                        rs.getDate("exam_date"),
+                        rs.getDouble("claim_amount"),
+                        ClaimStatus.valueOf(rs.getString("status")),
+                        rs.getString("receiver_bank"),
+                        rs.getString("receiver_name"),
+                        rs.getString("receiver_number"),
+                        rs.getString("policyHolder_name"),
+                        rs.getTimestamp("createdAt")
                 );
                 claims.add(claim);
             }
@@ -740,25 +751,27 @@ public class DBUtil {
                         ClaimStatus.valueOf(rs.getString("status")),
                         rs.getString("receiver_bank"),
                         rs.getString("receiver_name"),
-                        rs.getString("receiver_number")
+                        rs.getString("receiver_number"),
+                        rs.getString("policyHolder_name"),
+                        rs.getTimestamp("createdAt")
                 )));
             }
         }
         return filterClaim;
     }
 
-    // Use to load policy holder name in table for function 'Filter Claim' (INSURANCE SURVEYOR)
-    public static List<String> selectPolicyHolderName() throws SQLException {
-        List<String> policyHolders = new ArrayList<>();
-        String query = "SELECT \"policy_holder_name\" FROM claims";
-        try (Connection conn = getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(query);
-             ResultSet rs = pstmt.executeQuery()) {
-            while (rs.next()) {
-                String fullName = rs.getString("policy_holder_name");
-                policyHolders.add(fullName);
-            }
-        }
-        return policyHolders;
-    }
+//    // Use to load policy holder name in table for function 'Filter Claim' (INSURANCE SURVEYOR)
+//    public static List<String> selectPolicyHolderName() throws SQLException {
+//        List<String> policyHolders = new ArrayList<>();
+//        String query = "SELECT \"policyHolder_name\" FROM claims";
+//        try (Connection conn = getConnection();
+//             PreparedStatement pstmt = conn.prepareStatement(query);
+//             ResultSet rs = pstmt.executeQuery()) {
+//            while (rs.next()) {
+//                String fullName = rs.getString("policyHolder_name");
+//                policyHolders.add(fullName);
+//            }
+//        }
+//        return policyHolders;
+//    }
 }
