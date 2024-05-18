@@ -43,6 +43,9 @@ public class Claim {
 
     }
 
+    public Claim(String id, java.sql.Date claimDate, String insuredPerson, String cardNumber, java.sql.Date examDate, Object o, double claimAmount, ClaimStatus status, String receiverBank, String receiverName, String receiverNumber, String policyHolderName) {
+    }
+
     public String getId() {
         return id;
     }
