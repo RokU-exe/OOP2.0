@@ -4,6 +4,8 @@ import java.util.List;
 
 public class PolicyHolder extends Customer {
     private List<Dependent> dependents;
+    private List<Claim> claims;
+
 
     // Constructors
     public PolicyHolder(String id, String fullName, String email, String password, UserRole role, InsuranceCard insuranceCard, List<Claim> claims, List<Dependent> dependents) {
