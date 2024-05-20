@@ -260,22 +260,23 @@ public class DBUtil {
     }
 
     public static List<Customer> getAllCustomers() {
-        List<Customer> users = new ArrayList<>();
-        String query = "SELECT * FROM users";
+        List<Customer> customers = new ArrayList<>();
+        String query = "SELECT id, full_name, email, role FROM users";
         try (Connection conn = getConnection();
              Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery(query)) {
             while (rs.next()) {
-                users.add(new Customer(
+                customers.add(new Customer(
                         rs.getString("id"),
                         rs.getString("full_name"),
-                        rs.getString("email")
+                        rs.getString("email"),
+                        rs.getString("role")
                 ));
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return users;
+        return customers;
     }
 
     public static List<Surveyor> getAllSurveyors() {
@@ -587,10 +588,11 @@ public class DBUtil {
                 return new Customer(
                         rs.getString("id"),
                         rs.getString("full_name"),
-                        rs.getString("email")
+                        rs.getString("email"),
+                        rs.getString("role")
                 );
             } else {
-                System.out.println("No user found with ID: " + id); // Debug statement
+                System.out.println("No user found with ID: " + id);
             }
         } catch (SQLException e) {
             e.printStackTrace();
