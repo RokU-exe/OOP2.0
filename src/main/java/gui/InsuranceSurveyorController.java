@@ -151,16 +151,12 @@ public class InsuranceSurveyorController implements Initializable {
         } else if (status.equals("REJECTED")) {
             return ClaimStatus.REJECTED;
         } else {
-            // Handle the case when the role is not recognized
-            // For example, you can throw an IllegalArgumentException
             throw new IllegalArgumentException("Unknown role: " + status);
         }
     }
 
 
     public void initialize() throws SQLException {
-//        String st = null;
-//        ClaimStatus statusOption = getStatus(st);
         List<String> options = DBUtil.selectPolicyHolderName();
         if (options != null) {
             for (String name : options) {
@@ -169,14 +165,6 @@ public class InsuranceSurveyorController implements Initializable {
                 policyHolderSelection.getItems().add(menuItem);
             }
         }
-
-//        if (statusOption != null) {
-//            for (String statusOpt : statusOption) {
-//                MenuItem menuItem = new MenuItem(statusOpt);
-//                menuItem.setOnAction(event -> statusSelection.setText(statusOpt));
-//                statusSelection.getItems().add(menuItem);
-//            }
-//        }
     }
 
     //MenuButton for selecting claim amount range
@@ -287,28 +275,24 @@ public class InsuranceSurveyorController implements Initializable {
     }
 
 
-    private String extractIdFromText(String text) {
-        if (text == null || text.isEmpty()) {
-            return null; // Handle empty text
-        }
-        // Assuming the ID is at the end, separated by a space or hyphen
-        int indexOfSeparator = text.lastIndexOf(" ") + 1; // Adjust for different separators
-        if (indexOfSeparator > 0) {
-            return text.substring(indexOfSeparator);
-        } else {
-            return text; // If no separator found, return the entire text (might need adjustment)
-        }
-    }
+//    private String extractIdFromText(String text) {
+//        if (text == null || text.isEmpty()) {
+//            return null; // Handle empty text
+//        }
+//        // Assuming the ID is at the end, separated by a space or hyphen
+//        int indexOfSeparator = text.lastIndexOf(" ") + 1; // Adjust for different separators
+//        if (indexOfSeparator > 0) {
+//            return text.substring(indexOfSeparator);
+//        } else {
+//            return text; // If no separator found, return the entire text (might need adjustment)
+//        }
+//    }
 
     //Method to retrieve filter claim
     private void findFilterClaim() throws SQLException {
-        String statusSelect = extractIdFromText(statusSelection.getText()); // Get selected card holder
-//        ClaimStatus sta = getStatus(statusSelect);
-        String policyHolderSelect = extractIdFromText(policyHolderSelection.getText());
-//        String amountRangeSelect = extractIdFromText(amountRangeSelection.getText());
+        String statusSelect = statusSelection.getText(); // Get selected card holder
+        String policyHolderSelect = policyHolderSelection.getText();
 
-//        List<String> filteredClaims = DBUtil.surveyorGetFilterClaim(statusSelect, policyHolderSelect, amountRangeSelect);
-        // Do something with the filteredClaims, such as displaying them in the UI or processing them further
         List<String> filterClaim = DBUtil.surveyorGetFilterClaim(statusSelect, policyHolderSelect/*, amountRangeSelect*/);
         if (filterClaim != null) {
             // Display the claim information
@@ -317,26 +301,179 @@ public class InsuranceSurveyorController implements Initializable {
             alert.setHeaderText("Claim Retrieved Successfully");
             alert.setContentText(filterClaim.toString());
             alert.showAndWait();
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/InsuranceSurveyorGUI/ViewFilterClaim.fxml"));
-            Parent adminDashboardRoot = loader.load();
+            try {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/InsuranceSurveyorGUI/ViewFilterClaim.fxml"));
+                Parent adminDashboardRoot = loader.load();
 
-            Node sourceNode = findButton; // Use any node from the current scene
+                Node sourceNode = findButton; // Use any node from the current scene
 
-            // Get the primary stage from the source node's scene
-            Stage primaryStage = (Stage) sourceNode.getScene().getWindow();
+                // Get the primary stage from the source node's scene
+                Stage primaryStage = (Stage) sourceNode.getScene().getWindow();
 
-            primaryStage.setScene(new Scene(adminDashboardRoot));
-            primaryStage.show();
-        } catch (IOException e) {
-            e.printStackTrace();
-            // Handle any errors loading the admin dashboard FXML
+                primaryStage.setScene(new Scene(adminDashboardRoot));
+                primaryStage.show();
+            } catch (IOException e) {
+                e.printStackTrace();
+                // Handle any errors loading the admin dashboard FXML
+            }
+        }else{
+            Alert alert1 = new Alert(Alert.AlertType.INFORMATION);
+            alert1.setTitle("Claim Information");
+            alert1.setHeaderText("Claim Unuccessfully");
+//            alert1.setContentText(filterClaim.toString());
+            alert1.showAndWait();
         }
     }
+
+
+
+
+    //PART OF FILTER CUSTOMER FUNCTION
+    @FXML
+    private Button filterCustomerOption;
+    @FXML
+    private MenuButton roleSelectionButton;
+    @FXML
+    private MenuButton emailSelectionButton;
+    @FXML
+    private MenuButton fullNameSelectionButton;
+    @FXML
+    Button findCustomerButton;
+
+    public void createFilterCustomerFXML() throws SQLException {
+        // Create root pane
+        AnchorPane root = new AnchorPane();
+        root.setPrefSize(600, 400);
+
+        // Create and configure "Filter Claim" label
+        Label filterCustomerLabel = new Label("Filter Customer");
+        filterCustomerLabel.setLayoutX(246);
+        filterCustomerLabel.setTextFill(Color.web("#ec1919"));
+        filterCustomerLabel.setFont(new Font("Calibri Bold", 24));
+
+        // Create and configure "Status" label
+        Label roleLabel = new Label("1. Role");
+        roleLabel.setLayoutX(38);
+        roleLabel.setLayoutY(73);
+        roleLabel.setTextFill(Color.web("#b71212"));
+        roleLabel.setFont(new Font(20));
+
+        // Create and configure "Role" menu button
+        roleSelectionButton = new MenuButton("Select Role");
+        roleSelectionButton.setLayoutX(278);
+        roleSelectionButton.setLayoutY(72);
+        MenuItem dependentSelect = new MenuItem("DEPENDENT");
+        MenuItem policyOwnerSelect = new MenuItem("POLICY OWNER");
+        MenuItem policyHolderSelect = new MenuItem("POLICY HOLDER");
+        roleSelectionButton.getItems().addAll(dependentSelect, policyOwnerSelect, policyHolderSelect);
+
+        // Set action listeners for status menu items
+        dependentSelect.setOnAction(event -> roleSelectionButton.setText(dependentSelect.getText()));
+        policyOwnerSelect.setOnAction(event -> roleSelectionButton.setText(policyOwnerSelect.getText()));
+        policyHolderSelect.setOnAction(event -> roleSelectionButton.setText(policyHolderSelect.getText()));
+
+        // Create and configure "Policy Holder" label
+        Label emailLabel = new Label("2. Email");
+        emailLabel.setLayoutX(38);
+        emailLabel.setLayoutY(159);
+        emailLabel.setTextFill(Color.web("#b71212"));
+        emailLabel.setFont(new Font(20));
+
+        // Create and configure "Policy Holder" menu button
+        emailSelectionButton = new MenuButton("Select Email");
+        emailSelectionButton.setLayoutX(278);
+        emailSelectionButton.setLayoutY(158);
+
+        // Create and configure "Claim Amount Range" label
+        Label fullNameRangeLabel = new Label("3. Full Name");
+        fullNameRangeLabel.setLayoutX(38);
+        fullNameRangeLabel.setLayoutY(242);
+        fullNameRangeLabel.setTextFill(Color.web("#b71212"));
+        fullNameRangeLabel.setFont(new Font(20));
+
+         //Create and configure "Claim Amount Range" menu button
+        fullNameSelectionButton = new MenuButton("Select Full Name");
+        fullNameSelectionButton.setLayoutX(277);
+        fullNameSelectionButton.setLayoutY(241);
+
+        // Create and configure "Find" button
+        findCustomerButton = new Button("Find");
+        findCustomerButton.setLayoutX(278);
+        findCustomerButton.setLayoutY(312);
+        findCustomerButton.setOnAction(event -> {
+            try {
+                findFilterCustomer();
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        });
+
+        root.getChildren().addAll(
+                filterCustomerLabel,
+                roleLabel,
+                roleSelectionButton,
+                emailLabel,
+                emailSelectionButton,
+                fullNameRangeLabel,
+                fullNameSelectionButton,
+
+                findCustomerButton
+        );
+        initializeCustomer();
+        filterClaimOption.getScene().setRoot(root);
+    }
+
+    public void initializeCustomer() throws SQLException {
+        List<String> options = DBUtil.selectCustomerEmail();
+        if (options != null) {
+            for (String email : options) {
+                MenuItem menuItem = new MenuItem(email);
+                menuItem.setOnAction(event -> emailSelectionButton.setText(email));
+                emailSelectionButton.getItems().add(menuItem);
+            }
         }
 
+        List<String> fullName = DBUtil.selectCustomerFullName();
+        if (fullName != null) {
+            for (String name : fullName) {
+                MenuItem menuItem = new MenuItem(name);
+                menuItem.setOnAction(event -> fullNameSelectionButton.setText(name));
+                fullNameSelectionButton.getItems().add(menuItem);
+            }
+        }
+    }
 
+    //Method to retrieve filter customer
+    private void findFilterCustomer() throws SQLException {
+        String roleSelect = roleSelectionButton.getText(); // Get selected card holder
+        String emailSelect = emailSelectionButton.getText();
+        String fullNameSelect = fullNameSelectionButton.getText();
 
+        List<String> filterCustomer = DBUtil.surveyorGetFilterCustomer(roleSelect, emailSelect, fullNameSelect);
+        if (filterCustomer != null) {
+            // Display the claim information
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Customer Information");
+            alert.setHeaderText("Customer Retrieved Successfully");
+            alert.setContentText(filterCustomer.toString());
+            alert.showAndWait();
+            try {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/InsuranceSurveyorGUI/ViewFilterCustomer.fxml"));
+                Parent adminDashboardRoot = loader.load();
+
+                Node sourceNode = findCustomerButton; // Use any node from the current scene
+
+                // Get the primary stage from the source node's scene
+                Stage primaryStage = (Stage) sourceNode.getScene().getWindow();
+
+                primaryStage.setScene(new Scene(adminDashboardRoot));
+                primaryStage.show();
+            } catch (IOException e) {
+                e.printStackTrace();
+                // Handle any errors loading the admin dashboard FXML
+            }
+        }
+    }
 
 
 }
