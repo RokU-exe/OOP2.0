@@ -14,7 +14,7 @@ import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import kotlin.jvm.internal.PackageReference;
 import models.InsuranceCard;
-import models.SystemAdmin;
+import controllers.SystemAdmin;
 import models.User;
 import models.UserRole;
 import utils.DBUtil;
