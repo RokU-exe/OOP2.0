@@ -618,10 +618,9 @@ public class DBUtil {
                         resultSet.getString("receiver_bank"),
                         resultSet.getString("receiver_name"),
                         resultSet.getString("receiver_number"),
-                        resultSet.getString("policyHolder_name")
+                        resultSet.getString("policyHolderName")
                 );
                 claims.add(claim);
-                System.out.println("Claim retrieved: " + claim); // Debug statement
             }
         } catch (SQLException e) {
             e.printStackTrace();
