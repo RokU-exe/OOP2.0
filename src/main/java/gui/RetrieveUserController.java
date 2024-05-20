@@ -39,14 +39,14 @@ public class RetrieveUserController {
         try {
             Customer customer = DBUtil.getCustomerById(userId);
             if (customer != null) {
-                userInfoArea.setText("ID: " + customer.getId() + "\nName: " + customer.getFullName() + "\nEmail: " + customer.getEmail());
+                userInfoArea.setText("ID: " + customer.getId() + "\nName: " + customer.getFullName() + "\nEmail: " + customer.getEmail() + "\nRole: " + customer.getRole());
                 System.out.println("Customer retrieved: " + customer); // Debug statement
             } else {
                 userInfoArea.setText("User not found.");
                 System.out.println("Customer not found with ID: " + userId); // Debug statement
             }
-        } catch (NumberFormatException e) {
-            showAlert(Alert.AlertType.ERROR, "Invalid Input", "User ID must be a number.");
+        } catch (Exception e) {
+            showAlert(Alert.AlertType.ERROR, "Error", "An error occurred while retrieving the user.");
             e.printStackTrace(); // Debug statement
         }
     }
