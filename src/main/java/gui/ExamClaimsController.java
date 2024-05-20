@@ -46,7 +46,7 @@ public class ExamClaimsController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         claimIdColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
-        policyHolderColumn.setCellValueFactory(new PropertyValueFactory<>("policyHolder_name"));
+        policyHolderColumn.setCellValueFactory(new PropertyValueFactory<>("policyHolderName"));
         statusColumn.setCellValueFactory(new PropertyValueFactory<>("status"));
 
         claimsTable.setItems(claimsData);
