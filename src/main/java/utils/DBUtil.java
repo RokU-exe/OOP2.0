@@ -663,54 +663,171 @@ public class DBUtil {
         return null;
     }
 
-    // Use to filter claim (INSURANCE SURVEYOR)
-    public static List<String> surveyorGetFilterClaim(String status, String policyHolderName) throws SQLException {
+    private static Connection connect() {
+        Connection conn = null;
+        try {
+            conn = DriverManager.getConnection(URL, USER, PASSWORD);
+            System.out.println("Connection to PostgreSQL has been established.");
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return conn;
+    }
+
+    //Use to filter claim (INSURANCE SURVEYOR)
+    public static List<String> surveyorGetFilterClaim(String status, String policyHolderName /*, String amountRange*/) throws SQLException {
         List<String> filterClaim = new ArrayList<>();
+
+        // Base query
         String query = "SELECT * FROM claims WHERE 1=1";
 
-        switch (status) {
+        // Dynamically build the query
+        switch (status){
             case "NEW":
-                query += " AND status = 'NEW'";
+                query += " AND \"status\" = 'NEW'";
                 break;
             case "PROCESSING":
-                query += " AND status = 'PROCESSING'";
+                query += " AND \"status\" = 'PROCESSING'";
                 break;
             case "APPROVED":
-                query += " AND status = 'APPROVED'";
+                query += " AND \"status\" = 'APPROVED'";
                 break;
             case "REJECTED":
-                query += " AND status = 'REJECTED'";
+                query += " AND \"status\" = 'REJECTED'";
                 break;
             default:
                 throw new IllegalArgumentException("Invalid status: " + status);
         }
 
+//        if (policyHolderName != null && !policyHolderName.isEmpty()) {
+//            query += " AND \"policyHolder_name\" = ?";
+//        }
+//
+////
+////        // Check if amountRange is not empty or null
+////        if (amountRange == null || amountRange.isEmpty()) {
+////            throw new IllegalArgumentException("Amount range cannot be empty or null");
+////        }
+////
+////        if(amountRange.equals("Under 1000")){
+////            query += " AND \"claim_amount\" < 1000.0";
+////        } else if (amountRange.equals("1000 - 2000")) {
+////            query += " AND \"claim_amount\" BETWEEN 1000.0 AND 2000.0";
+////        } else if (amountRange.equals("Above 2000")) {
+////            query += " AND \"claim_amount\" > 2000.0";
+////        }else{
+////            throw new IllegalArgumentException("Invalid amount range: ");
+////        }
+//
+////        switch (amountRange){
+////            case "Under 1000":
+////                query += " AND claim_amount < 1000.0";
+////                break;
+////            case "1000 - 2000":
+////                query += " AND claim_amount BETWEEN 1000.0 AND 2000.0";
+////                break;
+////            case "Above 2000":
+////                query += " AND claim_amount > 2000.0";
+////                break;
+////            default:
+////                throw new IllegalArgumentException("Invalid amount range: ");
+////        }
+//
+////        try (Connection conn = getConnection();
+////             PreparedStatement pstmt = conn.prepareStatement(query);
+////             if (hasPolicyHolderName) {
+////            pstmt.setString(1, policyHolderName);
+////            }
+////             ResultSet rs = pstmt.executeQuery()) {
+////            while (rs.next()) {
+////                filterClaim.add(String.valueOf(new Claim(
+////                        rs.getString("id"),
+////                        rs.getDate("claim_date"),
+////                        rs.getString("insured_person"),
+////                        rs.getString("card_number"),
+////                        rs.getDate("exam_date"),
+////                        null,
+////                        rs.getDouble("claim_amount"),
+////                        ClaimStatus.valueOf(rs.getString("status")),
+////                        rs.getString("receiver_bank"),
+////                        rs.getString("receiver_name"),
+////                        rs.getString("receiver_number"),
+////                        rs.getString("policyHolder_name")
+//        try (Connection conn = getConnection();
+//             PreparedStatement pstmt = conn.prepareStatement(query)) {
+//
+//            // Set the parameter for policyHolderName if it is present
+//                pstmt.setString(1, policyHolderName);
+//
+//
+//            try (ResultSet rs = pstmt.executeQuery()) {
+//                while (rs.next()) {
+//                    filterClaim.add(String.valueOf(new Claim(
+//                            rs.getString("id"),
+//                            rs.getDate("claim_date"),
+//                            rs.getString("insured_person"),
+//                            rs.getString("card_number"),
+//                            rs.getDate("exam_date"),
+//                            null,
+//                            rs.getDouble("claim_amount"),
+//                            ClaimStatus.valueOf(rs.getString("status")),
+//                            rs.getString("receiver_bank"),
+//                            rs.getString("receiver_name"),
+//                            rs.getString("receiver_number"),
+//                            rs.getString("policyHolder_name")
+//                    )));
+//                }
+//            }
+//        }
+//        return filterClaim;
+        boolean hasPolicyHolderName = policyHolderName != null && !policyHolderName.isEmpty();
+        if (hasPolicyHolderName) {
+            query += " AND \"policyHolder_name\" = ?";
+        }
+        // Debug: Print the final query
+        System.out.println("Final query: " + query);
+
         try (Connection conn = getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(query);
-             ResultSet rs = pstmt.executeQuery()) {
-            while (rs.next()) {
-                filterClaim.add(String.valueOf(new Claim(
-                        rs.getString("id"),
-                        rs.getDate("claim_date"),
-                        rs.getString("insured_person"),
-                        rs.getString("card_number"),
-                        rs.getDate("exam_date"),
-                        rs.getDouble("claim_amount"),
-                        ClaimStatus.valueOf(rs.getString("status")),
-                        rs.getString("receiver_bank"),
-                        rs.getString("receiver_name"),
-                        rs.getString("receiver_number"),
-                        rs.getString("policyHolder_name")
-                )));
+             PreparedStatement pstmt = conn.prepareStatement(query)) {
+
+            // Set the parameter for policyHolderName if it is present
+            if (hasPolicyHolderName) {
+//                int paramIndex = 1;
+                pstmt.setString(1, policyHolderName);
+            }
+            // Debug: Print the prepared statement parameters
+            System.out.println("Parameters:");
+            if (hasPolicyHolderName) {
+                System.out.println("1: " + policyHolderName);
+            }
+
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    filterClaim.add(String.valueOf(new Claim(
+                            rs.getString("id"),
+                            rs.getDate("claim_date"),
+                            rs.getString("insured_person"),
+                            rs.getString("card_number"),
+                            rs.getDate("exam_date"),
+                            null,
+                            rs.getDouble("claim_amount"),
+                            ClaimStatus.valueOf(rs.getString("status")),
+                            rs.getString("receiver_bank"),
+                            rs.getString("receiver_name"),
+                            rs.getString("receiver_number"),
+                            rs.getString("policyHolder_name")
+                    )));
+                }
             }
         }
         return filterClaim;
     }
 
-    // Use to load policy holder name in table for function 'Filter Claim' (INSURANCE SURVEYOR)
+    //Use to load policy holder name in table for function 'Filter Claim' (INSURANCE SURVEYOR)
     public static List<String> selectPolicyHolderName() throws SQLException {
         List<String> policyHolders = new ArrayList<>();
-        String query = "SELECT policyHolder_name FROM claims";
+        String query = "SELECT \"policyHolder_name\" FROM claims";
         try (Connection conn = getConnection();
              PreparedStatement pstmt = conn.prepareStatement(query);
              ResultSet rs = pstmt.executeQuery()) {
@@ -722,14 +839,129 @@ public class DBUtil {
         return policyHolders;
     }
 
-    private static Connection connect() {
-        Connection conn = null;
-        try {
-            conn = DriverManager.getConnection(URL, USER, PASSWORD);
-            System.out.println("Connection to PostgreSQL has been established.");
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
+
+    //(INSURANCE SURVEYOR) Filter Customer
+    public static List<String> selectCustomerEmail() throws SQLException {
+        List<String> emails = new ArrayList<>();
+        String roleD = "DEPENDENT";
+        String rolePO = "POLICY OWNER";
+        String rolePH = "POLICY HOLDER";
+
+        // Base query
+        String query = "SELECT email FROM users WHERE 1=1";
+
+        // Add condition based on the role
+        if ("DEPENDENT".equalsIgnoreCase(roleD)) {
+            query += " AND email LIKE 'd%'";
+        }else if("POLICY OWNER".equalsIgnoreCase(rolePO)){
+            query += " AND email LIKE 'o%'";
+        }else if("POLICY HOLDER".equalsIgnoreCase(rolePH)){
+            query += " AND email LIKE 'h%'";
+        }else{
+            throw new IllegalArgumentException("Invalid email");
         }
-        return conn;
+
+        try (Connection conn = getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(query);
+             ResultSet rs = pstmt.executeQuery()) {
+            while (rs.next()) {
+                String email = rs.getString("email");
+                emails.add(email);
+            }
+        }
+        return emails;
     }
+
+
+    public static List<String> selectCustomerFullName() throws SQLException {
+        List<String> fullName = new ArrayList<>();
+        String roleD = "DEPENDENT";
+        String rolePO = "POLICY OWNER";
+        String rolePH = "POLICY HOLDER";
+
+        // Base query
+        String query = "SELECT full_name FROM users WHERE 1=1";
+
+        // Add condition based on the role
+        if ("DEPENDENT".equalsIgnoreCase(roleD)) {
+            query += " AND role = 'DEPENDENT' ";
+        }else if("POLICY OWNER".equalsIgnoreCase(rolePO)){
+            query += " AND role = 'POLICY OWNER' ";
+        }else if("POLICY HOLDER".equalsIgnoreCase(rolePH)){
+            query += " AND role = 'POLICY HOLDER' ";
+        }else{
+            throw new IllegalArgumentException("Invalid email");
+        }
+
+        try (Connection conn = getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(query);
+             ResultSet rs = pstmt.executeQuery()) {
+            while (rs.next()) {
+                String full_name = rs.getString("full_name");
+                fullName.add(full_name);
+            }
+        }
+        return fullName;
+    }
+
+    public static List<String> surveyorGetFilterCustomer(String role, String email , String fullName) throws SQLException {
+        List<String> filterCustomer = new ArrayList<>();
+
+        // Base query
+        String query = "SELECT * FROM users WHERE 1=1";
+
+
+        boolean hasRole = role != null && !role.isEmpty();
+        if (hasRole) {
+            query += " AND \"role\" = ?";
+        }
+
+        boolean hasEmail = email != null && !email.isEmpty();
+        if (hasEmail) {
+            query += " AND \"email\" = ?";
+        }
+
+        boolean hasFullName = fullName != null && !fullName.isEmpty();
+        if (hasFullName) {
+            query += " AND \"full_name\" = ?";
+        }
+
+        // Debug: Print the final query
+        System.out.println("Final query: " + query);
+
+        try (Connection conn = getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(query)) {
+
+            // Set the parameter for policyHolderName if it is present
+            //if (hasPolicyHolderName) {
+//                int paramIndex = 1;
+            pstmt.setString(1, role);
+            pstmt.setString(2, email);
+            pstmt.setString(3, fullName);
+
+            //}
+            // Debug: Print the prepared statement parameters
+            System.out.println("Parameters:");
+//            if (hasPolicyHolderName) {
+                System.out.println("1: " + role);
+            System.out.println("2: " + email);
+            System.out.println("3: " + fullName);
+//            }
+
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    filterCustomer.add(String.valueOf(new User(
+                            rs.getString("id"),
+                            rs.getString("full_name"),
+                            rs.getString("email"),
+                            rs.getString("password"),
+                            UserRole.valueOf(rs.getString("role"))
+                    )));
+                }
+            }
+        }
+        return filterCustomer;
+    }
+    
 }
