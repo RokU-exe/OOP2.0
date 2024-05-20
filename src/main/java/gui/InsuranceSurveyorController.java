@@ -1,7 +1,5 @@
 package gui;
 
-import javafx.application.Platform;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -16,20 +14,13 @@ import javafx.stage.Stage;
 import models.Claim;
 import models.ClaimStatus;
 import models.User;
-import models.UserRole;
 import utils.DBUtil;
 
 import java.io.IOException;
 import java.net.URL;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
-
-import static utils.DBUtil.getConnection;
 
 public class InsuranceSurveyorController implements Initializable {
     @Override
@@ -89,6 +80,11 @@ public class InsuranceSurveyorController implements Initializable {
                 e.printStackTrace();
             }
         } else {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Warning");
+            alert.setHeaderText("No Claim Found");
+            alert.setContentText("No customers were found based on the provided criteria.");
+            alert.showAndWait();
             // Handle case where claim information could not be retrieved
             System.out.println("Error: Claim information not available.");
         }
@@ -127,8 +123,6 @@ public class InsuranceSurveyorController implements Initializable {
 
 
 
-
-
     //PART OF FILTER CLAIM FUNCTION
     @FXML
     private Button filterClaimOption;
@@ -136,8 +130,6 @@ public class InsuranceSurveyorController implements Initializable {
     private MenuButton statusSelection;
     @FXML
     private MenuButton policyHolderSelection;
-    @FXML
-    private MenuButton amountRangeSelection;
     @FXML
     Button findButton;
 
@@ -215,27 +207,6 @@ public class InsuranceSurveyorController implements Initializable {
         policyHolderSelection.setLayoutX(278);
         policyHolderSelection.setLayoutY(158);
 
-        // Create and configure "Claim Amount Range" label
-        Label amountRangeLabel = new Label("3. Claim Amount Range");
-        amountRangeLabel.setLayoutX(38);
-        amountRangeLabel.setLayoutY(242);
-        amountRangeLabel.setTextFill(Color.web("#b71212"));
-        amountRangeLabel.setFont(new Font(20));
-
-        // Create and configure "Claim Amount Range" menu button
-//        amountRangeSelection = new MenuButton("Select Amount Range");
-//        amountRangeSelection.setLayoutX(277);
-//        amountRangeSelection.setLayoutY(241);
-//        MenuItem under1000 = new MenuItem("Under 1000");
-//        MenuItem between1000And2000 = new MenuItem("1000 - 2000");
-//        MenuItem above2000 = new MenuItem("Above 2000");
-//        amountRangeSelection.getItems().addAll(under1000, between1000And2000, above2000);
-//
-//        // Set action listeners for amount range menu items
-//        under1000.setOnAction(event -> amountRangeSelection.setText(under1000.getText()));
-//        between1000And2000.setOnAction(event -> amountRangeSelection.setText(between1000And2000.getText()));
-//        above2000.setOnAction(event -> amountRangeSelection.setText(above2000.getText()));
-
         // Create and configure "Find" button
         findButton = new Button("Find");
         findButton.setLayoutX(278);
@@ -266,27 +237,11 @@ public class InsuranceSurveyorController implements Initializable {
                 statusSelection,
                 policyHolderLabel,
                 policyHolderSelection,
-                amountRangeLabel,
-
                 findButton
         );
         initialize();
         filterClaimOption.getScene().setRoot(root);
     }
-
-
-//    private String extractIdFromText(String text) {
-//        if (text == null || text.isEmpty()) {
-//            return null; // Handle empty text
-//        }
-//        // Assuming the ID is at the end, separated by a space or hyphen
-//        int indexOfSeparator = text.lastIndexOf(" ") + 1; // Adjust for different separators
-//        if (indexOfSeparator > 0) {
-//            return text.substring(indexOfSeparator);
-//        } else {
-//            return text; // If no separator found, return the entire text (might need adjustment)
-//        }
-//    }
 
     //Method to retrieve filter claim
     private void findFilterClaim() throws SQLException {
@@ -326,8 +281,6 @@ public class InsuranceSurveyorController implements Initializable {
     }
 
 
-
-
     //PART OF FILTER CUSTOMER FUNCTION
     @FXML
     private Button filterCustomerOption;
@@ -339,6 +292,7 @@ public class InsuranceSurveyorController implements Initializable {
     private MenuButton fullNameSelectionButton;
     @FXML
     Button findCustomerButton;
+    private String selectedRole; // Add a member variable to store the selected role
 
     public void createFilterCustomerFXML() throws SQLException {
         // Create root pane
@@ -363,8 +317,8 @@ public class InsuranceSurveyorController implements Initializable {
         roleSelectionButton.setLayoutX(278);
         roleSelectionButton.setLayoutY(72);
         MenuItem dependentSelect = new MenuItem("DEPENDENT");
-        MenuItem policyOwnerSelect = new MenuItem("POLICY OWNER");
-        MenuItem policyHolderSelect = new MenuItem("POLICY HOLDER");
+        MenuItem policyOwnerSelect = new MenuItem("POLICY_OWNER");
+        MenuItem policyHolderSelect = new MenuItem("POLICY_HOLDER");
         roleSelectionButton.getItems().addAll(dependentSelect, policyOwnerSelect, policyHolderSelect);
 
         // Set action listeners for status menu items
@@ -424,7 +378,9 @@ public class InsuranceSurveyorController implements Initializable {
     }
 
     public void initializeCustomer() throws SQLException {
+        //String selectedRole = roleSelectionButton.getText();
         List<String> options = DBUtil.selectCustomerEmail();
+        emailSelectionButton.getItems().clear();
         if (options != null) {
             for (String email : options) {
                 MenuItem menuItem = new MenuItem(email);
@@ -434,6 +390,7 @@ public class InsuranceSurveyorController implements Initializable {
         }
 
         List<String> fullName = DBUtil.selectCustomerFullName();
+        fullNameSelectionButton.getItems().clear();
         if (fullName != null) {
             for (String name : fullName) {
                 MenuItem menuItem = new MenuItem(name);
@@ -449,8 +406,9 @@ public class InsuranceSurveyorController implements Initializable {
         String emailSelect = emailSelectionButton.getText();
         String fullNameSelect = fullNameSelectionButton.getText();
 
+
         List<String> filterCustomer = DBUtil.surveyorGetFilterCustomer(roleSelect, emailSelect, fullNameSelect);
-        if (filterCustomer != null) {
+        if (filterCustomer != null && !filterCustomer.isEmpty()) {
             // Display the claim information
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Customer Information");
@@ -472,8 +430,55 @@ public class InsuranceSurveyorController implements Initializable {
                 e.printStackTrace();
                 // Handle any errors loading the admin dashboard FXML
             }
+        }else {
+            // Display a warning alert if no customers were found
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Warning");
+            alert.setHeaderText("No Customers Found");
+            alert.setContentText("No customers were found based on the provided criteria.");
+            alert.showAndWait();
         }
     }
+
+//    private void findFilterCustomer() throws SQLException {
+//        String roleSelect = roleSelectionButton.getText(); // Get selected card holder
+//        String emailSelect = emailSelectionButton.getText();
+//        String fullNameSelect = fullNameSelectionButton.getText();
+//
+//        List<String> filterCustomer = DBUtil.surveyorGetFilterCustomer(roleSelect, emailSelect, fullNameSelect);
+//
+//        if (filterCustomer != null && !filterCustomer.isEmpty()) {
+//            // Display the claim information
+//            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+//            alert.setTitle("Customer Information");
+//            alert.setHeaderText("Customer Retrieved Successfully");
+//            alert.setContentText(filterCustomer.toString());
+//            alert.showAndWait();
+//            try {
+//                FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/InsuranceSurveyorGUI/ViewFilterCustomer.fxml"));
+//                Parent adminDashboardRoot = loader.load();
+//
+//                Node sourceNode = findCustomerButton; // Use any node from the current scene
+//
+//                // Get the primary stage from the source node's scene
+//                Stage primaryStage = (Stage) sourceNode.getScene().getWindow();
+//
+//                primaryStage.setScene(new Scene(adminDashboardRoot));
+//                primaryStage.show();
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//                // Handle any errors loading the admin dashboard FXML
+//            }
+//        } else {
+//            // Display a warning alert if no customers were found
+//            Alert alert = new Alert(Alert.AlertType.WARNING);
+//            alert.setTitle("Warning");
+//            alert.setHeaderText("No Customers Found");
+//            alert.setContentText("No customers were found based on the provided criteria.");
+//            alert.showAndWait();
+//        }
+//    }
+
 
 
 }
