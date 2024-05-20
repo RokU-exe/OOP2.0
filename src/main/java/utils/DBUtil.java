@@ -127,7 +127,29 @@ public class DBUtil {
         return customers;
     }
 
-    // Get all Policy Holders (Bao Do)
+    public static PolicyHolder fetchPolicyHolderDetails(String userId) throws SQLException {
+        String query = "SELECT * FROM users WHERE id = ?";
+
+        try (Connection conn = getConnection();
+             PreparedStatement preparedStatement = conn.prepareStatement(query)) {
+
+            preparedStatement.setString(1, userId);
+
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                if (resultSet.next()) {
+                    // Map ResultSet to PolicyHolder object
+                    PolicyHolder policyHolder = new PolicyHolder();
+                    policyHolder.setId(resultSet.getString("id"));
+                    policyHolder.setFullName(resultSet.getString("full_name"));
+                    // ... set other properties from the ResultSet
+                    return policyHolder;
+                }
+            }
+        }
+        return null; // PolicyHolder not found
+    }
+
+    // Get all Policy Holders
     public static List<String> getPolicyHolders() throws SQLException {
         List<String> policyHolders = new ArrayList<>();
         String query = "SELECT u.id, u.full_name " +
