@@ -58,7 +58,7 @@ public class InsuranceSurveyorController implements Initializable {
     public void reviewClaim(){
         List<Claim> currentSurveyor = DBUtil.surveyorReviewClaim();
 
-        if (currentSurveyor != null) {
+        if (currentSurveyor != null && !currentSurveyor.isEmpty()) {
             // Display the claim information
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Review Claim Information");
@@ -83,10 +83,8 @@ public class InsuranceSurveyorController implements Initializable {
             Alert alert = new Alert(Alert.AlertType.WARNING);
             alert.setTitle("Warning");
             alert.setHeaderText("No Claim Found");
-            alert.setContentText("No customers were found based on the provided criteria.");
+            alert.setContentText("No claims need to be reviewed.");
             alert.showAndWait();
-            // Handle case where claim information could not be retrieved
-            System.out.println("Error: Claim information not available.");
         }
     }
 
@@ -121,6 +119,31 @@ public class InsuranceSurveyorController implements Initializable {
     }
 
 
+    @FXML
+    private Button requireMoreClaimInformation;
+    public void requireMoreClaimInformation() throws SQLException {
+        List<Claim> currentSurveyor = DBUtil.surveyorRequireClaimInformation();
+
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Claim Information Invalid");
+        alert.setHeaderText("Require More Information Successfully");
+        //alert.setContentText(currentSurveyor.toString());
+        alert.showAndWait();
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/InsuranceSurveyorGUI/InsuranceSurveyor.fxml"));
+            Parent adminDashboardRoot = loader.load();
+
+            Node sourceNode = requireMoreClaimInformation;
+
+            // Get the primary stage from the current scene
+            Stage primaryStage = (Stage) sourceNode.getScene().getWindow();
+
+            primaryStage.setScene(new Scene(adminDashboardRoot));
+            primaryStage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
 
     //PART OF FILTER CLAIM FUNCTION
