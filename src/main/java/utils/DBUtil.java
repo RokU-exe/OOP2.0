@@ -12,13 +12,6 @@ public class DBUtil {
     private static final String USER = "postgres.tfusvrojiuczultagudt";
     private static final String PASSWORD = "fURTHERpROGRAMMING78";
 
-    /*
-    Bao Do's connection
-    private static final String URL = "jdbc:postgresql://aws-0-ap-southeast-1.pooler.supabase.com:5432/postgres";
-    private static final String USER = "postgres.xjekduuxxczbrnzmdhzo";
-    private static final String PASSWORD = "giabaodoxuan";
-    */
-
     public static Connection getConnection() throws SQLException {
         Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
         System.out.println("Connected to the database."); // Debug statement
@@ -38,9 +31,8 @@ public class DBUtil {
                         resultSet.getString("insured_person"),
                         resultSet.getString("card_number"),
                         resultSet.getDate("exam_date"),
-                        null,
                         resultSet.getDouble("claim_amount"),
-                        resultSet.getString("status"),
+                        ClaimStatus.valueOf(resultSet.getString("status")),
                         resultSet.getString("receiver_bank"),
                         resultSet.getString("receiver_name"),
                         resultSet.getString("receiver_number"),
@@ -221,8 +213,7 @@ public class DBUtil {
                         rs.getString("receiver_bank"),
                         rs.getString("receiver_name"),
                         rs.getString("receiver_number"),
-                        rs.getString("policy_holder_name"),
-                        rs.getTimestamp("created_at")
+                        rs.getString("policyHolder_name")
                 ));
             }
         } catch (SQLException e) {
@@ -296,7 +287,7 @@ public class DBUtil {
             while (rs.next()) {
                 surveyors.add(new Surveyor(
                         rs.getString("id"),
-                        rs.getString("name")
+                        rs.getString("full_name")
                 ));
             }
         } catch (SQLException e) {
@@ -305,7 +296,7 @@ public class DBUtil {
         return surveyors;
     }
 
-   public static String getPrefixByUserRole(UserRole role) {
+    public static String getPrefixByUserRole(UserRole role) {
         switch (role) {
             case POLICY_HOLDER:
                 return "h";
@@ -317,6 +308,8 @@ public class DBUtil {
                 return "m";
             case DEPENDENT:
                 return "d";
+            case SYSTEM_ADMIN:
+                return "a";
             default:
                 throw new IllegalArgumentException("Unknown role: " + role);
         }
@@ -352,6 +345,7 @@ public class DBUtil {
         }
         return null;
     }
+
     public static String generateUniqueRandomCardNumber() {
         int numRetries = 0; // Track retry attempts
         int maxRetries = 10; // Set a maximum number of retries (optional)
@@ -367,6 +361,7 @@ public class DBUtil {
         } while (isCardNumberInUse(cardNumber));
         return cardNumber;
     }
+
     public static String generateRandomCardNumber() {
         StringBuilder sb = new StringBuilder();
         Random random = new Random();
@@ -394,6 +389,7 @@ public class DBUtil {
             return false; // Assume failure on error
         }
     }
+
     public static void addInsuranceCard(InsuranceCard card) {
         String query = "INSERT INTO \"InsuranceCard\" (card_number, policy_holder_id, policy_owner_id, expire_date) VALUES (?, ?, ?, ?)";
         try (Connection conn = getConnection();
@@ -409,6 +405,7 @@ public class DBUtil {
             e.printStackTrace();
         }
     }
+
     // Method to retrieve Dependent from the database
     public static List<String> getDependent() throws SQLException {
         List<String> dependent = new ArrayList<>();
@@ -426,6 +423,7 @@ public class DBUtil {
         }
         return dependent;
     }
+
     // Method to retrieve Insurance Surveyor from the database
     public static List<String> getInsuranceSurveyor() throws SQLException {
         List<String> insuranceSurveyor = new ArrayList<>();
@@ -443,6 +441,7 @@ public class DBUtil {
         }
         return insuranceSurveyor;
     }
+
     // Method to retrieve Insurance Manager from the database
     public static List<String> getInsuranceManager() throws SQLException {
         List<String> insuranceManager = new ArrayList<>();
@@ -459,23 +458,6 @@ public class DBUtil {
             }
         }
         return insuranceManager;
-    }
-    public static List<String> getPolicyHolders() throws SQLException {
-        List<String> policyHolders = new ArrayList<>();
-        String query = "SELECT u.id, u.full_name " +
-                "FROM users u " +
-                "LEFT JOIN \"InsuranceCard\" ic ON u.id = ic.policy_holder_id " +
-                "WHERE ic.policy_holder_id IS NULL AND u.role = 'POLICY_HOLDER'";
-        try (Connection conn = getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(query);
-             ResultSet rs = pstmt.executeQuery()) {
-            while (rs.next()) {
-                String fullName = rs.getString("full_name");
-                String id = rs.getString("id");
-                policyHolders.add(fullName + " - " + id);
-            }
-        }
-        return policyHolders;
     }
 
     // Method to retrieve policy owners from the database
@@ -494,99 +476,6 @@ public class DBUtil {
             }
         }
         return policyOwners;
-    }
-    public static List<String> getPH() throws SQLException {
-        List<String> policyHolders = new ArrayList<>();
-        String query = "SELECT u.id, u.full_name " +
-                "FROM users u " +
-                "WHERE u.role = 'POLICY_HOLDER'";
-        try (Connection conn = getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(query);
-             ResultSet rs = pstmt.executeQuery()) {
-            while (rs.next()) {
-                String fullName = rs.getString("full_name");
-                String id = rs.getString("id");
-                policyHolders.add(fullName + " - " + id);
-            }
-        }
-        return policyHolders;
-    }
-    public static User getUser(String id) {
-        User user = new User(); // Initialize user to null
-
-        String query = "SELECT * FROM users WHERE users.id = ?"; // Use prepared statement for security
-        try (Connection conn = getConnection();
-             PreparedStatement stmt = conn.prepareStatement(query)) {
-            stmt.setString(1, id); // Set the id parameter
-            try (ResultSet rs = stmt.executeQuery()) {
-                if (rs.next()) {
-                    user = new User(  // Create a User object with retrieved values
-                            rs.getString("id"),
-                            rs.getString("full_name"),
-                            rs.getString("email"),
-                            rs.getString("password"),
-                            UserRole.valueOf(rs.getString("role"))
-                    );
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        return user;
-    }
-    public static InsuranceCard getIC(String card) {
-        InsuranceCard insuranceCard = new InsuranceCard();
-
-        String query = "SELECT card_number, policy_holder_id, policy_owner_id, expire_date FROM \"InsuranceCard\" WHERE card_number = ?";
-        try (Connection conn = getConnection();
-             PreparedStatement stmt = conn.prepareStatement(query)) {
-            stmt.setString(1, card);
-            try (ResultSet rs = stmt.executeQuery()) {
-                if (rs.next()) {
-                    String cardNumber = rs.getString("card_number");
-                    String policyHolderId = rs.getString("policy_holder_id");
-                    String policyOwnerId = rs.getString("policy_owner_id");
-                    Date expireDate = rs.getDate("expire_date");
-
-                    insuranceCard = new InsuranceCard(cardNumber, policyHolderId, policyOwnerId, expireDate);
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        return insuranceCard;
-    }
-    public static List<String> getICForMenu() {
-        List<String> insuranceCardInfoList = new ArrayList<>();
-        String query = "SELECT ic.card_number, ic.policy_holder_id, ph.full_name AS policy_holder_name, ic.policy_owner_id, po.full_name AS policy_owner_name " +
-                "FROM \"InsuranceCard\" ic " +
-                "JOIN \"users\" ph ON ic.policy_holder_id = ph.id " +
-                "JOIN \"users\" po ON ic.policy_owner_id = po.id";
-
-        try (Connection conn = getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(query);
-             ResultSet rs = pstmt.executeQuery()) {
-
-            while (rs.next()) {
-                String cardNumber = rs.getString("card_number");
-                String policyHolderId = rs.getString("policy_holder_id");
-                String policyHolderName = rs.getString("policy_holder_name");
-                String policyOwnerId = rs.getString("policy_owner_id");
-                String policyOwnerName = rs.getString("policy_owner_name");
-
-                String formattedInfo = String.format("%s - %s - %s - %s",
-                        cardNumber, policyHolderId, policyHolderName, policyOwnerName);
-
-                insuranceCardInfoList.add(formattedInfo);
-            }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        return insuranceCardInfoList;
     }
 
     // Get claims for Policy Owner
@@ -689,9 +578,9 @@ public class DBUtil {
     }
 
     public static Customer getCustomerById(String id) {
-        String sql = "SELECT * FROM users WHERE id = ?";
-        try (Connection conn = connect();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        String query = "SELECT * FROM users WHERE id = ?";
+        try (Connection conn = getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(query)) {
             pstmt.setString(1, id);
             ResultSet rs = pstmt.executeQuery();
             if (rs.next()) {
@@ -700,29 +589,40 @@ public class DBUtil {
                         rs.getString("full_name"),
                         rs.getString("email")
                 );
+            } else {
+                System.out.println("No user found with ID: " + id); // Debug statement
             }
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
+            e.printStackTrace();
         }
         return null;
     }
 
     public static List<Claim> getClaimsToExamine() {
         List<Claim> claims = new ArrayList<>();
-        String sql = "SELECT * FROM claims WHERE status = 'waiting for examination'";
-        try (Connection conn = connect();
-             Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery(sql)) {
-            while (rs.next()) {
+        String query = "SELECT * FROM claims WHERE status = 'waiting for examination'";
+        try (Connection connection = getConnection();
+             Statement statement = connection.createStatement();
+             ResultSet resultSet = statement.executeQuery(query)) {
+            while (resultSet.next()) {
                 Claim claim = new Claim(
-                        rs.getString("id"),
-                        rs.getString("policyHolder_name"),
-                        rs.getString("status")
+                        resultSet.getString("id"),
+                        resultSet.getDate("claim_date"),
+                        resultSet.getString("insured_person"),
+                        resultSet.getString("card_number"),
+                        resultSet.getDate("exam_date"),
+                        resultSet.getDouble("claim_amount"),
+                        ClaimStatus.valueOf(resultSet.getString("status")),
+                        resultSet.getString("receiver_bank"),
+                        resultSet.getString("receiver_name"),
+                        resultSet.getString("receiver_number"),
+                        resultSet.getString("policyHolder_name")
                 );
                 claims.add(claim);
+                System.out.println("Claim retrieved: " + claim); // Debug statement
             }
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
+            e.printStackTrace();
         }
         return claims;
     }
@@ -801,87 +701,6 @@ public class DBUtil {
                 throw new IllegalArgumentException("Invalid status: " + status);
         }
 
-//        if (policyHolderName != null && !policyHolderName.isEmpty()) {
-//            query += " AND \"policyHolder_name\" = ?";
-//        }
-//
-////
-////        // Check if amountRange is not empty or null
-////        if (amountRange == null || amountRange.isEmpty()) {
-////            throw new IllegalArgumentException("Amount range cannot be empty or null");
-////        }
-////
-////        if(amountRange.equals("Under 1000")){
-////            query += " AND \"claim_amount\" < 1000.0";
-////        } else if (amountRange.equals("1000 - 2000")) {
-////            query += " AND \"claim_amount\" BETWEEN 1000.0 AND 2000.0";
-////        } else if (amountRange.equals("Above 2000")) {
-////            query += " AND \"claim_amount\" > 2000.0";
-////        }else{
-////            throw new IllegalArgumentException("Invalid amount range: ");
-////        }
-//
-////        switch (amountRange){
-////            case "Under 1000":
-////                query += " AND claim_amount < 1000.0";
-////                break;
-////            case "1000 - 2000":
-////                query += " AND claim_amount BETWEEN 1000.0 AND 2000.0";
-////                break;
-////            case "Above 2000":
-////                query += " AND claim_amount > 2000.0";
-////                break;
-////            default:
-////                throw new IllegalArgumentException("Invalid amount range: ");
-////        }
-//
-////        try (Connection conn = getConnection();
-////             PreparedStatement pstmt = conn.prepareStatement(query);
-////             if (hasPolicyHolderName) {
-////            pstmt.setString(1, policyHolderName);
-////            }
-////             ResultSet rs = pstmt.executeQuery()) {
-////            while (rs.next()) {
-////                filterClaim.add(String.valueOf(new Claim(
-////                        rs.getString("id"),
-////                        rs.getDate("claim_date"),
-////                        rs.getString("insured_person"),
-////                        rs.getString("card_number"),
-////                        rs.getDate("exam_date"),
-////                        null,
-////                        rs.getDouble("claim_amount"),
-////                        ClaimStatus.valueOf(rs.getString("status")),
-////                        rs.getString("receiver_bank"),
-////                        rs.getString("receiver_name"),
-////                        rs.getString("receiver_number"),
-////                        rs.getString("policyHolder_name")
-//        try (Connection conn = getConnection();
-//             PreparedStatement pstmt = conn.prepareStatement(query)) {
-//
-//            // Set the parameter for policyHolderName if it is present
-//                pstmt.setString(1, policyHolderName);
-//
-//
-//            try (ResultSet rs = pstmt.executeQuery()) {
-//                while (rs.next()) {
-//                    filterClaim.add(String.valueOf(new Claim(
-//                            rs.getString("id"),
-//                            rs.getDate("claim_date"),
-//                            rs.getString("insured_person"),
-//                            rs.getString("card_number"),
-//                            rs.getDate("exam_date"),
-//                            null,
-//                            rs.getDouble("claim_amount"),
-//                            ClaimStatus.valueOf(rs.getString("status")),
-//                            rs.getString("receiver_bank"),
-//                            rs.getString("receiver_name"),
-//                            rs.getString("receiver_number"),
-//                            rs.getString("policyHolder_name")
-//                    )));
-//                }
-//            }
-//        }
-//        return filterClaim;
         boolean hasPolicyHolderName = policyHolderName != null && !policyHolderName.isEmpty();
         if (hasPolicyHolderName) {
             query += " AND \"policyHolder_name\" = ?";
@@ -894,7 +713,6 @@ public class DBUtil {
 
             // Set the parameter for policyHolderName if it is present
             if (hasPolicyHolderName) {
-//                int paramIndex = 1;
                 pstmt.setString(1, policyHolderName);
             }
             // Debug: Print the prepared statement parameters
@@ -902,7 +720,6 @@ public class DBUtil {
             if (hasPolicyHolderName) {
                 System.out.println("1: " + policyHolderName);
             }
-
 
             try (ResultSet rs = pstmt.executeQuery()) {
                 while (rs.next()) {
@@ -912,7 +729,6 @@ public class DBUtil {
                             rs.getString("insured_person"),
                             rs.getString("card_number"),
                             rs.getDate("exam_date"),
-                            null,
                             rs.getDouble("claim_amount"),
                             ClaimStatus.valueOf(rs.getString("status")),
                             rs.getString("receiver_bank"),
@@ -940,7 +756,6 @@ public class DBUtil {
         }
         return policyHolders;
     }
-
 
     //(INSURANCE SURVEYOR) Filter Customer
     public static List<String> selectCustomerEmail() throws SQLException {
@@ -973,7 +788,6 @@ public class DBUtil {
         }
         return emails;
     }
-
 
     public static List<String> selectCustomerFullName() throws SQLException {
         List<String> fullName = new ArrayList<>();
@@ -1012,7 +826,6 @@ public class DBUtil {
         // Base query
         String query = "SELECT * FROM users WHERE 1=1";
 
-
         boolean hasRole = role != null && !role.isEmpty();
         if (hasRole) {
             query += " AND \"role\" = ?";
@@ -1034,22 +847,28 @@ public class DBUtil {
         try (Connection conn = getConnection();
              PreparedStatement pstmt = conn.prepareStatement(query)) {
 
-            // Set the parameter for policyHolderName if it is present
-            //if (hasPolicyHolderName) {
-//                int paramIndex = 1;
-            pstmt.setString(1, role);
-            pstmt.setString(2, email);
-            pstmt.setString(3, fullName);
+            // Set the parameters if they are present
+            if (hasRole) {
+                pstmt.setString(1, role);
+            }
+            if (hasEmail) {
+                pstmt.setString(2, email);
+            }
+            if (hasFullName) {
+                pstmt.setString(3, fullName);
+            }
 
-            //}
             // Debug: Print the prepared statement parameters
             System.out.println("Parameters:");
-//            if (hasPolicyHolderName) {
+            if (hasRole) {
                 System.out.println("1: " + role);
-            System.out.println("2: " + email);
-            System.out.println("3: " + fullName);
-//            }
-
+            }
+            if (hasEmail) {
+                System.out.println("2: " + email);
+            }
+            if (hasFullName) {
+                System.out.println("3: " + fullName);
+            }
 
             try (ResultSet rs = pstmt.executeQuery()) {
                 while (rs.next()) {
@@ -1065,5 +884,4 @@ public class DBUtil {
         }
         return filterCustomer;
     }
-    
 }
