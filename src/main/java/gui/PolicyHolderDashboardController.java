@@ -7,6 +7,7 @@ import javafx.scene.control.Button;
 import models.Claim;
 import models.PolicyHolder;
 import java.util.List;
+import java.util.ResourceBundle;
 
 public class PolicyHolderDashboardController {
 
@@ -25,10 +26,19 @@ public class PolicyHolderDashboardController {
 
     private PolicyHolder policyHolder;
 
+    public <URL> void initialize(URL url, ResourceBundle resources) {
+        // This method is called after FXML loading is complete
+        if (policyHolder != null) {
+            welcomeLabel.setText("Welcome, " + policyHolder.getFullName() + "!");
+            loadClaimData(); // Load and display claims in the ListView
+        }
+    }
+
     public void setPolicyHolder(PolicyHolder policyHolder) {
         this.policyHolder = policyHolder;
-        welcomeLabel.setText("Welcome, " + policyHolder.getFullName() + "!");
-        loadClaimData(); // Load and display claims in the ListView
+        if (claimListView != null) { // Check if initialized
+            loadClaimData();
+        }
     }
 
     private void loadClaimData() {

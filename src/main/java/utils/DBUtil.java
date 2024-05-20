@@ -12,6 +12,13 @@ public class DBUtil {
     private static final String USER = "postgres.tfusvrojiuczultagudt";
     private static final String PASSWORD = "fURTHERpROGRAMMING78";
 
+    /*
+    Bao Do's connection
+    private static final String URL = "jdbc:postgresql://aws-0-ap-southeast-1.pooler.supabase.com:5432/postgres";
+    private static final String USER = "postgres.xjekduuxxczbrnzmdhzo";
+    private static final String PASSWORD = "giabaodoxuan";
+    */
+
     public static Connection getConnection() throws SQLException {
         Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
         System.out.println("Connected to the database."); // Debug statement
