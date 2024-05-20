@@ -35,12 +35,12 @@
                 <Font name="Calibri" size="14.0" />
             </font>
         </Button>
-        <Button layoutX="36.0" layoutY="240.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="214.0" text="Update Policy Owner">
+        <Button fx:id="update" layoutX="36.0" layoutY="240.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="214.0" text="Update Policy Owner" onAction="#updatePolicyOwner">
             <font>
                 <Font name="Calibri" size="14.0" />
             </font>
         </Button>
-        <Button layoutX="355.0" layoutY="240.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="214.0" text=" Delete Policy Owner">
+        <Button fx:id="delete" layoutX="355.0" layoutY="240.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="214.0" text=" Delete Policy Owner" onAction="#deletePolicyOwner">
             <font>
                 <Font name="Calibri" size="14.0" />
             </font>
