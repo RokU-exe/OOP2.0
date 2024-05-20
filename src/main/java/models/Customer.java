@@ -2,7 +2,7 @@ package models;
 
 import java.util.List;
 
-public class Customer extends User{
+public class Customer extends User {
     private InsuranceCard insuranceCard;
     private List<Claim> claims;
 
@@ -12,13 +12,19 @@ public class Customer extends User{
         this.claims = claims;
     }
 
+    public Customer(String id, String fullName, String email, String role) {
+        super(id, fullName, email, null, UserRole.valueOf(role));
+    }
+
     public Customer(String id, String fullName, String email) {
+        super(id, fullName, email, null, UserRole.CUSTOMER);
     }
 
     public Customer() {
     }
 
     public Customer(String id, String fullName) {
+        super(id, fullName, null, null, UserRole.CUSTOMER);
     }
 
     public InsuranceCard getInsuranceCard() {
@@ -39,7 +45,7 @@ public class Customer extends User{
 
     @Override
     public String toString() {
-        return "Customer{" + super.toString()+
+        return "Customer{" + super.toString() +
                 "insuranceCard=" + insuranceCard +
                 ", claims=" + claims +
                 '}';
