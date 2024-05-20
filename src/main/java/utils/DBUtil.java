@@ -195,7 +195,6 @@ public class DBUtil {
         return policyHolders;
     }
 
-    //(DEPENDENT)
     public static List<Claim> getFilteredClaims() {
         List<Claim> claims = new ArrayList<>();
         String query = "SELECT claims.* FROM claims INNER JOIN users ON claims.insured_person = users.full_name";
@@ -524,6 +523,61 @@ public class DBUtil {
         return claims;
     }
 
+    // Use to review claim (Insurance Surveyor) before deciding to propose to manager or require more information
+    public static List<Claim> surveyorReviewClaim() {
+        List<Claim> claims = new ArrayList<>();
+        String query = "SELECT * FROM claims WHERE status = 'NEW'";
+        try (Connection conn = getConnection();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(query)) {
+            while (rs.next()) {
+                claims.add(new Claim(
+                        rs.getString("id"),
+                        rs.getDate("claim_date"),
+                        rs.getString("insured_person"),
+                        rs.getString("card_number"),
+                        rs.getDate("exam_date"),
+                        rs.getDouble("claim_amount"),
+                        ClaimStatus.valueOf(rs.getString("status")),
+                        rs.getString("receiver_bank"),
+                        rs.getString("receiver_name"),
+                        rs.getString("receiver_number")
+                ));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return claims;
+    }
+
+    // Use to propose claim to manager (Insurance Surveyor)
+    public static List<Claim> surveyorProposeToManager() {
+        List<Claim> claims = new ArrayList<>();
+        String query = "UPDATE claims SET status = 'PROCESSING' WHERE status = 'NEW'";
+        try (Connection conn = getConnection();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(query)) {
+            while (rs.next()) {
+                claims.add(new Claim(
+                        rs.getString("id"),
+                        rs.getDate("claim_date"),
+                        rs.getString("insured_person"),
+                        rs.getString("card_number"),
+                        rs.getDate("exam_date"),
+                        rs.getDouble("claim_amount"),
+                        ClaimStatus.valueOf(rs.getString("status")),
+                        rs.getString("receiver_bank"),
+                        rs.getString("receiver_name"),
+                        rs.getString("receiver_number")
+                ));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return claims;
+    }
+
     public static Customer getCustomerById(String id) {
         String query = "SELECT * FROM users WHERE id = ?";
         try (Connection conn = getConnection();
@@ -624,85 +678,8 @@ public class DBUtil {
         return conn;
     }
 
-    // INSURANCE SURVEYOR 
-    //Use to review claim before decide to propose to manager or require more information
-    public static List<Claim> surveyorReviewClaim(){
-        List<Claim> claims = new ArrayList<>();
-        String query = "SELECT * FROM claims WHERE \"status\" = 'NEW'";
-        try (Connection conn = getConnection();
-             Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery(query)) {
-            while (rs.next()) {
-                claims.add(new Claim(
-                        rs.getString("id"),
-                        rs.getDate("claim_date"),
-                        rs.getString("insured_person"),
-                        rs.getString("card_number"),
-                        rs.getDate("exam_date"),
-                        null,
-                        rs.getDouble("claim_amount"),
-                        ClaimStatus.valueOf(rs.getString("status")),
-                        rs.getString("receiver_bank"),
-                        rs.getString("receiver_name"),
-                        rs.getString("receiver_number"),
-                        rs.getString("policyHolder_name")
-                ));
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        return claims;
-    }
-
-    //(INSURANCE SURVEYOR) Use to propose claim to manager
-    public static List<Claim> surveyorProposeToManager() throws SQLException {
-        Connection connection = getConnection();
-        String query = "UPDATE claims SET status = 'PROCESSING' WHERE status = 'NEW'";
-        PreparedStatement statement = connection.prepareStatement(query);
-        int rowsAffected = statement.executeUpdate();
-
-        if (rowsAffected == 0) {
-            // No rows were updated, meaning no claims with status 'NEW' were found
-            throw new SQLException("No claims found with status 'NEW'.");
-        }
-
-        System.out.println("All 'NEW' claims updated to 'PROCESSING' successfully.");
-        return null;
-    }
-
-    //(INSURANCE SURVEYOR) Use to require more claim information
-    public static List<Claim> surveyorRequireClaimInformation() throws SQLException {
-        Connection connection = getConnection();
-        String query = "UPDATE claims SET status = 'REJECTED' WHERE status = 'NEW'";
-        PreparedStatement statement = connection.prepareStatement(query);
-        int rowsAffected = statement.executeUpdate();
-
-        if (rowsAffected == 0) {
-            // No rows were updated, meaning no claims with status 'NEW' were found
-            throw new SQLException("No claims found with status 'NEW'.");
-        }
-
-        System.out.println("All 'NEW' claims updated to 'REJECTED' successfully.");
-        return null;
-    }
-    
     //Use to filter claim (INSURANCE SURVEYOR)
-    //Use to load policy holder name in table for function 'Filter Claim' (INSURANCE SURVEYOR)
-    public static List<String> selectPolicyHolderName() throws SQLException {
-        List<String> policyHolders = new ArrayList<>();
-        String query = "SELECT \"policyHolder_name\" FROM claims";
-        try (Connection conn = getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(query);
-             ResultSet rs = pstmt.executeQuery()) {
-            while (rs.next()) {
-                String fullName = rs.getString("policyHolder_name");
-                policyHolders.add(fullName);
-            }
-        }
-        return policyHolders;
-    }
-    public static List<String> surveyorGetFilterClaim(String status, String policyHolderName) throws SQLException {
+    public static List<String> surveyorGetFilterClaim(String status, String policyHolderName /*, String amountRange*/) throws SQLException {
         List<String> filterClaim = new ArrayList<>();
 
         // Base query
@@ -725,7 +702,7 @@ public class DBUtil {
             default:
                 throw new IllegalArgumentException("Invalid status: " + status);
         }
-        
+
         boolean hasPolicyHolderName = policyHolderName != null && !policyHolderName.isEmpty();
         if (hasPolicyHolderName) {
             query += " AND \"policyHolder_name\" = ?";
@@ -738,7 +715,6 @@ public class DBUtil {
 
             // Set the parameter for policyHolderName if it is present
             if (hasPolicyHolderName) {
-//                int paramIndex = 1;
                 pstmt.setString(1, policyHolderName);
             }
             // Debug: Print the prepared statement parameters
@@ -746,7 +722,6 @@ public class DBUtil {
             if (hasPolicyHolderName) {
                 System.out.println("1: " + policyHolderName);
             }
-
 
             try (ResultSet rs = pstmt.executeQuery()) {
                 while (rs.next()) {
@@ -756,7 +731,6 @@ public class DBUtil {
                             rs.getString("insured_person"),
                             rs.getString("card_number"),
                             rs.getDate("exam_date"),
-                            null,
                             rs.getDouble("claim_amount"),
                             ClaimStatus.valueOf(rs.getString("status")),
                             rs.getString("receiver_bank"),
@@ -770,13 +744,42 @@ public class DBUtil {
         return filterClaim;
     }
 
-   
-
+    //Use to load policy holder name in table for function 'Filter Claim' (INSURANCE SURVEYOR)
+    public static List<String> selectPolicyHolderName() throws SQLException {
+        List<String> policyHolders = new ArrayList<>();
+        String query = "SELECT \"policyHolder_name\" FROM claims";
+        try (Connection conn = getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(query);
+             ResultSet rs = pstmt.executeQuery()) {
+            while (rs.next()) {
+                String fullName = rs.getString("policyHolder_name");
+                policyHolders.add(fullName);
+            }
+        }
+        return policyHolders;
+    }
 
     //(INSURANCE SURVEYOR) Filter Customer
     public static List<String> selectCustomerEmail() throws SQLException {
         List<String> emails = new ArrayList<>();
-        String query = "SELECT \"email\" FROM users";
+        String roleD = "DEPENDENT";
+        String rolePO = "POLICY OWNER";
+        String rolePH = "POLICY HOLDER";
+
+        // Base query
+        String query = "SELECT email FROM users WHERE 1=1";
+
+        // Add condition based on the role
+        if ("DEPENDENT".equalsIgnoreCase(roleD)) {
+            query += " AND email LIKE 'd%'";
+        }else if("POLICY OWNER".equalsIgnoreCase(rolePO)){
+            query += " AND email LIKE 'o%'";
+        }else if("POLICY HOLDER".equalsIgnoreCase(rolePH)){
+            query += " AND email LIKE 'h%'";
+        }else{
+            throw new IllegalArgumentException("Invalid email");
+        }
+
         try (Connection conn = getConnection();
              PreparedStatement pstmt = conn.prepareStatement(query);
              ResultSet rs = pstmt.executeQuery()) {
@@ -789,36 +792,89 @@ public class DBUtil {
     }
 
     public static List<String> selectCustomerFullName() throws SQLException {
-        List<String> fullNames = new ArrayList<>();
-        String query = "SELECT \"full_name\" FROM users";
+        List<String> fullName = new ArrayList<>();
+        String roleD = "DEPENDENT";
+        String rolePO = "POLICY OWNER";
+        String rolePH = "POLICY HOLDER";
+
+        // Base query
+        String query = "SELECT full_name FROM users WHERE 1=1";
+
+        // Add condition based on the role
+        if ("DEPENDENT".equalsIgnoreCase(roleD)) {
+            query += " AND role = 'DEPENDENT' ";
+        }else if("POLICY OWNER".equalsIgnoreCase(rolePO)){
+            query += " AND role = 'POLICY OWNER' ";
+        }else if("POLICY HOLDER".equalsIgnoreCase(rolePH)){
+            query += " AND role = 'POLICY HOLDER' ";
+        }else{
+            throw new IllegalArgumentException("Invalid email");
+        }
+
         try (Connection conn = getConnection();
              PreparedStatement pstmt = conn.prepareStatement(query);
              ResultSet rs = pstmt.executeQuery()) {
             while (rs.next()) {
                 String full_name = rs.getString("full_name");
-                fullNames.add(full_name);
+                fullName.add(full_name);
             }
         }
-        return fullNames;
+        return fullName;
     }
-    
 
-    public static List<String> surveyorGetFilterCustomer(String role, String email, String fullName) throws SQLException {
-        List<String> customers = new ArrayList<>();
-        String query = "SELECT * FROM users WHERE \"role\" = ? AND \"email\" = ? AND \"full_name\" = ?";
+    public static List<String> surveyorGetFilterCustomer(String role, String email , String fullName) throws SQLException {
+        List<String> filterCustomer = new ArrayList<>();
+
+        // Base query
+        String query = "SELECT * FROM users WHERE 1=1";
+
+        boolean hasRole = role != null && !role.isEmpty();
+        if (hasRole) {
+            query += " AND \"role\" = ?";
+        }
+
+        boolean hasEmail = email != null && !email.isEmpty();
+        if (hasEmail) {
+            query += " AND \"email\" = ?";
+        }
+
+        boolean hasFullName = fullName != null && !fullName.isEmpty();
+        if (hasFullName) {
+            query += " AND \"full_name\" = ?";
+        }
+
+        // Debug: Print the final query
+        System.out.println("Final query: " + query);
 
         try (Connection conn = getConnection();
              PreparedStatement pstmt = conn.prepareStatement(query)) {
-            pstmt.setString(1, role);
-            pstmt.setString(2, email);
-            pstmt.setString(3, fullName);
-            System.out.println("1: " + role);
-            System.out.println("2: " + email);
-            System.out.println("3: " + fullName);
+
+            // Set the parameters if they are present
+            if (hasRole) {
+                pstmt.setString(1, role);
+            }
+            if (hasEmail) {
+                pstmt.setString(2, email);
+            }
+            if (hasFullName) {
+                pstmt.setString(3, fullName);
+            }
+
+            // Debug: Print the prepared statement parameters
+            System.out.println("Parameters:");
+            if (hasRole) {
+                System.out.println("1: " + role);
+            }
+            if (hasEmail) {
+                System.out.println("2: " + email);
+            }
+            if (hasFullName) {
+                System.out.println("3: " + fullName);
+            }
 
             try (ResultSet rs = pstmt.executeQuery()) {
                 while (rs.next()) {
-                    customers.add(String.valueOf(new User(
+                    filterCustomer.add(String.valueOf(new User(
                             rs.getString("id"),
                             rs.getString("full_name"),
                             rs.getString("email"),
@@ -828,6 +884,6 @@ public class DBUtil {
                 }
             }
         }
-        return customers;
+        return filterCustomer;
     }
 }
