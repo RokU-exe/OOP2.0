@@ -195,6 +195,7 @@ public class DBUtil {
         return policyHolders;
     }
 
+    //(DEPENDENT)
     public static List<Claim> getFilteredClaims() {
         List<Claim> claims = new ArrayList<>();
         String query = "SELECT claims.* FROM claims INNER JOIN users ON claims.insured_person = users.full_name";
@@ -523,61 +524,6 @@ public class DBUtil {
         return claims;
     }
 
-    // Use to review claim (Insurance Surveyor) before deciding to propose to manager or require more information
-    public static List<Claim> surveyorReviewClaim() {
-        List<Claim> claims = new ArrayList<>();
-        String query = "SELECT * FROM claims WHERE status = 'NEW'";
-        try (Connection conn = getConnection();
-             Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery(query)) {
-            while (rs.next()) {
-                claims.add(new Claim(
-                        rs.getString("id"),
-                        rs.getDate("claim_date"),
-                        rs.getString("insured_person"),
-                        rs.getString("card_number"),
-                        rs.getDate("exam_date"),
-                        rs.getDouble("claim_amount"),
-                        ClaimStatus.valueOf(rs.getString("status")),
-                        rs.getString("receiver_bank"),
-                        rs.getString("receiver_name"),
-                        rs.getString("receiver_number")
-                ));
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        return claims;
-    }
-
-    // Use to propose claim to manager (Insurance Surveyor)
-    public static List<Claim> surveyorProposeToManager() {
-        List<Claim> claims = new ArrayList<>();
-        String query = "UPDATE claims SET status = 'PROCESSING' WHERE status = 'NEW'";
-        try (Connection conn = getConnection();
-             Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery(query)) {
-            while (rs.next()) {
-                claims.add(new Claim(
-                        rs.getString("id"),
-                        rs.getDate("claim_date"),
-                        rs.getString("insured_person"),
-                        rs.getString("card_number"),
-                        rs.getDate("exam_date"),
-                        rs.getDouble("claim_amount"),
-                        ClaimStatus.valueOf(rs.getString("status")),
-                        rs.getString("receiver_bank"),
-                        rs.getString("receiver_name"),
-                        rs.getString("receiver_number")
-                ));
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return claims;
-    }
-
     public static Customer getCustomerById(String id) {
         String query = "SELECT * FROM users WHERE id = ?";
         try (Connection conn = getConnection();
@@ -678,6 +624,69 @@ public class DBUtil {
         return conn;
     }
 
+    // INSURANCE SURVEYOR 
+    //Use to review claim before decide to propose to manager or require more information
+    public static List<Claim> surveyorReviewClaim(){
+        List<Claim> claims = new ArrayList<>();
+        String query = "SELECT * FROM claims WHERE \"status\" = 'NEW'";
+        try (Connection conn = getConnection();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(query)) {
+            while (rs.next()) {
+                claims.add(new Claim(
+                        rs.getString("id"),
+                        rs.getDate("claim_date"),
+                        rs.getString("insured_person"),
+                        rs.getString("card_number"),
+                        rs.getDate("exam_date"),
+                        null,
+                        rs.getDouble("claim_amount"),
+                        ClaimStatus.valueOf(rs.getString("status")),
+                        rs.getString("receiver_bank"),
+                        rs.getString("receiver_name"),
+                        rs.getString("receiver_number"),
+                        rs.getString("policyHolder_name")
+                ));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return claims;
+    }
+
+    //(INSURANCE SURVEYOR) Use to propose claim to manager
+    public static List<Claim> surveyorProposeToManager() throws SQLException {
+        Connection connection = getConnection();
+        String query = "UPDATE claims SET status = 'PROCESSING' WHERE status = 'NEW'";
+        PreparedStatement statement = connection.prepareStatement(query);
+        int rowsAffected = statement.executeUpdate();
+
+        if (rowsAffected == 0) {
+            // No rows were updated, meaning no claims with status 'NEW' were found
+            throw new SQLException("No claims found with status 'NEW'.");
+        }
+
+        System.out.println("All 'NEW' claims updated to 'PROCESSING' successfully.");
+        return null;
+    }
+
+    //(INSURANCE SURVEYOR) Use to require more claim information
+    public static List<Claim> surveyorRequireClaimInformation() throws SQLException {
+        Connection connection = getConnection();
+        String query = "UPDATE claims SET status = 'REJECTED' WHERE status = 'NEW'";
+        PreparedStatement statement = connection.prepareStatement(query);
+        int rowsAffected = statement.executeUpdate();
+
+        if (rowsAffected == 0) {
+            // No rows were updated, meaning no claims with status 'NEW' were found
+            throw new SQLException("No claims found with status 'NEW'.");
+        }
+
+        System.out.println("All 'NEW' claims updated to 'REJECTED' successfully.");
+        return null;
+    }
+    
     //Use to filter claim (INSURANCE SURVEYOR)
     //Use to load policy holder name in table for function 'Filter Claim' (INSURANCE SURVEYOR)
     public static List<String> selectPolicyHolderName() throws SQLException {
