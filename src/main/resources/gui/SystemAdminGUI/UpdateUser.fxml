@@ -8,7 +8,7 @@
 
 <AnchorPane prefHeight="400.0" prefWidth="600.0" style="-fx-background-color: #CDE8E5;" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.SystemAdminController">
     <children>
-        <Label alignment="CENTER" contentDisplay="CENTER" layoutX="128.0" layoutY="5.0" prefHeight="118.0" prefWidth="497.0" style="-fx-background-color: #CDE8E5;">
+        <Label alignment="CENTER" contentDisplay="CENTER" layoutX="128.0" prefHeight="118.0" prefWidth="497.0" style="-fx-background-color: #CDE8E5;" text="UPDATE NEW USER">
             <font>
                 <Font name="Calibri" size="24.0" />
             </font></Label>
@@ -25,30 +25,40 @@
                 <Blend opacity="0.96" />
             </effect>
         </ImageView>
-        <Button fx:id="add" layoutX="36.0" layoutY="101.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="214.0" text="Create new Policy Owner" onAction="#addUser">
-            <font>
-                <Font name="Calibri" size="14.0" />
-            </font>
-        </Button>
-        <Button fx:id="read" layoutX="355.0" layoutY="101.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="214.0" text="Read Policy Owner" onAction="#readPolicyOwner">
-            <font>
-                <Font name="Calibri" size="14.0" />
-            </font>
-        </Button>
-        <Button fx:id="update" layoutX="36.0" layoutY="240.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="214.0" text="Update Policy Owner" onAction="#updatePolicyOwner">
-            <font>
-                <Font name="Calibri" size="14.0" />
-            </font>
-        </Button>
-        <Button fx:id="delete" layoutX="355.0" layoutY="240.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="214.0" text=" Delete Policy Owner" onAction="#deletePolicyOwner">
-            <font>
-                <Font name="Calibri" size="14.0" />
-            </font>
-        </Button>
-        <Button fx:id="back" layoutX="525.0" layoutY="5.0" mnemonicParsing="false" text="Back to Dashboard" onAction="#backtoDashboard">
+        <Button fx:id="back" layoutX="525.0" layoutY="5.0" mnemonicParsing="false" onAction="#backtoDashboard" text="Back to Dashboard">
             <font>
                 <Font size="14.0" />
             </font>
         </Button>
+        <TextField fx:id="upfullname" layoutX="227.0" layoutY="165.0" />
+        <Label />
+        <Label layoutX="89.0" layoutY="167.0" text="Full name:">
+            <font>
+                <Font name="Calibri" size="18.0" />
+            </font>
+        </Label>
+        <Label layoutX="88.0" layoutY="242.0" text="Email:">
+            <font>
+                <Font name="Calibri" size="18.0" />
+            </font>
+        </Label>
+        <TextField fx:id="upemail" layoutX="227.0" layoutY="240.0" />
+        <Label layoutX="88.0" layoutY="317.0" text="Password: ">
+            <font>
+                <Font name="Calibri" size="18.0" />
+            </font>
+        </Label>
+        <TextField fx:id="uppassword" layoutX="227.0" layoutY="315.0" />
+        <Button id="update" fx:id="doneUpdating" layoutX="502.0" layoutY="168.0" mnemonicParsing="false" onAction="#doneUpdatingPH" prefHeight="47.0" prefWidth="106.0" text="UPDATE">
+            <font>
+                <Font name="Calibri" size="18.0" />
+            </font>
+        </Button>
+      <Label layoutX="227.0" layoutY="95.0" text="Fill in the attribute that you want to update.">
+         <font>
+            <Font name="Calibri" size="18.0" />
+         </font>
+      </Label>
+
     </children>
 </AnchorPane>

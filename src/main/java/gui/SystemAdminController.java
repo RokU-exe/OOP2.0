@@ -1,5 +1,6 @@
 package gui;
 
+import controllers.CustomerManagerImpl;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -12,9 +13,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
-import kotlin.jvm.internal.PackageReference;
 import models.InsuranceCard;
-import models.SystemAdmin;
 import models.User;
 import models.UserRole;
 import utils.DBUtil;
@@ -28,8 +27,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.ResourceBundle;
 
-import static models.UserRole.*;
-
 public class SystemAdminController implements Initializable {
 
 
@@ -37,13 +34,13 @@ public class SystemAdminController implements Initializable {
     public void initialize(URL url, ResourceBundle resourceBundle) {
 
     }
-    private SystemAdmin systemAdmin;
+    private CustomerManagerImpl.SystemAdmin systemAdmin;
     public SystemAdminController() {
         // Default constructor
     }
 
 
-    public SystemAdminController(SystemAdmin systemAdmin) {
+    public SystemAdminController(CustomerManagerImpl.SystemAdmin systemAdmin) {
         this.systemAdmin = systemAdmin;
     }
 
@@ -138,37 +135,8 @@ public class SystemAdminController implements Initializable {
        alert.setContentText(user.toString());
        alert.showAndWait();
 
-       try {
-           FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/SystemAdminGUI/systemAdminDashboard.fxml"));
-           Parent adminDashboardRoot = loader.load();
-
-           Node sourceNode = doneAdding; // Use any node from the current scene
-
-           // Get the primary stage from the source node's scene
-           Stage primaryStage = (Stage) sourceNode.getScene().getWindow();
-
-           primaryStage.setScene(new Scene(adminDashboardRoot));
-           primaryStage.show();
-       } catch (IOException e) {
-           e.printStackTrace();
-           // Handle any errors loading the admin dashboard FXML
-       }
+       dashBoard(doneAdding);
    }
-
-    public void updateUser(User updatedUser) {
-        // Update a user's information in the database
-        DBUtil.updateUser(updatedUser);
-    }
-
-    public void deleteUser(String userId) {
-        // Delete a user by ID from the database
-        DBUtil.deleteUser(userId);
-    }
-
-    public List<User> getFilteredUsers(String filterCriteria) {
-        // Retrieve all users based on a filter
-        return DBUtil.getFilteredCustomers(filterCriteria);
-    }
 
     public double calculateTotalClaimedAmount() {
         // Sum up the successfully claimed amount with different parameters
@@ -292,21 +260,7 @@ public class SystemAdminController implements Initializable {
         alert.setHeaderText("Card: "+ cardNumber + " Added Successfully!");
         alert.setContentText(newIC.toString());
         alert.showAndWait();
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/SystemAdminGUI/systemAdminDashboard.fxml"));
-            Parent adminDashboardRoot = loader.load();
-
-            Node sourceNode = doneAddingIC; // Use any node from the current scene
-
-            // Get the primary stage from the source node's scene
-            Stage primaryStage = (Stage) sourceNode.getScene().getWindow();
-
-            primaryStage.setScene(new Scene(adminDashboardRoot));
-            primaryStage.show();
-        } catch (IOException e) {
-            e.printStackTrace();
-            // Handle any errors loading the admin dashboard FXML
-        }
+        dashBoard(doneAddingIC);
     }
 
     private void populateMenuButtons() throws SQLException {
@@ -332,21 +286,7 @@ public class SystemAdminController implements Initializable {
     @FXML
 // Open the Admin Dashboard
     public void openAdminDashboard(Button loginButton) {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/SystemAdminGUI/systemAdminDashboard.fxml"));
-            Parent adminDashboardRoot = loader.load();
-
-            Node sourceNode = loginButton; // Use any node from the current scene
-
-            // Get the primary stage from the source node's scene
-            Stage primaryStage = (Stage) sourceNode.getScene().getWindow();
-
-            primaryStage.setScene(new Scene(adminDashboardRoot));
-            primaryStage.show();
-        } catch (IOException e) {
-            e.printStackTrace();
-            // Handle any errors loading the admin dashboard FXML
-        }
+        dashBoard(loginButton);
     }
 
     @FXML
@@ -470,25 +410,91 @@ public class SystemAdminController implements Initializable {
     @FXML
     private Button back;
     public void backtoDashboard() {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/SystemAdminGUI/systemAdminDashboard.fxml"));
-            Parent adminDashboardRoot = loader.load();
-
-            Node sourceNode = back; // Use any node from the current scene
-
-            // Get the primary stage from the source node's scene
-            Stage primaryStage = (Stage) sourceNode.getScene().getWindow();
-
-            primaryStage.setScene(new Scene(adminDashboardRoot));
-            primaryStage.show();
-        } catch (IOException e) {
-            e.printStackTrace();
-            // Handle any errors loading the admin dashboard FXML
-        }
+        dashBoard(back);
     }
     @FXML
     private Button read;
     // Read dependent
+    @FXML
+    private MenuButton readIC;
+    @FXML
+    private Button readIC1;
+
+    @FXML
+    private void readInsuranceCard() throws SQLException {
+        AnchorPane root = new AnchorPane();
+        root.setPrefSize(600, 400);
+        root.setStyle("-fx-background-color: #CDE8E5;");
+
+        Label titleLabel = new Label("READ INSURANCE CARD");
+        titleLabel.setLayoutX(128);
+        titleLabel.setPrefHeight(118);
+        titleLabel.setPrefWidth(497);
+        titleLabel.setStyle("-fx-background-color: #CDE8E5;");
+        titleLabel.setFont(new Font("Calibri", 24));
+        titleLabel.setAlignment(javafx.geometry.Pos.CENTER);
+
+        ImageView logoImageView = new ImageView(new Image("https://1000logos.net/wp-content/uploads/2019/07/RMIT-Logo.png"));
+        logoImageView.setFitHeight(88);
+        logoImageView.setFitWidth(286);
+        logoImageView.setPreserveRatio(true);
+        logoImageView.setPickOnBounds(true);
+
+        ImageView blendImageView = new ImageView(new Image("https://tse1.mm.bing.net/th?id=OIP.QqEXi7j5Z0ZMFu8pLgTxzAHaHa&amp;pid=Api&amp;P=0&amp;h=180"));
+        blendImageView.setFitHeight(150);
+        blendImageView.setFitWidth(200);
+        blendImageView.setLayoutX(450);
+        blendImageView.setLayoutY(242);
+        blendImageView.setPreserveRatio(true);
+        blendImageView.setPickOnBounds(true);
+        blendImageView.setBlendMode(javafx.scene.effect.BlendMode.MULTIPLY);
+
+        Label policyOwnerLabel = new Label("Insurance Card:");
+        policyOwnerLabel.setLayoutX(77);
+        policyOwnerLabel.setLayoutY(126);
+        policyOwnerLabel.setFont(new Font("Calibri", 18));
+
+        readIC = new MenuButton("Select Insurance Card");
+        readIC.setLayoutX(248);
+        readIC.setLayoutY(124);
+        readIC.setPrefHeight(26);
+        readIC.setPrefWidth(367);
+        populatereadIC();
+
+        readIC1 = new Button("READ");
+        readIC1.setLayoutX(179);
+        readIC1.setLayoutY(303);
+        readIC1.setPrefHeight(47);
+        readIC1.setPrefWidth(106);
+        readIC1.setFont(new Font("Calibri", 18));
+        readIC1.setOnAction(event -> doneReadingIC());
+
+        root.getChildren().addAll(titleLabel, logoImageView, blendImageView, policyOwnerLabel, readIC, readIC1);
+
+
+        read.getScene().setRoot(root);
+    }
+    private void populatereadIC() throws SQLException {
+        List<String> insuranceCard = DBUtil.getICForMenu();
+        readIC.getItems().clear();
+
+        for (String is : insuranceCard) {
+            MenuItem menuItem = new MenuItem(is);
+            menuItem.setOnAction(event -> readIC.setText(is));
+            readIC.getItems().add(menuItem);
+        }
+    }
+    public void doneReadingIC(){
+        InsuranceCard user = DBUtil.getIC(extractCardNumber(readIC.getText()));
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+
+        alert.setTitle("Read User:");
+        alert.setHeaderText("InsuranceCard: "+ user.getCardNumber());
+        alert.setContentText(user.toString());
+        alert.showAndWait();
+        dashBoard(readIC1);
+    }
+
     @FXML
     private MenuButton readD;
     @FXML
@@ -565,21 +571,7 @@ public class SystemAdminController implements Initializable {
         alert.setHeaderText("User "+ user.getFullName());
         alert.setContentText(user.toString());
         alert.showAndWait();
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/SystemAdminGUI/systemAdminDashboard.fxml"));
-            Parent adminDashboardRoot = loader.load();
-
-            Node sourceNode = readD1; // Use any node from the current scene
-
-            // Get the primary stage from the source node's scene
-            Stage primaryStage = (Stage) sourceNode.getScene().getWindow();
-
-            primaryStage.setScene(new Scene(adminDashboardRoot));
-            primaryStage.show();
-        } catch (IOException e) {
-            e.printStackTrace();
-            // Handle any errors loading the admin dashboard FXML
-        }
+        dashBoard(readD1);
     }
     // Read insurance surveyor
     @FXML
@@ -657,21 +649,7 @@ public class SystemAdminController implements Initializable {
         alert.setHeaderText("User "+ user.getFullName());
         alert.setContentText(user.toString());
         alert.showAndWait();
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/SystemAdminGUI/systemAdminDashboard.fxml"));
-            Parent adminDashboardRoot = loader.load();
-
-            Node sourceNode = readIS; // Use any node from the current scene
-
-            // Get the primary stage from the source node's scene
-            Stage primaryStage = (Stage) sourceNode.getScene().getWindow();
-
-            primaryStage.setScene(new Scene(adminDashboardRoot));
-            primaryStage.show();
-        } catch (IOException e) {
-            e.printStackTrace();
-            // Handle any errors loading the admin dashboard FXML
-        }
+        dashBoard(readIS);
     }
     //Read Insurance Manager
     @FXML
@@ -751,21 +729,7 @@ public class SystemAdminController implements Initializable {
         alert.setHeaderText("User "+ user.getFullName());
         alert.setContentText(user.toString());
         alert.showAndWait();
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/SystemAdminGUI/systemAdminDashboard.fxml"));
-            Parent adminDashboardRoot = loader.load();
-
-            Node sourceNode = readIM1; // Use any node from the current scene
-
-            // Get the primary stage from the source node's scene
-            Stage primaryStage = (Stage) sourceNode.getScene().getWindow();
-
-            primaryStage.setScene(new Scene(adminDashboardRoot));
-            primaryStage.show();
-        } catch (IOException e) {
-            e.printStackTrace();
-            // Handle any errors loading the admin dashboard FXML
-        }
+        dashBoard(readIM1);
     }
     // Read policy owners
     @FXML
@@ -844,21 +808,7 @@ public class SystemAdminController implements Initializable {
         alert.setHeaderText("User "+ user.getFullName());
         alert.setContentText(user.toString());
         alert.showAndWait();
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/SystemAdminGUI/systemAdminDashboard.fxml"));
-            Parent adminDashboardRoot = loader.load();
-
-            Node sourceNode = readPO; // Use any node from the current scene
-
-            // Get the primary stage from the source node's scene
-            Stage primaryStage = (Stage) sourceNode.getScene().getWindow();
-
-            primaryStage.setScene(new Scene(adminDashboardRoot));
-            primaryStage.show();
-        } catch (IOException e) {
-            e.printStackTrace();
-            // Handle any errors loading the admin dashboard FXML
-        }
+        dashBoard(readPO);
 
     }
     // Read Policy Holder
@@ -938,11 +888,867 @@ public class SystemAdminController implements Initializable {
         alert.setHeaderText("User "+ user.getFullName());
         alert.setContentText(user.toString());
         alert.showAndWait();
+        dashBoard(readPH);
+    }
+    ////////////////////////UPDATE SECTION/////////////////////////////////////////////////////////////////////////////////////
+   @FXML
+   private Button update;
+    @FXML
+    private Button upPH;
+    @FXML
+    private MenuButton upPH1;
+    @FXML
+    private Button doneUpdating;
+// updating policy holder
+    @FXML
+    private void updatePolicyHolder() throws SQLException {
+        AnchorPane root = new AnchorPane();
+        root.setPrefSize(600, 400);
+        root.setStyle("-fx-background-color: #CDE8E5;");
+
+        Label titleLabel = new Label("UPDATE POLICY HOLDER");
+        titleLabel.setLayoutX(128);
+        titleLabel.setPrefHeight(118);
+        titleLabel.setPrefWidth(497);
+        titleLabel.setStyle("-fx-background-color: #CDE8E5;");
+        titleLabel.setFont(new Font("Calibri", 24));
+        titleLabel.setAlignment(javafx.geometry.Pos.CENTER);
+
+        ImageView logoImageView = new ImageView(new Image("https://1000logos.net/wp-content/uploads/2019/07/RMIT-Logo.png"));
+        logoImageView.setFitHeight(88);
+        logoImageView.setFitWidth(286);
+        logoImageView.setPreserveRatio(true);
+        logoImageView.setPickOnBounds(true);
+
+        ImageView blendImageView = new ImageView(new Image("https://tse1.mm.bing.net/th?id=OIP.QqEXi7j5Z0ZMFu8pLgTxzAHaHa&amp;pid=Api&amp;P=0&amp;h=180"));
+        blendImageView.setFitHeight(150);
+        blendImageView.setFitWidth(200);
+        blendImageView.setLayoutX(450);
+        blendImageView.setLayoutY(242);
+        blendImageView.setPreserveRatio(true);
+        blendImageView.setPickOnBounds(true);
+        blendImageView.setBlendMode(javafx.scene.effect.BlendMode.MULTIPLY);
+
+        Label policyHolderLabel = new Label("Policy Holder:");
+        policyHolderLabel.setLayoutX(77);
+        policyHolderLabel.setLayoutY(126);
+        policyHolderLabel.setFont(new Font("Calibri", 18));
+        upPH1 = new MenuButton("Select Policy Holder");
+        upPH1.setLayoutX(248);
+        upPH1.setLayoutY(124);
+        upPH1.setPrefHeight(26);
+        upPH1.setPrefWidth(367);
+
+        upPH = new Button("UPDATE");
+        upPH.setLayoutX(179);
+        upPH.setLayoutY(303);
+        upPH.setPrefHeight(47);
+        upPH.setPrefWidth(106);
+        upPH.setFont(new Font("Calibri", 18));
+        upPH.setOnAction(event -> goToUpdate());
+
+        root.getChildren().addAll(titleLabel, logoImageView, blendImageView, policyHolderLabel, upPH1, upPH);
+
+        populateUpPH1();
+        update.getScene().setRoot(root);
+    }
+    private void populateUpPH1() throws SQLException {
+        List<String> policyHolders = DBUtil.getPH();
+
+        upPH1.getItems().clear();
+
+        for (String holder : policyHolders) {
+            MenuItem menuItem = new MenuItem(holder);
+            menuItem.setOnAction(event -> {
+                upPH1.setText(holder);
+                SharedData.getInstance().setSelectedPolicyHolder(holder);
+            });
+            upPH1.getItems().add(menuItem);
+        }
+    }
+
+    public void goToUpdate(){
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/SystemAdminGUI/UpdateUser.fxml"));
+            Parent adminDashboardRoot = loader.load();
+
+            Node sourceNode = upPH; // Use any node from the current scene
+
+            // Get the primary stage from the source node's scene
+            Stage primaryStage = (Stage) sourceNode.getScene().getWindow();
+
+            primaryStage.setScene(new Scene(adminDashboardRoot));
+            primaryStage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+            // Handle any errors loading the admin dashboard FXML
+        }
+    }
+    @FXML
+    private TextField upemail;
+    @FXML
+    private TextField upfullname;
+    @FXML
+    private TextField uppassword;
+
+    public void doneUpdatingPH() {
+        SharedData sharedData = SharedData.getInstance();
+        String selectedEntity;
+        if (sharedData.isUpdatingPolicyHolder()) {
+            selectedEntity = sharedData.getSelectedPolicyHolder();
+        } else if (sharedData.isUpdatingDependent()) {
+            selectedEntity = sharedData.getSelectedDependent();
+        } else if (sharedData.isUpdatingInsuranceSurveyor()) {
+            selectedEntity = sharedData.getSelectedInsuranceSurveyor();
+        } else if (sharedData.isUpdatingInsuranceManager()) {
+            selectedEntity = sharedData.getSelectedInsuranceManager();
+        } else {
+            selectedEntity = sharedData.getSelectedPolicyOwner();
+        }
+
+        if (selectedEntity != null) {
+            User user = DBUtil.getUser(extractIdFromText(selectedEntity));
+            String name = upfullname.getText();
+            String email = upemail.getText();
+            String password = uppassword.getText();
+
+            if (name != null && !name.isEmpty()) {
+                user.setFullName(name);
+            }
+            if (email != null && !email.isEmpty()) {
+                user.setEmail(email);
+            }
+            if (password != null && !password.isEmpty()) {
+                user.setPassword(password);
+            }
+            DBUtil.updateUser(user);
+
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Updated User:");
+            alert.setHeaderText("User " + user.getId());
+            alert.setContentText(user.toString());
+            alert.showAndWait();
+        } else {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText("No selection");
+            alert.setContentText("Please select a policy holder, policy owner, dependent, insurance surveyor, or insurance manager to update.");
+            alert.showAndWait();
+        }
+        dashBoard(upPH);
+    }
+
+
+    //update Policy Owner
+    @FXML
+    private MenuButton upPO1;
+
+    @FXML
+    private void updatePolicyOwner() throws SQLException {
+        AnchorPane root = new AnchorPane();
+        root.setPrefSize(600, 400);
+        root.setStyle("-fx-background-color: #CDE8E5;");
+
+        Label titleLabel = new Label("UPDATE POLICY OWNER");
+        titleLabel.setLayoutX(128);
+        titleLabel.setPrefHeight(118);
+        titleLabel.setPrefWidth(497);
+        titleLabel.setStyle("-fx-background-color: #CDE8E5;");
+        titleLabel.setFont(new Font("Calibri", 24));
+        titleLabel.setAlignment(javafx.geometry.Pos.CENTER);
+
+        ImageView logoImageView = new ImageView(new Image("https://1000logos.net/wp-content/uploads/2019/07/RMIT-Logo.png"));
+        logoImageView.setFitHeight(88);
+        logoImageView.setFitWidth(286);
+        logoImageView.setPreserveRatio(true);
+        logoImageView.setPickOnBounds(true);
+
+        ImageView blendImageView = new ImageView(new Image("https://tse1.mm.bing.net/th?id=OIP.QqEXi7j5Z0ZMFu8pLgTxzAHaHa&amp;pid=Api&amp;P=0&amp;h=180"));
+        blendImageView.setFitHeight(150);
+        blendImageView.setFitWidth(200);
+        blendImageView.setLayoutX(450);
+        blendImageView.setLayoutY(242);
+        blendImageView.setPreserveRatio(true);
+        blendImageView.setPickOnBounds(true);
+        blendImageView.setBlendMode(javafx.scene.effect.BlendMode.MULTIPLY);
+
+        Label policyHolderLabel = new Label("Policy Owners:");
+        policyHolderLabel.setLayoutX(77);
+        policyHolderLabel.setLayoutY(126);
+        policyHolderLabel.setFont(new Font("Calibri", 18));
+        upPO1 = new MenuButton("Select Policy Owner");
+        upPO1.setLayoutX(248);
+        upPO1.setLayoutY(124);
+        upPO1.setPrefHeight(26);
+        upPO1.setPrefWidth(367);
+
+        upPH = new Button("UPDATE");
+        upPH.setLayoutX(179);
+        upPH.setLayoutY(303);
+        upPH.setPrefHeight(47);
+        upPH.setPrefWidth(106);
+        upPH.setFont(new Font("Calibri", 18));
+        upPH.setOnAction(event -> goToUpdate());
+
+        root.getChildren().addAll(titleLabel, logoImageView, blendImageView, policyHolderLabel, upPO1, upPH);
+
+        populateUpPO1();
+        update.getScene().setRoot(root);
+    }
+    private void populateUpPO1() throws SQLException {
+        List<String> policyOwners = DBUtil.getPolicyOwners(); // Assuming you have a method to get policy owners
+
+        upPO1.getItems().clear(); // Assuming upPO1 is your MenuButton for policy owners
+
+        for (String owner : policyOwners) {
+            MenuItem menuItem = new MenuItem(owner);
+            menuItem.setOnAction(event -> {
+                upPO1.setText(owner);
+                SharedData.getInstance().setSelectedPolicyOwner(owner);
+            });
+            upPO1.getItems().add(menuItem);
+        }
+    }
+    // update Dependent
+    @FXML
+    private MenuButton upDependent;
+    @FXML
+    private void updateDependent() throws SQLException {
+        AnchorPane root = new AnchorPane();
+        root.setPrefSize(600, 400);
+        root.setStyle("-fx-background-color: #CDE8E5;");
+
+        Label titleLabel = new Label("UPDATE DELETE");
+        titleLabel.setLayoutX(128);
+        titleLabel.setPrefHeight(118);
+        titleLabel.setPrefWidth(497);
+        titleLabel.setStyle("-fx-background-color: #CDE8E5;");
+        titleLabel.setFont(new Font("Calibri", 24));
+        titleLabel.setAlignment(javafx.geometry.Pos.CENTER);
+
+        ImageView logoImageView = new ImageView(new Image("https://1000logos.net/wp-content/uploads/2019/07/RMIT-Logo.png"));
+        logoImageView.setFitHeight(88);
+        logoImageView.setFitWidth(286);
+        logoImageView.setPreserveRatio(true);
+        logoImageView.setPickOnBounds(true);
+
+        ImageView blendImageView = new ImageView(new Image("https://tse1.mm.bing.net/th?id=OIP.QqEXi7j5Z0ZMFu8pLgTxzAHaHa&amp;pid=Api&amp;P=0&amp;h=180"));
+        blendImageView.setFitHeight(150);
+        blendImageView.setFitWidth(200);
+        blendImageView.setLayoutX(450);
+        blendImageView.setLayoutY(242);
+        blendImageView.setPreserveRatio(true);
+        blendImageView.setPickOnBounds(true);
+        blendImageView.setBlendMode(javafx.scene.effect.BlendMode.MULTIPLY);
+
+        Label policyHolderLabel = new Label("Dependent:");
+        policyHolderLabel.setLayoutX(77);
+        policyHolderLabel.setLayoutY(126);
+        policyHolderLabel.setFont(new Font("Calibri", 18));
+        upDependent = new MenuButton("Select Dependent");
+        upDependent.setLayoutX(248);
+        upDependent.setLayoutY(124);
+        upDependent.setPrefHeight(26);
+        upDependent.setPrefWidth(367);
+
+        upPH = new Button("UPDATE");
+        upPH.setLayoutX(179);
+        upPH.setLayoutY(303);
+        upPH.setPrefHeight(47);
+        upPH.setPrefWidth(106);
+        upPH.setFont(new Font("Calibri", 18));
+        upPH.setOnAction(event -> goToUpdate());
+
+        root.getChildren().addAll(titleLabel, logoImageView, blendImageView, policyHolderLabel, upDependent, upPH);
+
+        populateUpDependent();
+        update.getScene().setRoot(root);
+    }
+
+    private void populateUpDependent() throws SQLException {
+        List<String> dependents = DBUtil.getDependent();
+
+        upDependent.getItems().clear();
+
+        for (String dependent : dependents) {
+            MenuItem menuItem = new MenuItem(dependent);
+            menuItem.setOnAction(event -> {
+                upDependent.setText(dependent);
+                SharedData.getInstance().setSelectedDependent(dependent);
+            });
+            upDependent.getItems().add(menuItem);
+        }
+    }
+    @FXML
+    private MenuButton upInsuranceSurveyor;
+    @FXML
+    private void updateInsuranceSurveyor() throws SQLException {
+        AnchorPane root = new AnchorPane();
+        root.setPrefSize(600, 400);
+        root.setStyle("-fx-background-color: #CDE8E5;");
+
+        Label titleLabel = new Label("UPDATE INSURANCE SURVEYOR");
+        titleLabel.setLayoutX(128);
+        titleLabel.setPrefHeight(118);
+        titleLabel.setPrefWidth(497);
+        titleLabel.setStyle("-fx-background-color: #CDE8E5;");
+        titleLabel.setFont(new Font("Calibri", 24));
+        titleLabel.setAlignment(javafx.geometry.Pos.CENTER);
+
+        ImageView logoImageView = new ImageView(new Image("https://1000logos.net/wp-content/uploads/2019/07/RMIT-Logo.png"));
+        logoImageView.setFitHeight(88);
+        logoImageView.setFitWidth(286);
+        logoImageView.setPreserveRatio(true);
+        logoImageView.setPickOnBounds(true);
+
+        ImageView blendImageView = new ImageView(new Image("https://tse1.mm.bing.net/th?id=OIP.QqEXi7j5Z0ZMFu8pLgTxzAHaHa&amp;pid=Api&amp;P=0&amp;h=180"));
+        blendImageView.setFitHeight(150);
+        blendImageView.setFitWidth(200);
+        blendImageView.setLayoutX(450);
+        blendImageView.setLayoutY(242);
+        blendImageView.setPreserveRatio(true);
+        blendImageView.setPickOnBounds(true);
+        blendImageView.setBlendMode(javafx.scene.effect.BlendMode.MULTIPLY);
+
+        Label policyHolderLabel = new Label("Insurance Surveyor:");
+        policyHolderLabel.setLayoutX(77);
+        policyHolderLabel.setLayoutY(126);
+        policyHolderLabel.setFont(new Font("Calibri", 18));
+        upInsuranceSurveyor = new MenuButton("Select Insurance Surveyor");
+        upInsuranceSurveyor.setLayoutX(248);
+        upInsuranceSurveyor.setLayoutY(124);
+        upInsuranceSurveyor.setPrefHeight(26);
+        upInsuranceSurveyor.setPrefWidth(367);
+
+        upPH = new Button("UPDATE");
+        upPH.setLayoutX(179);
+        upPH.setLayoutY(303);
+        upPH.setPrefHeight(47);
+        upPH.setPrefWidth(106);
+        upPH.setFont(new Font("Calibri", 18));
+        upPH.setOnAction(event -> goToUpdate());
+
+        root.getChildren().addAll(titleLabel, logoImageView, blendImageView, policyHolderLabel, upInsuranceSurveyor, upPH);
+
+        populateUpInsuranceSurveyor();
+        update.getScene().setRoot(root);
+    }
+    private void populateUpInsuranceSurveyor() throws SQLException {
+        List<String> surveyors = DBUtil.getInsuranceSurveyor(); // Assuming you have a method to get insurance surveyors
+
+        upInsuranceSurveyor.getItems().clear(); // Assuming upInsuranceSurveyor is your MenuButton for insurance surveyors
+
+        for (String surveyor : surveyors) {
+            MenuItem menuItem = new MenuItem(surveyor);
+            menuItem.setOnAction(event -> {
+                upInsuranceSurveyor.setText(surveyor);
+                SharedData.getInstance().setSelectedInsuranceSurveyor(surveyor);
+            });
+            upInsuranceSurveyor.getItems().add(menuItem);
+        }
+    }
+    //update insurance manager
+    @FXML
+    private MenuButton upInsuranceManager;
+    @FXML
+    private void updateInsuranceMaanger() throws SQLException {
+        AnchorPane root = new AnchorPane();
+        root.setPrefSize(600, 400);
+        root.setStyle("-fx-background-color: #CDE8E5;");
+
+        Label titleLabel = new Label("UPDATE INSURANCE MANAGER");
+        titleLabel.setLayoutX(128);
+        titleLabel.setPrefHeight(118);
+        titleLabel.setPrefWidth(497);
+        titleLabel.setStyle("-fx-background-color: #CDE8E5;");
+        titleLabel.setFont(new Font("Calibri", 24));
+        titleLabel.setAlignment(javafx.geometry.Pos.CENTER);
+
+        ImageView logoImageView = new ImageView(new Image("https://1000logos.net/wp-content/uploads/2019/07/RMIT-Logo.png"));
+        logoImageView.setFitHeight(88);
+        logoImageView.setFitWidth(286);
+        logoImageView.setPreserveRatio(true);
+        logoImageView.setPickOnBounds(true);
+
+        ImageView blendImageView = new ImageView(new Image("https://tse1.mm.bing.net/th?id=OIP.QqEXi7j5Z0ZMFu8pLgTxzAHaHa&amp;pid=Api&amp;P=0&amp;h=180"));
+        blendImageView.setFitHeight(150);
+        blendImageView.setFitWidth(200);
+        blendImageView.setLayoutX(450);
+        blendImageView.setLayoutY(242);
+        blendImageView.setPreserveRatio(true);
+        blendImageView.setPickOnBounds(true);
+        blendImageView.setBlendMode(javafx.scene.effect.BlendMode.MULTIPLY);
+
+        Label policyHolderLabel = new Label("Insurance Manager:");
+        policyHolderLabel.setLayoutX(77);
+        policyHolderLabel.setLayoutY(126);
+        policyHolderLabel.setFont(new Font("Calibri", 18));
+        upInsuranceManager = new MenuButton("Select Insurance Manager");
+        upInsuranceManager.setLayoutX(248);
+        upInsuranceManager.setLayoutY(124);
+        upInsuranceManager.setPrefHeight(26);
+        upInsuranceManager.setPrefWidth(367);
+
+        upPH = new Button("UPDATE");
+        upPH.setLayoutX(179);
+        upPH.setLayoutY(303);
+        upPH.setPrefHeight(47);
+        upPH.setPrefWidth(106);
+        upPH.setFont(new Font("Calibri", 18));
+        upPH.setOnAction(event -> goToUpdate());
+
+        root.getChildren().addAll(titleLabel, logoImageView, blendImageView, policyHolderLabel, upInsuranceManager, upPH);
+
+        populateUpInsuranceManager();
+        update.getScene().setRoot(root);
+    }
+
+
+    private void populateUpInsuranceManager() throws SQLException {
+        List<String> managers = DBUtil.getInsuranceManager(); // Assuming you have a method to get insurance managers
+
+        upInsuranceManager.getItems().clear(); // Assuming upInsuranceManager is your MenuButton for insurance managers
+
+        for (String manager : managers) {
+            MenuItem menuItem = new MenuItem(manager);
+            menuItem.setOnAction(event -> {
+                upInsuranceManager.setText(manager);
+                SharedData.getInstance().setSelectedInsuranceManager(manager);
+            });
+            upInsuranceManager.getItems().add(menuItem);
+        }
+    }
+
+    public static String extractCardNumber(String insuranceCardInfoString) {
+        // Split the string by the separator " - "
+        String[] parts = insuranceCardInfoString.split(" - ");
+
+        // The card number is the first part
+        return parts[0];
+    }
+    /////////////////////////DELETE USER//////////////////////////////////////////////////
+    @FXML
+    private Button delete;
+    @FXML
+    private Button dePH;
+    @FXML
+    private MenuButton dePH1;
+
+    // delete policy holder
+    @FXML
+    private void deletePolicyHolder() throws SQLException {
+        AnchorPane root = new AnchorPane();
+        root.setPrefSize(600, 400);
+        root.setStyle("-fx-background-color: #CDE8E5;");
+
+        Label titleLabel = new Label("DELETE POLICY HOLDER");
+        titleLabel.setLayoutX(128);
+        titleLabel.setPrefHeight(118);
+        titleLabel.setPrefWidth(497);
+        titleLabel.setStyle("-fx-background-color: #CDE8E5;");
+        titleLabel.setFont(new Font("Calibri", 24));
+        titleLabel.setAlignment(javafx.geometry.Pos.CENTER);
+
+        ImageView logoImageView = new ImageView(new Image("https://1000logos.net/wp-content/uploads/2019/07/RMIT-Logo.png"));
+        logoImageView.setFitHeight(88);
+        logoImageView.setFitWidth(286);
+        logoImageView.setPreserveRatio(true);
+        logoImageView.setPickOnBounds(true);
+
+        ImageView blendImageView = new ImageView(new Image("https://tse1.mm.bing.net/th?id=OIP.QqEXi7j5Z0ZMFu8pLgTxzAHaHa&amp;pid=Api&amp;P=0&amp;h=180"));
+        blendImageView.setFitHeight(150);
+        blendImageView.setFitWidth(200);
+        blendImageView.setLayoutX(450);
+        blendImageView.setLayoutY(242);
+        blendImageView.setPreserveRatio(true);
+        blendImageView.setPickOnBounds(true);
+        blendImageView.setBlendMode(javafx.scene.effect.BlendMode.MULTIPLY);
+
+        Label policyHolderLabel = new Label("Policy Holder:");
+        policyHolderLabel.setLayoutX(77);
+        policyHolderLabel.setLayoutY(126);
+        policyHolderLabel.setFont(new Font("Calibri", 18));
+        dePH1 = new MenuButton("Select Policy Holder");
+        dePH1.setLayoutX(248);
+        dePH1.setLayoutY(124);
+        dePH1.setPrefHeight(26);
+        dePH1.setPrefWidth(367);
+
+        dePH = new Button("DELETE");
+        dePH.setLayoutX(179);
+        dePH.setLayoutY(303);
+        dePH.setPrefHeight(47);
+        dePH.setPrefWidth(106);
+        dePH.setFont(new Font("Calibri", 18));
+        dePH.setOnAction(event -> doneDeletingPH());
+
+        root.getChildren().addAll(titleLabel, logoImageView, blendImageView, policyHolderLabel, dePH1, dePH);
+
+        populateDePH1();
+        delete.getScene().setRoot(root);
+    }
+    private void populateDePH1() throws SQLException {
+        List<String> policyHolders = DBUtil.getPH();
+
+        dePH1.getItems().clear();
+
+        for (String holder : policyHolders) {
+            MenuItem menuItem = new MenuItem(holder);
+            menuItem.setOnAction(event -> {
+                dePH1.setText(holder);
+            });
+            dePH1.getItems().add(menuItem);
+        }
+    }
+
+    public void doneDeletingPH() {
+            User user = DBUtil.getUser(extractIdFromText(dePH1.getText()));
+            DBUtil.deleteUser(user.getId());
+
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Delete User:");
+            alert.setHeaderText("User " + user.getId());
+            alert.setContentText(user.toString());
+            alert.showAndWait();
+            dashBoard(dePH);
+    }
+
+
+    //delete Policy Owner
+    @FXML
+    private Button dePO;
+    @FXML
+    private MenuButton dePO1;
+
+    @FXML
+    private void deletePolicyOwner() throws SQLException {
+        AnchorPane root = new AnchorPane();
+        root.setPrefSize(600, 400);
+        root.setStyle("-fx-background-color: #CDE8E5;");
+
+        Label titleLabel = new Label("DELETE POLICY OWNER");
+        titleLabel.setLayoutX(128);
+        titleLabel.setPrefHeight(118);
+        titleLabel.setPrefWidth(497);
+        titleLabel.setStyle("-fx-background-color: #CDE8E5;");
+        titleLabel.setFont(new Font("Calibri", 24));
+        titleLabel.setAlignment(javafx.geometry.Pos.CENTER);
+
+        ImageView logoImageView = new ImageView(new Image("https://1000logos.net/wp-content/uploads/2019/07/RMIT-Logo.png"));
+        logoImageView.setFitHeight(88);
+        logoImageView.setFitWidth(286);
+        logoImageView.setPreserveRatio(true);
+        logoImageView.setPickOnBounds(true);
+
+        ImageView blendImageView = new ImageView(new Image("https://tse1.mm.bing.net/th?id=OIP.QqEXi7j5Z0ZMFu8pLgTxzAHaHa&amp;pid=Api&amp;P=0&amp;h=180"));
+        blendImageView.setFitHeight(150);
+        blendImageView.setFitWidth(200);
+        blendImageView.setLayoutX(450);
+        blendImageView.setLayoutY(242);
+        blendImageView.setPreserveRatio(true);
+        blendImageView.setPickOnBounds(true);
+        blendImageView.setBlendMode(javafx.scene.effect.BlendMode.MULTIPLY);
+
+        Label policyHolderLabel = new Label("Policy Owners:");
+        policyHolderLabel.setLayoutX(77);
+        policyHolderLabel.setLayoutY(126);
+        policyHolderLabel.setFont(new Font("Calibri", 18));
+        dePO1 = new MenuButton("Select Policy Owner");
+        dePO1.setLayoutX(248);
+        dePO1.setLayoutY(124);
+        dePO1.setPrefHeight(26);
+        dePO1.setPrefWidth(367);
+
+        dePO = new Button("DELETE");
+        dePO.setLayoutX(179);
+        dePO.setLayoutY(303);
+        dePO.setPrefHeight(47);
+        dePO.setPrefWidth(106);
+        dePO.setFont(new Font("Calibri", 18));
+        dePO.setOnAction(event -> doneDeletingPO());
+
+        root.getChildren().addAll(titleLabel, logoImageView, blendImageView, policyHolderLabel, dePO1, dePO);
+
+        populatedePO1();
+        delete.getScene().setRoot(root);
+    }
+    public void doneDeletingPO() {
+        User user = DBUtil.getUser(extractIdFromText(dePO1.getText()));
+        DBUtil.deleteUser(user.getId());
+
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Delete User:");
+        alert.setHeaderText("User " + user.getId());
+        alert.setContentText(user.toString());
+        alert.showAndWait();
+        dashBoard(dePO);
+    }
+
+    private void populatedePO1() throws SQLException {
+        List<String> policyOwners = DBUtil.getPolicyOwners(); // Assuming you have a method to get policy owners
+
+        dePO1.getItems().clear(); // Assuming upPO1 is your MenuButton for policy owners
+
+        for (String owner : policyOwners) {
+            MenuItem menuItem = new MenuItem(owner);
+            menuItem.setOnAction(event -> {
+                dePO1.setText(owner);
+            });
+            dePO1.getItems().add(menuItem);
+        }
+    }
+    // delete Dependent
+    @FXML
+    private MenuButton deD;
+    @FXML
+    private Button deD1;
+    @FXML
+    private void deleteDependent() throws SQLException {
+        AnchorPane root = new AnchorPane();
+        root.setPrefSize(600, 400);
+        root.setStyle("-fx-background-color: #CDE8E5;");
+
+        Label titleLabel = new Label("DELETE DEPENDENT");
+        titleLabel.setLayoutX(128);
+        titleLabel.setPrefHeight(118);
+        titleLabel.setPrefWidth(497);
+        titleLabel.setStyle("-fx-background-color: #CDE8E5;");
+        titleLabel.setFont(new Font("Calibri", 24));
+        titleLabel.setAlignment(javafx.geometry.Pos.CENTER);
+
+        ImageView logoImageView = new ImageView(new Image("https://1000logos.net/wp-content/uploads/2019/07/RMIT-Logo.png"));
+        logoImageView.setFitHeight(88);
+        logoImageView.setFitWidth(286);
+        logoImageView.setPreserveRatio(true);
+        logoImageView.setPickOnBounds(true);
+
+        ImageView blendImageView = new ImageView(new Image("https://tse1.mm.bing.net/th?id=OIP.QqEXi7j5Z0ZMFu8pLgTxzAHaHa&amp;pid=Api&amp;P=0&amp;h=180"));
+        blendImageView.setFitHeight(150);
+        blendImageView.setFitWidth(200);
+        blendImageView.setLayoutX(450);
+        blendImageView.setLayoutY(242);
+        blendImageView.setPreserveRatio(true);
+        blendImageView.setPickOnBounds(true);
+        blendImageView.setBlendMode(javafx.scene.effect.BlendMode.MULTIPLY);
+
+        Label policyHolderLabel = new Label("Dependent:");
+        policyHolderLabel.setLayoutX(77);
+        policyHolderLabel.setLayoutY(126);
+        policyHolderLabel.setFont(new Font("Calibri", 18));
+        deD = new MenuButton("Select Dependent");
+        deD.setLayoutX(248);
+        deD.setLayoutY(124);
+        deD.setPrefHeight(26);
+        deD.setPrefWidth(367);
+
+        deD1 = new Button("DELETE");
+        deD1.setLayoutX(179);
+        deD1.setLayoutY(303);
+        deD1.setPrefHeight(47);
+        deD1.setPrefWidth(106);
+        deD1.setFont(new Font("Calibri", 18));
+        deD1.setOnAction(event -> doneDeletingDe());
+
+        root.getChildren().addAll(titleLabel, logoImageView, blendImageView, policyHolderLabel, deD, deD1);
+
+        populatedeDependent();
+        delete.getScene().setRoot(root);
+    }
+
+    private void populatedeDependent() throws SQLException {
+        List<String> dependents = DBUtil.getDependent();
+
+        deD.getItems().clear();
+
+        for (String dependent : dependents) {
+            MenuItem menuItem = new MenuItem(dependent);
+            menuItem.setOnAction(event -> {
+                deD.setText(dependent);
+            });
+            deD.getItems().add(menuItem);
+        }
+    }
+    public void doneDeletingDe() {
+        User user = DBUtil.getUser(extractIdFromText(deD.getText()));
+        DBUtil.deleteUser(user.getId());
+
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Delete User:");
+        alert.setHeaderText("User " + user.getId());
+        alert.setContentText(user.toString());
+        alert.showAndWait();
+        dashBoard(deD1);
+    }
+    @FXML
+    private MenuButton deInsuranceSurveyor;
+    @FXML
+    private Button deInsuranceSurveyor1;
+    @FXML
+    private void deleteInsuranceSurveyor() throws SQLException {
+        AnchorPane root = new AnchorPane();
+        root.setPrefSize(600, 400);
+        root.setStyle("-fx-background-color: #CDE8E5;");
+
+        Label titleLabel = new Label("DELETE INSURANCE SURVEYOR");
+        titleLabel.setLayoutX(128);
+        titleLabel.setPrefHeight(118);
+        titleLabel.setPrefWidth(497);
+        titleLabel.setStyle("-fx-background-color: #CDE8E5;");
+        titleLabel.setFont(new Font("Calibri", 24));
+        titleLabel.setAlignment(javafx.geometry.Pos.CENTER);
+
+        ImageView logoImageView = new ImageView(new Image("https://1000logos.net/wp-content/uploads/2019/07/RMIT-Logo.png"));
+        logoImageView.setFitHeight(88);
+        logoImageView.setFitWidth(286);
+        logoImageView.setPreserveRatio(true);
+        logoImageView.setPickOnBounds(true);
+
+        ImageView blendImageView = new ImageView(new Image("https://tse1.mm.bing.net/th?id=OIP.QqEXi7j5Z0ZMFu8pLgTxzAHaHa&amp;pid=Api&amp;P=0&amp;h=180"));
+        blendImageView.setFitHeight(150);
+        blendImageView.setFitWidth(200);
+        blendImageView.setLayoutX(450);
+        blendImageView.setLayoutY(242);
+        blendImageView.setPreserveRatio(true);
+        blendImageView.setPickOnBounds(true);
+        blendImageView.setBlendMode(javafx.scene.effect.BlendMode.MULTIPLY);
+
+        Label policyHolderLabel = new Label("Insurance Surveyor:");
+        policyHolderLabel.setLayoutX(77);
+        policyHolderLabel.setLayoutY(126);
+        policyHolderLabel.setFont(new Font("Calibri", 18));
+        deInsuranceSurveyor = new MenuButton("Select Insurance Surveyor");
+        deInsuranceSurveyor.setLayoutX(248);
+        deInsuranceSurveyor.setLayoutY(124);
+        deInsuranceSurveyor.setPrefHeight(26);
+        deInsuranceSurveyor.setPrefWidth(367);
+
+        deInsuranceSurveyor1 = new Button("DELETE");
+        deInsuranceSurveyor1.setLayoutX(179);
+        deInsuranceSurveyor1.setLayoutY(303);
+        deInsuranceSurveyor1.setPrefHeight(47);
+        deInsuranceSurveyor1.setPrefWidth(106);
+        deInsuranceSurveyor1.setFont(new Font("Calibri", 18));
+        deInsuranceSurveyor1.setOnAction(event -> doneDeletingIS());
+
+        root.getChildren().addAll(titleLabel, logoImageView, blendImageView, policyHolderLabel, deInsuranceSurveyor, deInsuranceSurveyor1);
+
+        populatedeInsuranceSurveyor();
+        delete.getScene().setRoot(root);
+    }
+    private void populatedeInsuranceSurveyor() throws SQLException {
+        List<String> surveyors = DBUtil.getInsuranceSurveyor(); // Assuming you have a method to get insurance surveyors
+
+        deInsuranceSurveyor.getItems().clear(); // Assuming upInsuranceSurveyor is your MenuButton for insurance surveyors
+
+        for (String surveyor : surveyors) {
+            MenuItem menuItem = new MenuItem(surveyor);
+            menuItem.setOnAction(event -> {
+                deInsuranceSurveyor.setText(surveyor);
+            });
+            deInsuranceSurveyor.getItems().add(menuItem);
+        }
+    }
+    public void doneDeletingIS() {
+        User user = DBUtil.getUser(extractIdFromText(deInsuranceSurveyor.getText()));
+        DBUtil.deleteUser(user.getId());
+
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Delete User:");
+        alert.setHeaderText("User " + user.getId());
+        alert.setContentText(user.toString());
+        alert.showAndWait();
+        dashBoard(deInsuranceSurveyor1);
+    }
+    //update insurance manager
+    @FXML
+    private MenuButton deInsuranceManager;
+    @FXML
+    private Button deInsuranceManager1;
+    @FXML
+    private void deInsuranceMaanger() throws SQLException {
+        AnchorPane root = new AnchorPane();
+        root.setPrefSize(600, 400);
+        root.setStyle("-fx-background-color: #CDE8E5;");
+
+        Label titleLabel = new Label("DELETE INSURANCE MANAGER");
+        titleLabel.setLayoutX(128);
+        titleLabel.setPrefHeight(118);
+        titleLabel.setPrefWidth(497);
+        titleLabel.setStyle("-fx-background-color: #CDE8E5;");
+        titleLabel.setFont(new Font("Calibri", 24));
+        titleLabel.setAlignment(javafx.geometry.Pos.CENTER);
+
+        ImageView logoImageView = new ImageView(new Image("https://1000logos.net/wp-content/uploads/2019/07/RMIT-Logo.png"));
+        logoImageView.setFitHeight(88);
+        logoImageView.setFitWidth(286);
+        logoImageView.setPreserveRatio(true);
+        logoImageView.setPickOnBounds(true);
+
+        ImageView blendImageView = new ImageView(new Image("https://tse1.mm.bing.net/th?id=OIP.QqEXi7j5Z0ZMFu8pLgTxzAHaHa&amp;pid=Api&amp;P=0&amp;h=180"));
+        blendImageView.setFitHeight(150);
+        blendImageView.setFitWidth(200);
+        blendImageView.setLayoutX(450);
+        blendImageView.setLayoutY(242);
+        blendImageView.setPreserveRatio(true);
+        blendImageView.setPickOnBounds(true);
+        blendImageView.setBlendMode(javafx.scene.effect.BlendMode.MULTIPLY);
+
+        Label policyHolderLabel = new Label("Insurance Manager:");
+        policyHolderLabel.setLayoutX(77);
+        policyHolderLabel.setLayoutY(126);
+        policyHolderLabel.setFont(new Font("Calibri", 18));
+
+        deInsuranceManager = new MenuButton("Select Insurance Manager");
+        deInsuranceManager.setLayoutX(248);
+        deInsuranceManager.setLayoutY(124);
+        deInsuranceManager.setPrefHeight(26);
+        deInsuranceManager.setPrefWidth(367);
+
+        deInsuranceManager1 = new Button("DELETE");
+        deInsuranceManager1.setLayoutX(179);
+        deInsuranceManager1.setLayoutY(303);
+        deInsuranceManager1.setPrefHeight(47);
+        deInsuranceManager1.setPrefWidth(106);
+        deInsuranceManager1.setFont(new Font("Calibri", 18));
+        deInsuranceManager1.setOnAction(event -> doneDeletingIM());
+
+        root.getChildren().addAll(titleLabel, logoImageView, blendImageView, policyHolderLabel, deInsuranceManager, deInsuranceManager1);
+
+        populatedeInsuranceManager();
+        delete.getScene().setRoot(root);
+    }
+
+
+    private void populatedeInsuranceManager() throws SQLException {
+        List<String> managers = DBUtil.getInsuranceManager(); // Assuming you have a method to get insurance managers
+
+        deInsuranceManager.getItems().clear(); // Assuming upInsuranceManager is your MenuButton for insurance managers
+
+        for (String manager : managers) {
+            MenuItem menuItem = new MenuItem(manager);
+            menuItem.setOnAction(event ->
+                deInsuranceManager.setText(manager));
+            deInsuranceManager.getItems().add(menuItem);
+        }
+    }
+    public void doneDeletingIM() {
+        User user = DBUtil.getUser(extractIdFromText(deInsuranceManager.getText()));
+        DBUtil.deleteUser(user.getId());
+
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Delete User:");
+        alert.setHeaderText("User " + user.getId());
+        alert.setContentText(user.toString());
+        alert.showAndWait();
+        dashBoard(deInsuranceManager1);
+    }
+
+    private void dashBoard(Button readIM1) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/SystemAdminGUI/systemAdminDashboard.fxml"));
             Parent adminDashboardRoot = loader.load();
 
-            Node sourceNode = readPH; // Use any node from the current scene
+            Node sourceNode = readIM1; // Use any node from the current scene
 
             // Get the primary stage from the source node's scene
             Stage primaryStage = (Stage) sourceNode.getScene().getWindow();

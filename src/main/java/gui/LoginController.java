@@ -1,18 +1,8 @@
 package gui;
 
-import gui.coolEffects.TextAnimation;
+import controllers.CustomerManagerImpl;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.geometry.Pos;
-import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.layout.FlowPane;
-import javafx.scene.text.Text;
-import javafx.scene.text.TextAlignment;
-import javafx.stage.Stage;
-import models.SystemAdmin;
 import models.User;
 import models.UserRole;
 import utils.DBUtil;
@@ -75,7 +65,7 @@ public class LoginController {
                 }
                 case UserRole.SYSTEM_ADMIN -> {
                     validShow();
-                    SystemAdmin systemAdmin = new SystemAdmin(user.getId(), user.getFullName(), user.getEmail(), user.getPassword(), UserRole.SYSTEM_ADMIN);
+                    CustomerManagerImpl.SystemAdmin systemAdmin = new CustomerManagerImpl.SystemAdmin(user.getId(), user.getFullName(), user.getEmail(), user.getPassword(), UserRole.SYSTEM_ADMIN);
                     SystemAdminController controller = new SystemAdminController(systemAdmin);
                     controller.openAdminDashboard(getLoginButton());
                 }

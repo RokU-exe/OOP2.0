@@ -16,6 +16,10 @@ public class InsuranceCard {
         this.expirationDate = expirationDate;
     }
 
+    public InsuranceCard() {
+
+    }
+
     public String getCardNumber() {
         return cardNumber;
     }

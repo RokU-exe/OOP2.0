@@ -1,6 +1,8 @@
 package controllers;
 
 import models.Customer;
+import models.User;
+import models.UserRole;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,5 +53,12 @@ public class CustomerManagerImpl implements CustomerManager {
     public List<Customer> getFilteredCustomers(String filterCriteria) {
         // Placeholder for filtering logic
         return new ArrayList<>(customers);
+    }
+
+    public static class SystemAdmin extends User {
+        public SystemAdmin(String id, String fullName, String email, String password, UserRole role) {
+            super(id, fullName, email, password, role);
+        }
+        // Additional methods specific to System Admins
     }
 }

@@ -31,12 +31,12 @@
                 <Font name="Calibri" size="14.0" />
             </font>
         </Button>
-        <Button layoutX="36.0" layoutY="240.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="214.0" text="Update Insurance Surveyor">
+        <Button fx:id="update" layoutX="36.0" layoutY="240.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="214.0" text="Update Insurance Surveyor" onAction="#updateInsuranceSurveyor">
             <font>
                 <Font name="Calibri" size="14.0" />
             </font>
         </Button>
-        <Button layoutX="355.0" layoutY="240.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="214.0" text=" Delete Insurance Surveyor">
+        <Button fx:id="delete" layoutX="355.0" layoutY="240.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="214.0" text=" Delete Insurance Surveyor" onAction="#deleteInsuranceSurveyor">
             <font>
                 <Font name="Calibri" size="14.0" />
             </font>

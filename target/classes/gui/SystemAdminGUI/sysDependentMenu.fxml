@@ -31,12 +31,12 @@
                 <Font name="Calibri" size="14.0" />
             </font>
         </Button>
-        <Button layoutX="36.0" layoutY="240.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="214.0" text="Update Dependent">
+        <Button fx:id="update" layoutX="36.0" layoutY="240.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="214.0" text="Update Dependent" onAction="#updateDependent">
             <font>
                 <Font name="Calibri" size="14.0" />
             </font>
         </Button>
-        <Button layoutX="355.0" layoutY="240.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="214.0" text=" Delete Dependent">
+        <Button fx:id="delete" layoutX="355.0" layoutY="240.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="214.0" text=" Delete Dependent" onAction="#deleteDependent">
             <font>
                 <Font name="Calibri" size="14.0" />
             </font>

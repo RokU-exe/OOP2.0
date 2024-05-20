@@ -94,13 +94,22 @@ public class DBUtil {
     }
 
     public static void deleteUser(String userId) {
+        if (userId == null) {
+            throw new IllegalArgumentException("userId cannot be null");
+        }
+
         String query = "DELETE FROM users WHERE id = ?";
         try (Connection conn = getConnection();
              PreparedStatement pstmt = conn.prepareStatement(query)) {
             pstmt.setString(1, userId);
-            pstmt.executeUpdate();
+            int affectedRows = pstmt.executeUpdate();
+            if (affectedRows == 0) {
+                System.err.println("No user found with the given id: " + userId);
+            }
         } catch (SQLException e) {
-            e.printStackTrace();
+            // Log the exception using a logging framework
+            System.err.println("Error deleting user: " + e.getMessage());
+            e.printStackTrace(); // Optional: remove in production
         }
     }
 
@@ -421,5 +430,59 @@ public class DBUtil {
 
         return user;
     }
+    public static InsuranceCard getIC(String card) {
+        InsuranceCard insuranceCard = new InsuranceCard();
+
+        String query = "SELECT card_number, policy_holder_id, policy_owner_id, expire_date FROM \"InsuranceCard\" WHERE card_number = ?";
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setString(1, card);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    String cardNumber = rs.getString("card_number");
+                    String policyHolderId = rs.getString("policy_holder_id");
+                    String policyOwnerId = rs.getString("policy_owner_id");
+                    Date expireDate = rs.getDate("expire_date");
+
+                    insuranceCard = new InsuranceCard(cardNumber, policyHolderId, policyOwnerId, expireDate);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return insuranceCard;
+    }
+    public static List<String> getICForMenu() {
+        List<String> insuranceCardInfoList = new ArrayList<>();
+        String query = "SELECT ic.card_number, ic.policy_holder_id, ph.full_name AS policy_holder_name, ic.policy_owner_id, po.full_name AS policy_owner_name " +
+                "FROM \"InsuranceCard\" ic " +
+                "JOIN \"users\" ph ON ic.policy_holder_id = ph.id " +
+                "JOIN \"users\" po ON ic.policy_owner_id = po.id";
+
+        try (Connection conn = getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(query);
+             ResultSet rs = pstmt.executeQuery()) {
+
+            while (rs.next()) {
+                String cardNumber = rs.getString("card_number");
+                String policyHolderId = rs.getString("policy_holder_id");
+                String policyHolderName = rs.getString("policy_holder_name");
+                String policyOwnerId = rs.getString("policy_owner_id");
+                String policyOwnerName = rs.getString("policy_owner_name");
+
+                String formattedInfo = String.format("%s - %s - %s - %s",
+                        cardNumber, policyHolderId, policyHolderName, policyOwnerName);
+
+                insuranceCardInfoList.add(formattedInfo);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return insuranceCardInfoList;
+    }
+
 
 }
