@@ -679,7 +679,21 @@ public class DBUtil {
     }
 
     //Use to filter claim (INSURANCE SURVEYOR)
-    public static List<String> surveyorGetFilterClaim(String status, String policyHolderName /*, String amountRange*/) throws SQLException {
+    //Use to load policy holder name in table for function 'Filter Claim' (INSURANCE SURVEYOR)
+    public static List<String> selectPolicyHolderName() throws SQLException {
+        List<String> policyHolders = new ArrayList<>();
+        String query = "SELECT \"policyHolder_name\" FROM claims";
+        try (Connection conn = getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(query);
+             ResultSet rs = pstmt.executeQuery()) {
+            while (rs.next()) {
+                String fullName = rs.getString("policyHolder_name");
+                policyHolders.add(fullName);
+            }
+        }
+        return policyHolders;
+    }
+    public static List<String> surveyorGetFilterClaim(String status, String policyHolderName) throws SQLException {
         List<String> filterClaim = new ArrayList<>();
 
         // Base query
@@ -702,7 +716,7 @@ public class DBUtil {
             default:
                 throw new IllegalArgumentException("Invalid status: " + status);
         }
-
+        
         boolean hasPolicyHolderName = policyHolderName != null && !policyHolderName.isEmpty();
         if (hasPolicyHolderName) {
             query += " AND \"policyHolder_name\" = ?";
@@ -715,6 +729,7 @@ public class DBUtil {
 
             // Set the parameter for policyHolderName if it is present
             if (hasPolicyHolderName) {
+//                int paramIndex = 1;
                 pstmt.setString(1, policyHolderName);
             }
             // Debug: Print the prepared statement parameters
@@ -722,6 +737,7 @@ public class DBUtil {
             if (hasPolicyHolderName) {
                 System.out.println("1: " + policyHolderName);
             }
+
 
             try (ResultSet rs = pstmt.executeQuery()) {
                 while (rs.next()) {
@@ -731,6 +747,7 @@ public class DBUtil {
                             rs.getString("insured_person"),
                             rs.getString("card_number"),
                             rs.getDate("exam_date"),
+                            null,
                             rs.getDouble("claim_amount"),
                             ClaimStatus.valueOf(rs.getString("status")),
                             rs.getString("receiver_bank"),
@@ -744,42 +761,13 @@ public class DBUtil {
         return filterClaim;
     }
 
-    //Use to load policy holder name in table for function 'Filter Claim' (INSURANCE SURVEYOR)
-    public static List<String> selectPolicyHolderName() throws SQLException {
-        List<String> policyHolders = new ArrayList<>();
-        String query = "SELECT \"policyHolder_name\" FROM claims";
-        try (Connection conn = getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(query);
-             ResultSet rs = pstmt.executeQuery()) {
-            while (rs.next()) {
-                String fullName = rs.getString("policyHolder_name");
-                policyHolders.add(fullName);
-            }
-        }
-        return policyHolders;
-    }
+   
+
 
     //(INSURANCE SURVEYOR) Filter Customer
     public static List<String> selectCustomerEmail() throws SQLException {
         List<String> emails = new ArrayList<>();
-        String roleD = "DEPENDENT";
-        String rolePO = "POLICY OWNER";
-        String rolePH = "POLICY HOLDER";
-
-        // Base query
-        String query = "SELECT email FROM users WHERE 1=1";
-
-        // Add condition based on the role
-        if ("DEPENDENT".equalsIgnoreCase(roleD)) {
-            query += " AND email LIKE 'd%'";
-        }else if("POLICY OWNER".equalsIgnoreCase(rolePO)){
-            query += " AND email LIKE 'o%'";
-        }else if("POLICY HOLDER".equalsIgnoreCase(rolePH)){
-            query += " AND email LIKE 'h%'";
-        }else{
-            throw new IllegalArgumentException("Invalid email");
-        }
-
+        String query = "SELECT \"email\" FROM users";
         try (Connection conn = getConnection();
              PreparedStatement pstmt = conn.prepareStatement(query);
              ResultSet rs = pstmt.executeQuery()) {
@@ -792,89 +780,36 @@ public class DBUtil {
     }
 
     public static List<String> selectCustomerFullName() throws SQLException {
-        List<String> fullName = new ArrayList<>();
-        String roleD = "DEPENDENT";
-        String rolePO = "POLICY OWNER";
-        String rolePH = "POLICY HOLDER";
-
-        // Base query
-        String query = "SELECT full_name FROM users WHERE 1=1";
-
-        // Add condition based on the role
-        if ("DEPENDENT".equalsIgnoreCase(roleD)) {
-            query += " AND role = 'DEPENDENT' ";
-        }else if("POLICY OWNER".equalsIgnoreCase(rolePO)){
-            query += " AND role = 'POLICY OWNER' ";
-        }else if("POLICY HOLDER".equalsIgnoreCase(rolePH)){
-            query += " AND role = 'POLICY HOLDER' ";
-        }else{
-            throw new IllegalArgumentException("Invalid email");
-        }
-
+        List<String> fullNames = new ArrayList<>();
+        String query = "SELECT \"full_name\" FROM users";
         try (Connection conn = getConnection();
              PreparedStatement pstmt = conn.prepareStatement(query);
              ResultSet rs = pstmt.executeQuery()) {
             while (rs.next()) {
                 String full_name = rs.getString("full_name");
-                fullName.add(full_name);
+                fullNames.add(full_name);
             }
         }
-        return fullName;
+        return fullNames;
     }
+    
 
-    public static List<String> surveyorGetFilterCustomer(String role, String email , String fullName) throws SQLException {
-        List<String> filterCustomer = new ArrayList<>();
-
-        // Base query
-        String query = "SELECT * FROM users WHERE 1=1";
-
-        boolean hasRole = role != null && !role.isEmpty();
-        if (hasRole) {
-            query += " AND \"role\" = ?";
-        }
-
-        boolean hasEmail = email != null && !email.isEmpty();
-        if (hasEmail) {
-            query += " AND \"email\" = ?";
-        }
-
-        boolean hasFullName = fullName != null && !fullName.isEmpty();
-        if (hasFullName) {
-            query += " AND \"full_name\" = ?";
-        }
-
-        // Debug: Print the final query
-        System.out.println("Final query: " + query);
+    public static List<String> surveyorGetFilterCustomer(String role, String email, String fullName) throws SQLException {
+        List<String> customers = new ArrayList<>();
+        String query = "SELECT * FROM users WHERE \"role\" = ? AND \"email\" = ? AND \"full_name\" = ?";
 
         try (Connection conn = getConnection();
              PreparedStatement pstmt = conn.prepareStatement(query)) {
-
-            // Set the parameters if they are present
-            if (hasRole) {
-                pstmt.setString(1, role);
-            }
-            if (hasEmail) {
-                pstmt.setString(2, email);
-            }
-            if (hasFullName) {
-                pstmt.setString(3, fullName);
-            }
-
-            // Debug: Print the prepared statement parameters
-            System.out.println("Parameters:");
-            if (hasRole) {
-                System.out.println("1: " + role);
-            }
-            if (hasEmail) {
-                System.out.println("2: " + email);
-            }
-            if (hasFullName) {
-                System.out.println("3: " + fullName);
-            }
+            pstmt.setString(1, role);
+            pstmt.setString(2, email);
+            pstmt.setString(3, fullName);
+            System.out.println("1: " + role);
+            System.out.println("2: " + email);
+            System.out.println("3: " + fullName);
 
             try (ResultSet rs = pstmt.executeQuery()) {
                 while (rs.next()) {
-                    filterCustomer.add(String.valueOf(new User(
+                    customers.add(String.valueOf(new User(
                             rs.getString("id"),
                             rs.getString("full_name"),
                             rs.getString("email"),
@@ -884,6 +819,6 @@ public class DBUtil {
                 }
             }
         }
-        return filterCustomer;
+        return customers;
     }
 }
