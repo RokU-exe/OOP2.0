@@ -73,7 +73,14 @@ public class ManagerController implements Initializable {
 
     @FXML
     private void handleViewClaims() {
-        loadClaimsData(); // Refresh the data from the database
+        List<Claim> claims = DBUtil.getAllClaims();
+        claimsData.setAll(claims);
+        StringBuilder claimsInfo = new StringBuilder("Claims:\n\n");
+        for (Claim claim : claims) {
+            claimsInfo.append(String.format("ID: %s, Policy Holder: %s, Status: %s\n",
+                    claim.getId(), claim.getInsuredPerson(), claim.getStatus()));
+        }
+        contentLabel.setText(claimsInfo.toString());
     }
 
     @FXML
@@ -102,7 +109,7 @@ public class ManagerController implements Initializable {
     private void handleApproveClaim() {
         Claim selectedClaim = getSelectedClaim();
         if (selectedClaim != null) {
-            DBUtil.approveClaim(Integer.parseInt(selectedClaim.getId()));
+            DBUtil.approveClaim(selectedClaim.getId());
             refreshClaims();
         } else {
             showAlert(Alert.AlertType.ERROR, "No Claim Selected", "Please select a claim to approve.");
@@ -113,7 +120,7 @@ public class ManagerController implements Initializable {
     private void handleRejectClaim() {
         Claim selectedClaim = getSelectedClaim();
         if (selectedClaim != null) {
-            DBUtil.rejectClaim(Integer.parseInt(selectedClaim.getId()));
+            DBUtil.rejectClaim(selectedClaim.getId());
             refreshClaims();
         } else {
             showAlert(Alert.AlertType.ERROR, "No Claim Selected", "Please select a claim to reject.");

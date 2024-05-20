@@ -1,8 +1,7 @@
 package models;
 
-import java.sql.Timestamp;
 import java.util.Date;
-import java.util.List;
+import java.sql.Timestamp;
 
 public class Claim {
     private String id;
@@ -10,8 +9,7 @@ public class Claim {
     private String insuredPerson;
     private String cardNumber;
     private Date examDate;
-    private List<String> documents;
-    private double claimAmount;
+    private Double claimAmount;
     private ClaimStatus status;
     private String receiverBank;
     private String receiverName;
@@ -19,14 +17,15 @@ public class Claim {
     private String policyHolderName;
     private Timestamp createdAt;
 
-    // Full constructor
-    public Claim(String id, Date claimDate, String insuredPerson, String cardNumber, Date examDate, List<String> documents, double claimAmount, ClaimStatus status, String receiverBank, String receiverName, String receiverNumber, String policyHolderName, Timestamp createdAt) {
+    // Constructor
+    public Claim(String id, Date claimDate, String insuredPerson, String cardNumber, Date examDate,
+                 Double claimAmount, ClaimStatus status, String receiverBank, String receiverName,
+                 String receiverNumber, String policyHolderName, Timestamp createdAt) {
         this.id = id;
         this.claimDate = claimDate;
         this.insuredPerson = insuredPerson;
         this.cardNumber = cardNumber;
         this.examDate = examDate;
-        this.documents = documents;
         this.claimAmount = claimAmount;
         this.status = status;
         this.receiverBank = receiverBank;
@@ -36,31 +35,18 @@ public class Claim {
         this.createdAt = createdAt;
     }
 
-    // Simplified constructor for specific uses
-    public Claim(String id, Date claimDate, String insuredPerson, String cardNumber, Date examDate, double claimAmount, ClaimStatus status, String receiverBank, String receiverName, String receiverNumber) {
-        this(id, claimDate, insuredPerson, cardNumber, examDate, null, claimAmount, status, receiverBank, receiverName, receiverNumber, null, null);
+    public Claim(String id, java.sql.Date claimDate, String insuredPerson, String cardNumber, java.sql.Date examDate, double claimAmount, ClaimStatus status, String receiverBank, String receiverName, String receiverNumber) {
     }
 
-    // Another simplified constructor
-    public Claim(String id, Date claimDate, String insuredPerson, String cardNumber, Date examDate, double claimAmount, ClaimStatus status, String receiverBank, String receiverName, String receiverNumber, String policyHolderName) {
-        this(id, claimDate, insuredPerson, cardNumber, examDate, null, claimAmount, status, receiverBank, receiverName, receiverNumber, policyHolderName, null);
+    public Claim(String id, String policyHolderName, String status) {
     }
 
-    // Constructor for claims to examine
-    public Claim(int id, String policyHolderName, String status) {
-        this.id = String.valueOf(id);
-        this.policyHolderName = policyHolderName;
-        this.status = ClaimStatus.valueOf(status);
+    public Claim(String id, java.sql.Date claimDate, String insuredPerson, String cardNumber, java.sql.Date examDate, double claimAmount, ClaimStatus status, String receiverBank, String receiverName, String receiverNumber, String policyHolderName) {
     }
 
-    // Default constructor
-    public Claim() {
+    public Claim(String id, java.sql.Date claimDate, String insuredPerson, String cardNumber, java.sql.Date examDate, Double claimAmount, double claimAmount1, String status, String receiverBank, String receiverName, String receiverNumber, String policyHolderName) {
     }
 
-    public Claim(String id, java.sql.Date claimDate, String insuredPerson, String cardNumber, java.sql.Date examDate, double claimAmount, ClaimStatus status, String receiverBank, String receiverName, String receiverNumber, String policyHolderName, Timestamp createdAt) {
-    }
-
-    // Getters and setters
     public String getId() {
         return id;
     }
@@ -101,19 +87,11 @@ public class Claim {
         this.examDate = examDate;
     }
 
-    public List<String> getDocuments() {
-        return documents;
-    }
-
-    public void setDocuments(List<String> documents) {
-        this.documents = documents;
-    }
-
-    public double getClaimAmount() {
+    public Double getClaimAmount() {
         return claimAmount;
     }
 
-    public void setClaimAmount(double claimAmount) {
+    public void setClaimAmount(Double claimAmount) {
         this.claimAmount = claimAmount;
     }
 
@@ -164,7 +142,7 @@ public class Claim {
     public void setCreatedAt(Timestamp createdAt) {
         this.createdAt = createdAt;
     }
-
+    
     @Override
     public String toString() {
         return "Claim{" +
@@ -173,7 +151,6 @@ public class Claim {
                 ", insuredPerson='" + insuredPerson + '\'' +
                 ", cardNumber='" + cardNumber + '\'' +
                 ", examDate=" + examDate +
-                ", documents=" + documents +
                 ", claimAmount=" + claimAmount +
                 ", status=" + status +
                 ", receiverBank='" + receiverBank + '\'' +

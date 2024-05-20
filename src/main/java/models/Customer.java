@@ -12,13 +12,13 @@ public class Customer extends User{
         this.claims = claims;
     }
 
-    public Customer(String id, String fullName, String email, String phone) {
-    }
-
-    public Customer(int id, String fullName, String role) {
+    public Customer(String id, String fullName, String email) {
     }
 
     public Customer() {
+    }
+
+    public Customer(String id, String fullName) {
     }
 
     public InsuranceCard getInsuranceCard() {

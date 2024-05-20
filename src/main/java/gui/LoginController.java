@@ -68,18 +68,18 @@ public class LoginController {
         Dependent d = new Dependent();
         if (user != null) {
             switch (user.getRole()) {
-                case UserRole.POLICY_HOLDER -> {
-                    // Fetch the PolicyHolder details
-                    PolicyHolder policyHolder = DBUtil.fetchPolicyHolderDetails(user.getId());
-                    if (policyHolder != null) {
-                        validShow();
-                        PolicyHolderController controller = new PolicyHolderController(policyHolder);
-                        controller.openPolicyHolderDashboard(getLoginButton()); // Open the dashboard
-                        LoginSession.getInstance().setCurrentUser(user);
-                    } else {
-                        // Handle the case where no policy holder is found (e.g., show an error)
-                    }
-                }
+//                case UserRole.POLICY_HOLDER -> {
+//                    // Fetch the PolicyHolder details
+//                    PolicyHolder policyHolder = DBUtil.fetchPolicyHolderDetails(user.getId());
+//                    if (policyHolder != null) {
+//                        validShow();
+//                        PolicyHolderController controller = new PolicyHolderController(policyHolder);
+//                        controller.openPolicyHolderDashboard(getLoginButton()); // Open the dashboard
+//                        LoginSession.getInstance().setCurrentUser(user);
+//                    } else {
+//                        // Handle the case where no policy holder is found (e.g., show an error)
+//                    }
+//                }
                 case UserRole.DEPENDENT -> {
                     validShow();
                     Dependent dependent = new Dependent(user.getId(), user.getFullName(), user.getEmail(), user.getPassword(), UserRole.DEPENDENT, d.getInsuranceCard(), null, d.getPolicyHolderId());
@@ -87,11 +87,11 @@ public class LoginController {
                     controller.openDependentDashboard(getLoginButton());
                     LoginSession.getInstance().setCurrentUser(user);
                 }
-                case UserRole.POLICY_OWNER -> {validShow();
-                    PolicyOwner po = new PolicyOwner(user.getId(), user.getFullName(), user.getEmail(), user.getPassword(), UserRole.DEPENDENT);
-                    PolicyOwnerController controller = new PolicyOwnerController(po);
-                    controller.openPolicyOwnerDashboard(getLoginButton());
-                }
+//                case UserRole.POLICY_OWNER -> {validShow();
+//                    PolicyOwner po = new PolicyOwner(user.getId(), user.getFullName(), user.getEmail(), user.getPassword(), UserRole.DEPENDENT);
+//                    PolicyOwnerController controller = new PolicyOwnerController(po);
+//                    controller.openPolicyOwnerDashboard(getLoginButton());
+//                }
                 case UserRole.INSURANCE_SURVEYOR -> {validShow();openSurveyorDashboard(user);}
                 case UserRole.INSURANCE_MANAGER ->{validShow(); openManagerDashboard(user);}
                 case UserRole.SYSTEM_ADMIN -> {

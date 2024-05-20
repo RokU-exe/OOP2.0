@@ -37,7 +37,7 @@ public class RetrieveUserController {
         }
 
         try {
-            Customer customer = DBUtil.getCustomerById(Integer.parseInt(userId));
+            Customer customer = DBUtil.getCustomerById(String.valueOf(Integer.parseInt(userId)));
             if (customer != null) {
                 userInfoArea.setText("ID: " + customer.getId() + "\nName: " + customer.getFullName() + "\nRole: " + customer.getRole());
             } else {
