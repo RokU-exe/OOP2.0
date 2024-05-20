@@ -12,7 +12,7 @@
          </font></Label>
       <Button fx:id="reviewClaimButton" layoutX="51.0" layoutY="102.0" mnemonicParsing="false" onAction="#reviewClaim" text="Review Claim" />
       <Button fx:id="filterClaimOption" layoutX="256.0" layoutY="102.0" mnemonicParsing="false" onAction="#createFilterClaimFXML" text="Filter Claim" />
-      <Button layoutX="434.0" layoutY="102.0" mnemonicParsing="false" text="Filter Customer" />
+      <Button fx:id="filterCustomerOption" layoutX="434.0" layoutY="102.0" mnemonicParsing="false" onAction="#createFilterCustomerFXML" text="Filter Customer" />
       <Button layoutX="230.0" layoutY="227.0" mnemonicParsing="false" text="Back To Dashboard" />
    </children>
 </AnchorPane>
