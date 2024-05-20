@@ -12,6 +12,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import models.Claim;
+import models.ClaimStatus;
 import models.Customer;
 import models.Surveyor;
 import utils.DBUtil;
@@ -30,10 +31,10 @@ public class ManagerController implements Initializable {
     private TableColumn<Claim, String> claimIdColumn;
 
     @FXML
-    private TableColumn<Claim, String> policyHolderColumn;
+    private TableColumn<Claim, String> insuredPersonColumn;
 
     @FXML
-    private TableColumn<Claim, String> statusColumn;
+    private TableColumn<Claim, ClaimStatus> statusColumn;
 
     private ObservableList<Claim> claimsData = FXCollections.observableArrayList();
 
@@ -49,20 +50,19 @@ public class ManagerController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         claimIdColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
-        policyHolderColumn.setCellValueFactory(new PropertyValueFactory<>("insuredPerson"));
+        insuredPersonColumn.setCellValueFactory(new PropertyValueFactory<>("insuredPerson"));
         statusColumn.setCellValueFactory(new PropertyValueFactory<>("status"));
 
-        claimsTable.setItems(claimsData);
         loadClaimsData();
     }
 
     private void loadClaimsData() {
         List<Claim> claims = DBUtil.getAllClaims();
-        System.out.println("Loaded claims: " + claims.size()); // Debug statement
-        claimsData.setAll(claims);
-        System.out.println("Claims added to ObservableList."); // Debug statement
-        for (Claim claim : claims) {
-            System.out.println(claim); // Print each claim to verify its content
+        if (claims != null && !claims.isEmpty()) {
+            claimsData.setAll(claims);
+            claimsTable.setItems(claimsData);
+        } else {
+            System.out.println("No data to display");
         }
     }
 
@@ -73,10 +73,9 @@ public class ManagerController implements Initializable {
 
     @FXML
     private void handleViewClaims() {
-        List<Claim> claims = DBUtil.getAllClaims();
-        claimsData.setAll(claims);
+        loadClaimsData();
         StringBuilder claimsInfo = new StringBuilder("Claims:\n\n");
-        for (Claim claim : claims) {
+        for (Claim claim : claimsData) {
             claimsInfo.append(String.format("ID: %s, Insured Person: %s, Status: %s\n",
                     claim.getId(), claim.getInsuredPerson(), claim.getStatus()));
         }
