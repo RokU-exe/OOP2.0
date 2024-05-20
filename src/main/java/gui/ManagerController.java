@@ -77,7 +77,7 @@ public class ManagerController implements Initializable {
         claimsData.setAll(claims);
         StringBuilder claimsInfo = new StringBuilder("Claims:\n\n");
         for (Claim claim : claims) {
-            claimsInfo.append(String.format("ID: %s, Policy Holder: %s, Status: %s\n",
+            claimsInfo.append(String.format("ID: %s, Insured Person: %s, Status: %s\n",
                     claim.getId(), claim.getInsuredPerson(), claim.getStatus()));
         }
         contentLabel.setText(claimsInfo.toString());
