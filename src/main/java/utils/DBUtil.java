@@ -305,7 +305,7 @@ public class DBUtil {
         return surveyors;
     }
 
-    public static String getPrefixByUserRole(UserRole role) {
+   public static String getPrefixByUserRole(UserRole role) {
         switch (role) {
             case POLICY_HOLDER:
                 return "h";
@@ -317,8 +317,6 @@ public class DBUtil {
                 return "m";
             case DEPENDENT:
                 return "d";
-            case SYSTEM_ADMIN:
-                return "a";
             default:
                 throw new IllegalArgumentException("Unknown role: " + role);
         }
@@ -354,7 +352,6 @@ public class DBUtil {
         }
         return null;
     }
-
     public static String generateUniqueRandomCardNumber() {
         int numRetries = 0; // Track retry attempts
         int maxRetries = 10; // Set a maximum number of retries (optional)
@@ -370,7 +367,6 @@ public class DBUtil {
         } while (isCardNumberInUse(cardNumber));
         return cardNumber;
     }
-
     public static String generateRandomCardNumber() {
         StringBuilder sb = new StringBuilder();
         Random random = new Random();
@@ -398,7 +394,6 @@ public class DBUtil {
             return false; // Assume failure on error
         }
     }
-
     public static void addInsuranceCard(InsuranceCard card) {
         String query = "INSERT INTO \"InsuranceCard\" (card_number, policy_holder_id, policy_owner_id, expire_date) VALUES (?, ?, ?, ?)";
         try (Connection conn = getConnection();
@@ -414,7 +409,6 @@ public class DBUtil {
             e.printStackTrace();
         }
     }
-
     // Method to retrieve Dependent from the database
     public static List<String> getDependent() throws SQLException {
         List<String> dependent = new ArrayList<>();
@@ -432,7 +426,6 @@ public class DBUtil {
         }
         return dependent;
     }
-
     // Method to retrieve Insurance Surveyor from the database
     public static List<String> getInsuranceSurveyor() throws SQLException {
         List<String> insuranceSurveyor = new ArrayList<>();
@@ -450,7 +443,6 @@ public class DBUtil {
         }
         return insuranceSurveyor;
     }
-
     // Method to retrieve Insurance Manager from the database
     public static List<String> getInsuranceManager() throws SQLException {
         List<String> insuranceManager = new ArrayList<>();
@@ -467,6 +459,23 @@ public class DBUtil {
             }
         }
         return insuranceManager;
+    }
+    public static List<String> getPolicyHolders() throws SQLException {
+        List<String> policyHolders = new ArrayList<>();
+        String query = "SELECT u.id, u.full_name " +
+                "FROM users u " +
+                "LEFT JOIN \"InsuranceCard\" ic ON u.id = ic.policy_holder_id " +
+                "WHERE ic.policy_holder_id IS NULL AND u.role = 'POLICY_HOLDER'";
+        try (Connection conn = getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(query);
+             ResultSet rs = pstmt.executeQuery()) {
+            while (rs.next()) {
+                String fullName = rs.getString("full_name");
+                String id = rs.getString("id");
+                policyHolders.add(fullName + " - " + id);
+            }
+        }
+        return policyHolders;
     }
 
     // Method to retrieve policy owners from the database
@@ -485,6 +494,99 @@ public class DBUtil {
             }
         }
         return policyOwners;
+    }
+    public static List<String> getPH() throws SQLException {
+        List<String> policyHolders = new ArrayList<>();
+        String query = "SELECT u.id, u.full_name " +
+                "FROM users u " +
+                "WHERE u.role = 'POLICY_HOLDER'";
+        try (Connection conn = getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(query);
+             ResultSet rs = pstmt.executeQuery()) {
+            while (rs.next()) {
+                String fullName = rs.getString("full_name");
+                String id = rs.getString("id");
+                policyHolders.add(fullName + " - " + id);
+            }
+        }
+        return policyHolders;
+    }
+    public static User getUser(String id) {
+        User user = new User(); // Initialize user to null
+
+        String query = "SELECT * FROM users WHERE users.id = ?"; // Use prepared statement for security
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setString(1, id); // Set the id parameter
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    user = new User(  // Create a User object with retrieved values
+                            rs.getString("id"),
+                            rs.getString("full_name"),
+                            rs.getString("email"),
+                            rs.getString("password"),
+                            UserRole.valueOf(rs.getString("role"))
+                    );
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return user;
+    }
+    public static InsuranceCard getIC(String card) {
+        InsuranceCard insuranceCard = new InsuranceCard();
+
+        String query = "SELECT card_number, policy_holder_id, policy_owner_id, expire_date FROM \"InsuranceCard\" WHERE card_number = ?";
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setString(1, card);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    String cardNumber = rs.getString("card_number");
+                    String policyHolderId = rs.getString("policy_holder_id");
+                    String policyOwnerId = rs.getString("policy_owner_id");
+                    Date expireDate = rs.getDate("expire_date");
+
+                    insuranceCard = new InsuranceCard(cardNumber, policyHolderId, policyOwnerId, expireDate);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return insuranceCard;
+    }
+    public static List<String> getICForMenu() {
+        List<String> insuranceCardInfoList = new ArrayList<>();
+        String query = "SELECT ic.card_number, ic.policy_holder_id, ph.full_name AS policy_holder_name, ic.policy_owner_id, po.full_name AS policy_owner_name " +
+                "FROM \"InsuranceCard\" ic " +
+                "JOIN \"users\" ph ON ic.policy_holder_id = ph.id " +
+                "JOIN \"users\" po ON ic.policy_owner_id = po.id";
+
+        try (Connection conn = getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(query);
+             ResultSet rs = pstmt.executeQuery()) {
+
+            while (rs.next()) {
+                String cardNumber = rs.getString("card_number");
+                String policyHolderId = rs.getString("policy_holder_id");
+                String policyHolderName = rs.getString("policy_holder_name");
+                String policyOwnerId = rs.getString("policy_owner_id");
+                String policyOwnerName = rs.getString("policy_owner_name");
+
+                String formattedInfo = String.format("%s - %s - %s - %s",
+                        cardNumber, policyHolderId, policyHolderName, policyOwnerName);
+
+                insuranceCardInfoList.add(formattedInfo);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return insuranceCardInfoList;
     }
 
     // Get claims for Policy Owner
