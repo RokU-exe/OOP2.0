@@ -33,8 +33,10 @@ public class Claim {
     }
 
     // Simplified Constructor
-    public Claim(String id, String policyHolderName, ClaimStatus status) {
-        this(id, null, null, null, null, null, status, null, null, null, policyHolderName);
+    public Claim(String id, String insuredPerson, ClaimStatus status) {
+        this.id = id;
+        this.insuredPerson = insuredPerson;
+        this.status = status;
     }
 
     public Claim(String id, java.sql.Date claimDate, String insuredPerson, String cardNumber, java.sql.Date examDate, double claimAmount, ClaimStatus status, String receiverBank, String receiverName, String receiverNumber) {
