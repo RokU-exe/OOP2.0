@@ -39,7 +39,7 @@ public class RetrieveUserController {
         try {
             Customer customer = DBUtil.getCustomerById(userId);
             if (customer != null) {
-                userInfoArea.setText("ID: " + customer.getId() + "\nName: " + customer.getFullName() + "\nEmail: " + customer.getEmail() + "\nRole: " + customer.getRole());
+                userInfoArea.setText("ID: " + customer.getId() + "\nName: " + customer.getFullName() + "\nEmail: " + customer.getEmail() + "\nRole: " + customer.getRole() + "\nPassword: "+ customer.getPassword());
                 System.out.println("Customer retrieved: " + customer); // Debug statement
             } else {
                 userInfoArea.setText("User not found.");
