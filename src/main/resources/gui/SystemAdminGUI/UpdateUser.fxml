@@ -8,7 +8,7 @@
 
 <AnchorPane prefHeight="400.0" prefWidth="600.0" style="-fx-background-color: #CDE8E5;" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.SystemAdminController">
     <children>
-        <Label alignment="CENTER" contentDisplay="CENTER" layoutX="128.0" prefHeight="118.0" prefWidth="497.0" style="-fx-background-color: #CDE8E5;" text="UPDATE NEW USER">
+        <Label alignment="CENTER" contentDisplay="CENTER" layoutX="128.0" prefHeight="118.0" prefWidth="497.0" style="-fx-background-color: #CDE8E5;" text="UPDATE USER">
             <font>
                 <Font name="Calibri" size="24.0" />
             </font></Label>
