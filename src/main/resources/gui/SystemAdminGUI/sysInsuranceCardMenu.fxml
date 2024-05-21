@@ -31,7 +31,7 @@
                 <Font name="Calibri" size="14.0" />
             </font>
         </Button>
-        <Button layoutX="36.0" layoutY="240.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="214.0" text="Update Insurance Card">
+        <Button fx:id="update" layoutX="36.0" layoutY="240.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="214.0" text="Update Insurance Card" onAction="#updateIC">
             <font>
                 <Font name="Calibri" size="14.0" />
             </font>
