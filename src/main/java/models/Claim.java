@@ -42,6 +42,10 @@ public class Claim {
     public Claim(String id, java.sql.Date claimDate, String insuredPerson, String cardNumber, java.sql.Date examDate, double claimAmount, ClaimStatus status, String receiverBank, String receiverName, String receiverNumber) {
     }
 
+
+    public Claim(String id, LocalDate claimDate, String insuredPerson, String cardNumber, LocalDate examDate, float claimAmount, String status, String receiverBank, String receiverName, String receiverNumber, String policyHolderName) {
+    }
+
     // Getters and Setters
     public String getId() {
         return id;
