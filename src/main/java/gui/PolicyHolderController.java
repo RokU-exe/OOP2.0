@@ -23,7 +23,7 @@ public class PolicyHolderController {
     @FXML
     public void openPolicyHolderDashboard(Button loginButton) throws IOException {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/policyHolderDashboard.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/PolicyHolderGUI/PolicyHolderDashboard.fxml"));
             Parent root = loader.load();
             Scene scene = new Scene(root);
 
