@@ -1760,4 +1760,110 @@ public class SystemAdminController implements Initializable {
             // Handle any errors loading the admin dashboard FXML
         }
     }
+    /////////////////UPDATE INSURANCE CARD////////////////////////////////
+
+    @FXML
+    private Button upIC;
+    @FXML
+    private MenuButton upIC1;
+    @FXML
+    private DatePicker expireDatePicker;
+        @FXML
+        private void updateIC() throws SQLException {
+            AnchorPane root = new AnchorPane();
+            root.setPrefSize(600, 400);
+            root.setStyle("-fx-background-color: #CDE8E5;");
+
+            // Create and configure the label
+            Label titleLabel = new Label("UPDATE INSURANCE CARD");
+            titleLabel.setFont(new Font("Calibri", 24));
+            titleLabel.setStyle("-fx-background-color: #CDE8E5;");
+            titleLabel.setPrefSize(497, 118);
+            titleLabel.setLayoutX(128);
+            titleLabel.setAlignment(javafx.geometry.Pos.CENTER);
+
+            // Create and configure the first ImageView
+            ImageView logoImageView = new ImageView();
+            logoImageView.setFitHeight(88);
+            logoImageView.setFitWidth(286);
+            logoImageView.setPreserveRatio(true);
+            logoImageView.setImage(new Image("https://1000logos.net/wp-content/uploads/2019/07/RMIT-Logo.png"));
+
+            // Create and configure the second ImageView
+            ImageView blendImageView = new ImageView();
+            blendImageView.setFitHeight(150);
+            blendImageView.setFitWidth(200);
+            blendImageView.setLayoutX(450);
+            blendImageView.setLayoutY(242);
+            blendImageView.setPreserveRatio(true);
+            blendImageView.setImage(new Image("https://tse1.mm.bing.net/th?id=OIP.QqEXi7j5Z0ZMFu8pLgTxzAHaHa&amp;pid=Api&amp;P=0&amp;h=180"));
+            blendImageView.setBlendMode(javafx.scene.effect.BlendMode.MULTIPLY);
+            blendImageView.setEffect(new Blend());
+
+            // Create and configure the back button
+            Button backButton = new Button("Back to Dashboard");
+            backButton.setFont(new Font(14));
+            backButton.setLayoutX(525);
+            backButton.setLayoutY(5);
+            backButton.setOnAction(e -> backtoDashboard());
+
+            Label policyHolderLabel = new Label("Insurance Card:");
+            policyHolderLabel.setLayoutX(77);
+            policyHolderLabel.setLayoutY(126);
+            policyHolderLabel.setFont(new Font("Calibri", 18));
+
+            upIC1 = new MenuButton("Select Insurance Card");
+            upIC1.setLayoutX(248);
+            upIC1.setLayoutY(124);
+            upIC1.setPrefHeight(26);
+            upIC1.setPrefWidth(367);
+
+            // Create and configure the expire date label
+            Label expireDateLabel = new Label("Expire Date:");
+            expireDateLabel.setFont(new Font("Calibri", 18));
+            expireDateLabel.setLayoutX(83);
+            expireDateLabel.setLayoutY(259);
+
+            // Create and configure the update button
+            upIC = new Button("UPDATE");
+            upIC.setFont(new Font("Calibri", 18));
+            upIC.setPrefSize(106, 47);
+            upIC.setLayoutX(508);
+            upIC.setLayoutY(235);
+            upIC.setOnAction(e -> doneUpdateIC());
+
+            // Create and configure the DatePicker
+            expireDatePicker = new DatePicker();
+            expireDatePicker.setLayoutX(243);
+            expireDatePicker.setLayoutY(257);
+
+            // Add all components to the root pane
+            root.getChildren().addAll(titleLabel, logoImageView, blendImageView, backButton, policyHolderLabel, upIC1, expireDateLabel, upIC, expireDatePicker);
+            populateupIC1();
+            update.getScene().setRoot(root);
+        }
+
+        private void populateupIC1(){
+            List<String> card = DBUtil.getICForMenu(); // Assuming you have a method to get insurance managers
+
+            upIC1.getItems().clear(); // Assuming upInsuranceManager is your MenuButton for insurance managers
+
+            for (String ic : card) {
+                MenuItem menuItem = new MenuItem(ic);
+                menuItem.setOnAction(event -> upIC1.setText(ic));
+                upIC1.getItems().add(menuItem);
+            }
+        }
+
+    public void doneUpdateIC() {
+        String user = extractCardNumber(upIC1.getText());
+        LocalDate expireDate = expireDatePicker.getValue(); // Get selected expiration date
+        DBUtil.updateIC(user, expireDate);
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Update Insurance Card:");
+        alert.setHeaderText("InsuranceCard: "+ extractCardNumber(upIC1.getText()));
+        alert.setContentText(user.toString());
+        alert.showAndWait();
+        dashBoard(upIC);
+    }
 }
