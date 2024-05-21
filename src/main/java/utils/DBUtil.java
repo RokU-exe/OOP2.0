@@ -18,6 +18,59 @@ public class DBUtil {
         return conn;
     }
 
+    // Get Claims for Policy Holder
+    public static List<Claim> getClaimsForPolicyHolder(String policyHolderName) throws SQLException {
+        List<Claim> claims = new ArrayList<>();
+        String sql = "SELECT * FROM claims WHERE policyHolder_name = ?";
+
+        try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setString(1, policyHolderName);
+            ResultSet rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                Claim claim = new Claim(
+                        rs.getString("id"),
+                        rs.getDate("claim_date").toLocalDate(), // Convert to LocalDate
+                        rs.getString("insured_person"),
+                        rs.getString("card_number"),
+                        rs.getDate("exam_date").toLocalDate(),
+                        rs.getFloat("claim_amount"),
+                        rs.getString("status"),
+                        rs.getString("receiver_bank"),
+                        rs.getString("receiver_name"),
+                        rs.getString("receiver_number"),
+                        rs.getString("policyHolder_name")
+                );
+                claims.add(claim);
+            }
+        }
+        return claims;
+    }
+
+    public static PolicyHolder fetchPolicyHolderDetails(String userId) throws SQLException {
+        String query = "SELECT * FROM users WHERE id = ?";
+
+        try (Connection conn = getConnection();
+             PreparedStatement preparedStatement = conn.prepareStatement(query)) {
+
+            preparedStatement.setString(1, userId);
+
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                if (resultSet.next()) {
+                    // Map ResultSet to PolicyHolder object
+                    PolicyHolder policyHolder = new PolicyHolder();
+                    policyHolder.setId(resultSet.getString("id"));
+                    policyHolder.setFullName(resultSet.getString("full_name"));
+                    // ... set other properties from the ResultSet
+                    return policyHolder;
+                }
+            }
+        }
+        return null; // PolicyHolder not found
+    }
+
     public static List<Claim> getAllClaims() {
         List<Claim> claims = new ArrayList<>();
         String query = "SELECT * FROM claims";
