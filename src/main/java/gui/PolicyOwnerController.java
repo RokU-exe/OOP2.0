@@ -1,23 +1,5 @@
 package gui;
 
-//import javafx.event.ActionEvent;
-//import javafx.fxml.FXML;
-//import javafx.fxml.FXMLLoader;
-//import javafx.fxml.Initializable;
-//import javafx.scene.Node;
-//import javafx.scene.Parent;
-//import javafx.scene.Scene;
-//import javafx.scene.control.Button;
-//import javafx.scene.control.MenuItem;
-//import javafx.stage.Stage;
-//import models.*;
-//import utils.DBUtil;
-//
-//import java.io.IOException;
-//import java.net.URL;
-//import java.sql.SQLException;
-//import java.util.List;
-//import java.util.ResourceBundle;
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -26,25 +8,16 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.text.Font;
 import javafx.stage.Stage;
-import controllers.SystemAdmin;
 import models.*;
 import utils.DBUtil;
 import javafx.event.ActionEvent;
 import java.io.IOException;
 import java.net.URL;
-import java.sql.SQLException;
-import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.*;
 
 import static models.UserRole.*;
-import static utils.DBUtil.getAllUsers;
-import static utils.DBUtil.getUserByIDandRole;
+
 
 public class PolicyOwnerController implements Initializable {
 
@@ -59,19 +32,23 @@ public class PolicyOwnerController implements Initializable {
     private TextField password;
     @FXML
     private TextField userID;
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
     }
 
 
-
     public PolicyOwnerController(PolicyOwner owner) {
         this.owner = owner;
-    };
+    }
+
+    ;
 
     public PolicyOwnerController() {
         //default constructor
-    };
+    }
+
+    ;
 
     @FXML
     private MenuButton beneficiary_role;
@@ -95,7 +72,7 @@ public class PolicyOwnerController implements Initializable {
     }
 
     //1.start with opening the Owner Dashboard
-     public void openPolicyOwnerDashboard(Button loginButton) {
+    public void openPolicyOwnerDashboard(Button loginButton) {
         // Open the Policy Owner Dashboard
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/PolicyOwnerDashBoard.fxml"));
@@ -117,9 +94,10 @@ public class PolicyOwnerController implements Initializable {
     //2. enter the beneficiary menu
     @FXML
     private Button beneficiary_menu_button;
+
     //Adding beneficiaries and their roles
     @FXML
-    public void beneficiary_Menu(){
+    public void beneficiary_Menu() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/PolicyOwnerGUI/Beneficiary_Menu.fxml"));
             Parent adminDashboardRoot = loader.load();
@@ -140,7 +118,8 @@ public class PolicyOwnerController implements Initializable {
     // enter the Interface of adding user
     @FXML
     private Button add_Bene_Button;
-    public void add_beneficiary_window(){
+
+    public void add_beneficiary_window() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/PolicyOwnerGUI/Add_Beneficiary.fxml"));
             Parent adminDashboardRoot = loader.load();
@@ -218,8 +197,8 @@ public class PolicyOwnerController implements Initializable {
 
     @FXML
     private Button remove_Bene_Button;
-    public void remove_beneficiary_window()
-    {
+
+    public void remove_beneficiary_window() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/PolicyOwnerGUI/Remove_Beneficiary.fxml"));
             Parent adminDashboardRoot = loader.load();
@@ -238,114 +217,138 @@ public class PolicyOwnerController implements Initializable {
     }
 
     @FXML
-    private Button remove_Bene;
-    @FXML
-    public void remove_Bene(String beneficiaryID, UserRole selectedRole) {
-        // Check if beneficiary ID and role are provided
-        if (beneficiaryID == null || beneficiaryID.isEmpty() || "Select Role".equals(selectedRole)) {
-            System.out.println("Please provide a valid beneficiary ID and select a role.");
+    public void remove_Bene() {
+        String beneficiaryID = userID.getText(); // Assuming userID is the TextField for beneficiary ID
+        // Check if beneficiaryID is empty
+        if (beneficiaryID.isEmpty()) {
+            System.out.println("Please enter a valid Beneficiary ID.");
+            return;
+        }
+        String roleName = beneficiary_role.getText();
+
+        // Check if a role is selected
+        if (roleName.equals("Select Beneficiary's Role")) {
+            System.out.println("Please select a valid role.");
             return;
         }
 
-        // Confirm removal operation with the user (optional)
-        Alert confirmationAlert = new Alert(Alert.AlertType.CONFIRMATION);
-        confirmationAlert.setTitle("Confirm Removal");
-        confirmationAlert.setHeaderText("Are you sure you want to remove the beneficiary?");
-        confirmationAlert.setContentText("ID: " + beneficiaryID + "\nRole: " + selectedRole);
+        UserRole userRole;
+        try {
+            userRole = getRole(String.valueOf(roleName)); // Convert roleName to UserRole
+        } catch (IllegalArgumentException e) {
+            System.out.println("Unknown role: " + roleName);
+            return;
+        }
 
-        Optional<ButtonType> result = confirmationAlert.showAndWait();
-        if (result.isPresent() && result.get() == ButtonType.OK) {
-            // Perform the removal operation
-            // You can replace this print statement with your actual removal logic
-            System.out.println("Removing beneficiary with ID: " + beneficiaryID + " and Role: " + selectedRole);
+        // Call the DBUtil method to delete the user
+        try {
+            DBUtil.PO_deleteUser(beneficiaryID, userRole);
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Remove " + roleName);
+            alert.setHeaderText(roleName + " Removed Successfully!");
+            alert.setContentText("Beneficiary ID: " + beneficiaryID + "\nRole: " + roleName);
+            alert.showAndWait();
 
-            // Once the removal is successful, you may want to update the UI or take further actions
-            // For example, you can clear the input fields or refresh the displayed data
-            // fullname.clear(); // Assuming fullname is the TextField for beneficiary ID
-            // beneficiary_role.setText("Select Role"); // Reset the role selection
-        } else {
-            System.out.println("Removal operation canceled.");
+            // Navigate back to the Policy Owner Dashboard
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/PolicyOwnerDashBoard.fxml"));
+            Parent adminDashboardRoot = loader.load();
+            if (remove_Bene_Button != null && remove_Bene_Button.getScene() != null) {
+                Node sourceNode = remove_Bene_Button; // Use any node from the current scene
+                Stage primaryStage = (Stage) sourceNode.getScene().getWindow();
+                primaryStage.setScene(new Scene(adminDashboardRoot));
+                primaryStage.show();
+            } else {
+                System.out.println("Error: sourceNode is null or not attached to any scene.");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            // Handle any errors during the deletion process
         }
     }
 
-//    public void remove_Bene() {
-//
-//        String roleName = beneficiary_role.getText();
-//        System.out.println(roleName);
-//
-//        UserRole userRole = getRole(roleName);
-//        String id = "";
-//        getUserByIDandRole(id,userRole);
-//
-//        User user1 = new User(id,roleName);
-//        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-//
-//        // Add a new user to the database
-//        DBUtil.removeBeneficiary(user1);
-//        alert.setTitle("Remove " + roleName);
-//        alert.setHeaderText(roleName + " Removed Successfully!");
-//        alert.setContentText(user1.toString());
-//        alert.showAndWait();
-//
-//        try {
-//            FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/PolicyOwnerDashBoard.fxml"));
-//            Parent adminDashboardRoot = loader.load();
-//
-//            Node sourceNode = remove_Bene; // Use any node from the current scene
-//
-//            // Get the primary stage from the source node's scene
-//            Stage primaryStage = (Stage) sourceNode.getScene().getWindow();
-//
-//            primaryStage.setScene(new Scene(adminDashboardRoot));
-//            primaryStage.show();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//            // Handle any errors loading the admin dashboard FXML
-//        }
-//    }
+    @FXML
+    private Button open_update_window_Button;
 
-//    public void remove_Bene() {
-//        String roleName = beneficiary_role.getText();
-//        System.out.println(roleName);
-//        // Check if a role is selected
-//        if (roleName.equals("Select Beneficiary's Role")) {
-//            System.out.println("Please select a valid role.");
-//            return;
+    public void update_beneficiary_window_Page1() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/PolicyOwnerGUI/Update_Beneficiary_Page1.fxml"));
+            Parent adminDashboardRoot = loader.load();
+
+            Node sourceNode = open_update_window_Button; // Use any node from the current scene
+
+            // Get the primary stage from the source node's scene
+            Stage primaryStage = (Stage) sourceNode.getScene().getWindow();
+
+            primaryStage.setScene(new Scene(adminDashboardRoot));
+            primaryStage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+            // Handle any errors loading the admin dashboard FXML
+        }
+    }
+
+    @FXML
+    private Button find_Updated_Beneficiary_button;
+    public void find_updated_beneficiary_Page2() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/PolicyOwnerGUI/Update_Beneficiary_Page2.fxml"));
+            Parent updateBeneficiaryPage2Root = loader.load();
+
+            Node sourceNode = find_Updated_Beneficiary_button; // Use any node from the current scene
+
+            // Get the primary stage from the source node's scene
+            Stage primaryStage = (Stage) sourceNode.getScene().getWindow();
+
+            primaryStage.setScene(new Scene(updateBeneficiaryPage2Root));
+            primaryStage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+            // Handle any errors loading the update beneficiary page 2 FXML
+        }
+    }
+
+//        if (user != null) {
+//            FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/PolicyOwnerGUi/Update_Beneficiary_Page2.fxml"));
+//            Parent root = loader.load();
+//
+//            UpdateBeneficiaryPage2Controller controller = loader.getController();
+//            controller.initData(String.valueOf(fullname)); // Pass the data to the controller
+//
+//            // Proceed with setting the scene and showing the stage
+//            Scene scene = new Scene(root);
+//            Stage stage = (Stage) find_Updated_Beneficiary_button.getScene().getWindow(); // Accessing the button's scene to get the window
+//            stage.setScene(scene);
+//            stage.show();
+//        } else {
+//            // Handle case where user is not found
+//            Alert alert = new Alert(Alert.AlertType.ERROR);
+//            alert.setTitle("User Not Found");
+//            alert.setHeaderText(null);
+//            alert.setContentText("User with ID " + user_ID + " not found!");
+//            alert.showAndWait();
 //        }
+//        String user_ID = userID.getText();
+//        User user = DBUtil.getUser(user_ID);
+//        if (user != null) {
+//            FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/PolicyOwnerGUi/Update_Beneficiary_Page2.fxml"));
+//            Parent root = loader.load();
 //
-//        UserRole userRole = getRole(roleName);
-//        String id = DBUtil.getLargestIdByUserRole(userRole);
-//        if (id == null) {
-//            // Handle case when no matching records are found
-//            System.out.println("No matching records found for role: " + roleName);
-//            return;
+//            UpdateBeneficiaryPage2Controller controller = loader.getController();
+//            controller.initData(String.valueOf(user)); // Pass the User object to the next page
+//
+//            // Proceed with setting the scene and showing the stage
+//            Scene scene = new Scene(root);
+//            Stage stage = (Stage) find_Updated_Beneficiary_button.getScene().getWindow(); // Accessing the button's scene to get the window
+//            stage.setScene(scene);
+//            stage.show();
+//        } else {
+//            // Handle case where user is not found
+//            Alert alert = new Alert(Alert.AlertType.ERROR);
+//            alert.setTitle("User Not Found");
+//            alert.setHeaderText(null);
+//            alert.setContentText("User with ID " + user_ID + " not found!");
+//            alert.showAndWait();
 //        }
-//        User user1 = new User(id,userRole);
-//        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-//
-//        // Add a new user to the database
-//        DBUtil.removeBeneficiary(user1);
-//        alert.setTitle("Remove " + roleName);
-//        alert.setHeaderText(roleName + " Removed Successfully!");
-//        alert.setContentText(user1.toString());
-//        alert.showAndWait();
-//
-//        try {
-//            FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/PolicyOwnerDashBoard.fxml"));
-//            Parent adminDashboardRoot = loader.load();
-//
-//            Node sourceNode = remove_Bene; // Use any node from the current scene
-//
-//            // Get the primary stage from the source node's scene
-//            Stage primaryStage = (Stage) sourceNode.getScene().getWindow();
-//
-//            primaryStage.setScene(new Scene(adminDashboardRoot));
-//            primaryStage.show();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//            // Handle any errors loading the admin dashboard FXML
-//        }
-//    }
 
 
 
@@ -353,6 +356,7 @@ public class PolicyOwnerController implements Initializable {
 
     @FXML
     private Button back;
+
     public void backtoDashboard() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/SystemAdminGUI/systemAdminDashboard.fxml"));
@@ -371,96 +375,12 @@ public class PolicyOwnerController implements Initializable {
         }
     }
 
-//    @FXML // lam lai !!!!!!!!!
-//    public void viewClaim() {
-//        try {
-//            // Retrieve all claims
-//            List<Claim> claims = DBUtil.getAllClaims();
-//
-//            // Open the View_Claim view and set the claims data
-//            FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/PolicyOwnerGUI/View_Claim.fxml"));
-//            Parent viewClaimRoot = loader.load();
-//
-//            ClaimsController claimsController = loader.getController();
-//            claimsController.setClaims(claims);
-//
-//            // Get the stage from the viewClaimRoot
-//            Stage primaryStage = new Stage();
-//            primaryStage.setScene(new Scene(viewClaimRoot));
-//            primaryStage.show();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//            // Handle any errors loading the view
-//        }
-//    }
-
-//    @FXML
-//    public void viewClaim() throws SQLException {
-//        // Retrieve all claims
-//        List<Claim> claims = DBUtil.getAllClaims();
-//
-//        // Open the View_Claim view and set the claims data
-//        try {
-//            FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/PolicyOwnerGUI/View_Claim.fxml"));
-//            Parent viewClaimRoot = loader.load();
-//
-//            ClaimsController claimsController = loader.getController();
-//            claimsController.setClaims(claims);
-//
-//            Stage primaryStage = (Stage) viewClaimButton.getScene().getWindow();
-//            primaryStage.setScene(new Scene(viewClaimRoot));
-//            primaryStage.show();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//            // Handle any errors loading the view
-//        }
-//    }
-
-
-//    @FXML
-//    private Button viewClaimButton;
-//    public void viewClaim() throws SQLException {
-//        String policyHolder_id = "";
-//
-//        // Call the getAllClaimsForPolicyOwner method from DBUtil to retrieve all claims for the policy owner
-//        List<Claim> claims = getClaimsForPolicyOwner(policyHolder_id);
-//
-//        // Perform further actions with the retrieved claims, such as displaying them in the UI
-//
-//
-//    }
-//    public void openViewClaim() {
-//
-//        // Open the Policy Owner Dashboard
-//        try {
-//            FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/PolicyOwnerGUI/View_Claim.fxml"));
-//            Parent viewClaimRoot = loader.load();
-//
-////            ClaimsController claimsController = loader.getController();
-////            claimsController.setClaims(claims);
-//
-//            Node sourceNode = viewClaimButton; // Use any node from the current scene
-//
-//            // Get the primary stage from the source node's scene
-//            Stage primaryStage = (Stage) sourceNode.getScene().getWindow();
-//
-//            primaryStage.setScene(new Scene(viewClaimRoot));
-//            primaryStage.show();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//            // Handle any errors loading the admin dashboard FXML
-//        }
-//    }
-
     @FXML
     private Button deleteClaimButton;
-    public void deleteClaim()
-    {
+
+    public void deleteClaim() {
 
     }
-
-
-
 
 
     //Initialization of buttons in PolicyOwner Dashboard
@@ -475,26 +395,14 @@ public class PolicyOwnerController implements Initializable {
 
     @FXML
     private Button updateClaimButtom;
-    public void updateClaim()
-    {
+
+    public void updateClaim() {
 
     }
-
-
-//    @FXML
-//    private Button fileClaimButton;
-//    public List<Claim> fileClaim() {
-//        // Call the getAllClaimsForPolicyOwner method from DBUtil to retrieve all claims for the policy owner
-//        List<Claim> claims = DBUtil.getAllClaims();
-//
-//        // Perform further actions with the retrieved claims, such as displaying them in the UI
-//        for (Claim claim : claims) {
-//            System.out.println("Claim ID: " + claim.getId());
-//            // Display other relevant information about the claim
-//        }
-//        return claims;
-//    }
-
-
 }
+
+
+
+
+
 
