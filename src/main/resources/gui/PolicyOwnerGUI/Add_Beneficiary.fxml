@@ -57,10 +57,7 @@
         <MenuButton fx:id="beneficiary_role" layoutX="227.0" layoutY="304.0" mnemonicParsing="false" text="Select Role">
             <items>
                 <MenuItem onAction="#selectRole" text="Policy Holder" />
-                <MenuItem onAction="#selectRole" text="Policy Owner" />
                 <MenuItem onAction="#selectRole" text="Dependent" />
-                <MenuItem onAction="#selectRole" text="Insurance Surveyor" />
-                <MenuItem onAction="#selectRole" text="Insurance Manager" />
             </items>
         </MenuButton>
         <Button fx:id="beneficiary_Adding_Button" layoutX="502.0" layoutY="168.0" mnemonicParsing="false" onAction="#add_Bene" prefHeight="47.0" prefWidth="106.0" text="ADD">
