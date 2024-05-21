@@ -144,6 +144,40 @@ public class DBUtil {
         }
     }
 
+     //PolicyOwner remove Beneficiary
+    public static void PO_deleteUser(String userId, UserRole role) {
+        String query = "DELETE FROM users WHERE id = ? AND role = ?";
+        try (Connection conn = getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(query)) {
+            pstmt.setString(1, userId);
+            pstmt.setString(2, role.toString());
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    //Policy Owner update Beneficiary
+    public static void PO_updateUser(User user) throws SQLException {
+        String sql = "UPDATE users SET full_Name = ?, email = ?, password = ?, role = ? WHERE id = ?";
+
+        try (Connection conn = getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setString(1, user.getFullName());
+            pstmt.setString(2, user.getEmail());
+            pstmt.setString(3, user.getPassword());
+            pstmt.setString(4, String.valueOf(user.getRole())); // Assuming role is stored as a string
+            pstmt.setString(5, user.getId()); // Setting ID as a string
+
+            int rowsAffected = pstmt.executeUpdate();
+            if (rowsAffected > 0) {
+                System.out.println("User updated successfully.");
+            } else {
+                System.out.println("No user found with the specified ID and role.");
+            }
+        }
+    }
     public static void deleteUser(String userId) {
         String query = "DELETE FROM users WHERE id = ?";
         try (Connection conn = getConnection();
