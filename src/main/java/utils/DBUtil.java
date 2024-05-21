@@ -972,4 +972,15 @@ public class DBUtil {
         }
         return filterCustomer;
     }
+    public static void updateIC(String cardNumber, LocalDate expireDate){
+        String query = "UPDATE \"InsuranceCard\" SET expire_date = ? WHERE card_number = ?";
+        try (Connection conn = DBUtil.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(query)) {
+            pstmt.setDate(1, java.sql.Date.valueOf(expireDate));
+            pstmt.setString(2, cardNumber);
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }
